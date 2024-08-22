@@ -1,0 +1,93 @@
+body.background-image {
+    background: url('/static/images/servicio.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+h1.title-orange {
+    color: #f18700; /* Color naranja del título */
+    font-size: 2.5rem; /* Tamaño de la fuente del título */
+    margin-bottom: 1rem; /* Espaciado inferior del título */
+    text-align: center; /* Centrar el texto */
+    font-weight: bold; /* Grosor de la fuente */
+}
+
+.logo {
+    max-width: 200px;
+    margin-bottom: 20px;
+}
+
+.login-form-container {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.login-form {
+    width: 100%;
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+    color: #f18700; /* Color naranja del subtítulo Login */
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.form-group .form-control {
+    padding-right: 40px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #1d1d1b;
+}
+
+.btn-orange {
+    background-color: #f18700 !important;
+    border-color: #f18700 !important;
+    color: white;
+    width: 100%;
+}
+
+#result {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .login-form-container {
+        padding: 20px;
+    }
+
+    .logo {
+        max-width: 150px;
+        margin-bottom: 15px;
+    }
+}

@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+}
+
+.sidebar {
+    background-color: #1d1d1b; /* Color negro del logo */
+    min-height: 100vh;
+}
+
+.sidebar .nav-link {
+    color: white;
+}
+
+.sidebar .nav-link.active {
+    background-color: #f18700; /* Color naranja del logo */
+}
+
+.sidebar .nav-link:hover {
+    background-color: #f18700; /* Color naranja del logo */
+}
+
+.nav-link i {
+    margin-right: 10px;
+}
+
+.card-title {
+    color: #f18700; /* Color naranja del logo */
+    font-size: 2rem;
+}
+
+.card-text {
+    color: #1d1d1b; /* Color negro del logo */
+}
+
+h1.h2 {
+    color: #1d1d1b; /* Color negro del logo */
+    margin-bottom: 0; /* Asegura que el título esté alineado con el botón */
+}
+
+.d-flex .btn-dark {
+    margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+    .btn-dark {
+        display: block;
+        position: relative;
+        z-index: 1050;
+    }
+    .modal-dialog-slideout {
+        transform: translate(0, 0);
+    }
+    .modal-content {
+        width: 250px; /* Ajusta el ancho del menú */
+    }
+    .modal-body .nav-link {
+        text-align: left;
+        padding: 10px;
+        color: white;
+    }
+    .modal-body .nav-link.active,
+    .modal-body .nav-link:hover {
+        background-color: #f18700; /* Color naranja del logo */
+    }
+}
+
+@media (max-width: 576px) {
+    .card-title {
+        font-size: 1.5rem;
+    }
+    .card-text {
+        font-size: 0.9rem;
+    }
+    h1.h2 {
+        font-size: 1.75rem;
+    }
+}
