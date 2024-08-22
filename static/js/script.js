@@ -143,6 +143,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('socio').value = user.SOCIO;
                 document.getElementById('pwd').value = user.PWD;
                 document.getElementById('userModalLabel').innerText = 'Editar Usuario';
+
+                loadSocios(user.SOCIO); // Cargar socios antes de abrir el modal
+
+                document.getElementById('togglePwdVisibility').style.display = 'block';
+
                 $('#userModal').modal('show');
             })
             .catch(function(error) {
@@ -150,6 +155,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Error al cargar el usuario.');
             });
     };
+
+    // Función para alternar la visibilidad de la contraseña
+    document.getElementById('togglePwdVisibility').addEventListener('click', function() {
+        const pwdField = document.getElementById('pwd');
+        const icon = this.querySelector('i');
+        if (pwdField.type === 'password') {
+            pwdField.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            pwdField.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
 
     // Función para eliminar usuarios
     window.deleteUser = function(id) {
@@ -229,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function loadSocios() {
+    function loadSocios(selectedSocioId) {
         axios.get('http://20.97.20.115:8081/api/socios')
             .then(function(response) {
                 console.log("Socios loaded:", response.data);
@@ -245,6 +265,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         selectSocio.appendChild(option);
                     }
                 });
+
+                //si estamos en modo edicion
+                if(selectedSocioId){
+                    selectSocio.value=selectedSocioId;
+                }
             })
             .catch(function(error) {
                 console.error('Error al cargar los socios:', error);
@@ -262,29 +287,5 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#userModal').modal('show');
     };
 
-    window.editUser = function(id) {
-        console.log("Editing user with ID:", id);
-        axios.get(`http://20.97.20.115:8081/api/usuarios/${id}`)
-            .then(function(response) {
-                console.log("User data received for edit:", response.data);
-                var user = response.data;
-                document.getElementById('userId').value = user.ID;
-                document.getElementById('usuario').value = user.USUARIO;
-                document.getElementById('perfil').value = user.PERFIL;
-                document.getElementById('activo').value = user.ACTIVO;
-                loadSocios(); // Cargar socios antes de abrir el modal
-                document.getElementById('socio').value = user.SOCIO;
-                document.getElementById('pwd').value = user.PWD;
-                document.getElementById('userModalLabel').innerText = 'Editar Usuario';
-                $('#userModal').modal('show');
-            })
-            .catch(function(error) {
-                console.error('Error al cargar el usuario:', error);
-                alert('Error al cargar el usuario.');
-            });
-    };
-
     // Cargar usuarios al iniciar la página
-    loadUsers();
-    handleMenuVisibility();
 });

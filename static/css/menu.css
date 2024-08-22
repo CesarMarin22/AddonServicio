@@ -1,81 +1,89 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
+    background-color: #f7f7f7 !important;
 }
 
+/* Color de fondo del sidebar */
 .sidebar {
-    background-color: #1d1d1b; /* Color negro del logo */
-    min-height: 100vh;
+    background-color: #f18700 !important; /* Color naranja */
+    min-height: 100vh !important;
 }
 
+/* Color de las opciones (links) en el sidebar */
 .sidebar .nav-link {
-    color: white;
+    color: white !important;
 }
 
+/* Color de la opción activa en el sidebar */
 .sidebar .nav-link.active {
-    background-color: #f18700; /* Color naranja del logo */
+    background-color: #1d1d1b !important; /* Color negro */
 }
 
+/* Color de las opciones al pasar el mouse */
 .sidebar .nav-link:hover {
-    background-color: #f18700; /* Color naranja del logo */
+    background-color: #1d1d1b !important; /* Color negro */
 }
 
+/* Ajuste de los iconos */
 .nav-link i {
-    margin-right: 10px;
+    margin-right: 10px !important;
 }
 
+/* Ajuste de los títulos */
 .card-title {
-    color: #f18700; /* Color naranja del logo */
-    font-size: 2rem;
+    color: #f18700 !important; /* Color naranja */
+    font-size: 2rem !important;
 }
 
 .card-text {
-    color: #1d1d1b; /* Color negro del logo */
+    color: #1d1d1b !important; /* Color negro */
 }
 
 h1.h2 {
-    color: #1d1d1b; /* Color negro del logo */
-    margin-bottom: 0; /* Asegura que el título esté alineado con el botón */
+    color: #1d1d1b !important; /* Color negro */
+    margin-bottom: 0 !important;
 }
 
 .d-flex .btn-dark {
-    margin-right: 10px;
+    margin-right: 10px !important;
 }
 
+/* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
     .sidebar {
-        display: none;
+        display: none !important;
     }
     .btn-dark {
-        display: block;
-        position: relative;
-        z-index: 1050;
+        display: block !important;
+        position: relative !important;
+        z-index: 1050 !important;
     }
     .modal-dialog-slideout {
-        transform: translate(0, 0);
+        transform: translate(0, 0) !important;
     }
     .modal-content {
-        width: 250px; /* Ajusta el ancho del menú */
+        width: 250px !important;
     }
     .modal-body .nav-link {
-        text-align: left;
-        padding: 10px;
-        color: white;
+        text-align: left !important;
+        padding: 10px !important;
+        color: white !important;
     }
     .modal-body .nav-link.active,
     .modal-body .nav-link:hover {
-        background-color: #f18700; /* Color naranja del logo */
+        background-color: #1d1d1b !important; /* Color negro */
     }
 }
 
+/* Ajustes adicionales para pantallas más pequeñas */
 @media (max-width: 576px) {
     .card-title {
-        font-size: 1.5rem;
+        font-size: 1.5rem !important;
     }
     .card-text {
-        font-size: 0.9rem;
+        font-size: 0.9rem !important;
     }
     h1.h2 {
-        font-size: 1.75rem;
+        font-size: 1.75rem !important;
     }
 }

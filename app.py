@@ -100,6 +100,11 @@ def menu():
     is_admin = session.get('is_admin', False)
     return render_template('menu.html', is_admin=is_admin)
 
+@app.route('/ordenes_trabajo')
+def ordenes_trabajo():
+    return render_template('ordenes_trabajo.html')
+
+
 @app.route('/logout')
 def logout():
     session.pop('ROUTEID', None)
