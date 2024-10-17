@@ -1,25 +1,82 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f7f7f7 !important;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Evita que el body tenga scroll */
 }
 
 /* Color de fondo del sidebar */
 .sidebar {
     background-color: #f18700 !important; /* Color naranja */
-    min-height: 100vh !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px; /* Ajusta según el ancho que necesites */
+    overflow-y: auto; /* Permite scroll en el sidebar si es necesario */
+    z-index: 1000; /* Asegura que esté encima del contenido principal */
+    display: flex;
+    flex-direction: column; /* Hace que el contenido se apile en columnas */
+    justify-content: space-between; /* Distribuye espacio entre los elementos */
 }
 
-/* Color de las opciones (links) en el sidebar */
+/* Contenido principal del sidebar */
+.nav {
+    flex-grow: 1; /* Esto permite que el contenido del sidebar ocupe todo el espacio disponible */
+}
+
+/* Estilos para el avatar y nombre del usuario en el sidebar */
+.user-info {
+    padding: 20px; /* Añadir un poco de espacio alrededor del nombre y el avatar */
+    color: white;
+    background-color: #f18700; /* Opcional: cambiar el fondo del área del usuario */
+}
+/* Estilos del nombre y avatar */
+.username-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: #1d1d1b; /* Fondo negro */
+    color: #f18700; /* Texto color naranja */
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50%;
+    line-height: 40px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.username {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Estilos para el contenido principal */
+#main-content {
+    margin-left: 250px; /* Debe coincidir con el ancho del sidebar */
+    padding: 20px;
+    height: 100vh;
+    overflow-y: auto; /* Permite el scroll en el contenido principal */
+    background-color: #f7f7f7;
+}
+
+/* Otros estilos existentes... */
+
 .sidebar .nav-link {
     color: white !important;
 }
 
-/* Color de la opción activa en el sidebar */
 .sidebar .nav-link.active {
     background-color: #1d1d1b !important; /* Color negro */
 }
 
-/* Color de las opciones al pasar el mouse */
 .sidebar .nav-link:hover {
     background-color: #1d1d1b !important; /* Color negro */
 }
@@ -29,7 +86,6 @@ body {
     margin-right: 10px !important;
 }
 
-/* Ajuste de los títulos */
 .card-title {
     color: #f18700 !important; /* Color naranja */
     font-size: 2rem !important;
@@ -50,32 +106,20 @@ h1.h2 {
 
 /* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
-    .sidebar {
-        display: none !important;
+    #sidebar {
+        display: none; /* Oculta el sidebar en pantallas pequeñas */
     }
-    .btn-dark {
-        display: block !important;
-        position: relative !important;
-        z-index: 1050 !important;
+
+    #main-content {
+        margin-left: 0; /* Quitar el margen en pantallas pequeñas */
     }
-    .modal-dialog-slideout {
-        transform: translate(0, 0) !important;
-    }
-    .modal-content {
-        width: 250px !important;
-    }
-    .modal-body .nav-link {
-        text-align: left !important;
-        padding: 10px !important;
-        color: white !important;
-    }
-    .modal-body .nav-link.active,
-    .modal-body .nav-link:hover {
-        background-color: #1d1d1b !important; /* Color negro */
+
+    /* Botón de hamburguesa visible solo en pantallas pequeñas */
+    #sidebarToggle {
+        display: block;
     }
 }
 
-/* Ajustes adicionales para pantallas más pequeñas */
 @media (max-width: 576px) {
     .card-title {
         font-size: 1.5rem !important;

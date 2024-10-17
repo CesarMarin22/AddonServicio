@@ -1,155 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/menu.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMTni8aMm9qeyfW1vXptG1XnKwQ8w6EqOc1TTn" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}IPL{% endblock %}</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/menu.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMTni8aMm9qeyfW1vXptG1XnKwQ8w6EqOc1TTn"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Botón de hamburguesa -->
 
-</head>
-<body>
     <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebar" class="col-12 col-md-3 col-lg-2 d-md-block bg-dark sidebar">
-                <div class="position-sticky">
-                    <div class="sidebar-header text-center my-4">
-                        <img src="{{ url_for('static', filename='images/logo ipl_BLANCO.png') }}" alt="Logo IPL" class="img-fluid" style="max-width: 80%;">
-                    </div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">
-                                <i class="fas fa-tachometer-alt"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-list"></i>
-                                Ordenes de trabajo
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('ordenes_trabajo') }}">
-                                <i class="fas fa-clipboard-check"></i>
-                                Ordenes de trabajo AUDI
-                            </a>
-                        </li>
-                        {% if is_admin %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('manage_users') }}">
-                                <i class="fas fa-users"></i>
-                                Usuarios
-                            </a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
+      <div class="row">
+        <!-- Sidebar (solo visible en pantallas grandes) -->
+        <nav
+          id="sidebar"
+          class="col-12 col-md-3 col-lg-2 d-none d-md-block bg-dark sidebar"
+        >
+          <div class="position-sticky">
+            <div class="sidebar-header text-center my-4">
+              <img
+                src="{{ url_for('static', filename='images/logo ipl_BLANCO.png') }}"
+                alt="Logo IPL"
+                class="img-fluid"
+                style="max-width: 80%"
+              />
+            </div>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a
+                  class="nav-link {% if request.endpoint == 'menu' %}active{% endif %}"
+                  href="{{ url_for('menu') }}"
+                >
+                  <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <i class="fas fa-clipboard-check"></i> OT AUDI
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link {% if request.endpoint == 'ordenes_trabajo' %}active{% endif %}"
+                  href="{{ url_for('ordenes_trabajo') }}"
+                >
+                  <i class="fas fa-clipboard-list"></i> Ordenes de trabajo
+                </a>
+              </li>
+              {% if session.get('is_admin') %}
+              <li class="nav-item">
+                <a
+                  class="nav-link {% if request.endpoint == 'usuarios' %}active{% endif %}"
+                  href="{{ url_for('usuarios') }}"
+                >
+                  <i class="fas fa-users"></i> Usuarios
+                </a>
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <a class="nav-link" href="#" onclick="logout()">
+                  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+              </li>
+            </ul>
+            <div class="user-info text-center my-4">
+              <div
+                class="username-avatar d-flex justify-content-center align-items-center"
+              >
+                <div class="avatar me-2">
+                  <span class="avatar-circle"
+                    >{{ session['username'][0] }}</span
+                  >
                 </div>
-            </nav>
+                <div class="username">
+                  <span>{{ session['username'] }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
 
-            <!-- Main content -->
-            <main class="col-12 col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <button type="button" class="btn btn-dark d-lg-none me-2" data-toggle="modal" data-target="#sidebarModal">
-                        <i class="fas fa-bars"></i> <!-- Icono de 3 rayitas -->
-                    </button>
-                    <h1 class="h2 mb-0 flex-grow-1">Dashboard</h1>
-                </div>
-
-                <!-- Dashboard content here -->
-                <div class="row">
-                    <div class="col-12 col-md-4">
-                        <div class="card mb-4 shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">$22k</h5>
-                                <p class="card-text">Total Earnings</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="card mb-4 shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">$10k</5>
-                                <p class="card-text">Withdrawn Amount</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="card mb-4 shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">15</h5>
-                                <p class="card-text">Total Projects</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Other content -->
-            </main>
-        </div>
+        <!-- Main content -->
+        <main
+          id="main-content"
+          class="col-12 col-md-9 ms-sm-auto col-lg-10 px-md-4"
+        >
+          {% block content %}{% endblock %}
+        </main>
+      </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="sidebarModal" tabindex="-1" aria-labelledby="sidebarModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-slideout">
-            <div class="modal-content bg-dark">
-                <div class="modal-header">
-                    <h5 class="modal-title text-white" id="sidebarModalLabel">Menú</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+    <!-- Modal para mostrar el sidebar en dispositivos pequeños -->
+    <div
+      class="modal fade"
+      id="sidebarModal"
+      tabindex="-1"
+      aria-labelledby="sidebarModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-slideout">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sidebarModalLabel">Menu</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a
+                  class="nav-link {% if request.endpoint == 'menu' %}active{% endif %}"
+                  href="{{ url_for('menu') }}"
+                >
+                  <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <i class="fas fa-clipboard-check"></i> OT AUDI
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link {% if request.endpoint == 'ordenes_trabajo' %}active{% endif %}"
+                  href="{{ url_for('ordenes_trabajo') }}"
+                >
+                  <i class="fas fa-clipboard-list"></i> Ordenes de trabajo
+                </a>
+              </li>
+              {% if session.get('is_admin') %}
+              <li class="nav-item">
+                <a
+                  class="nav-link {% if request.endpoint == 'usuarios' %}active{% endif %}"
+                  href="{{ url_for('usuarios') }}"
+                >
+                  <i class="fas fa-users"></i> Usuarios
+                </a>
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <a class="nav-link" href="#" onclick="logout()">
+                  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+              </li>
+            </ul>
+            <div class="user-info text-center my-4">
+              <div
+                class="username-avatar d-flex justify-content-center align-items-center"
+              >
+                <div class="avatar me-2">
+                  <span class="avatar-circle"
+                    >{{ session['username'][0] }}</span
+                  >
                 </div>
-                <div class="modal-body">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">
-                                <i class="fas fa-tachometer-alt"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-list"></i>
-                                Ordenes de trabajo
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-check"></i>
-                                Ordenes de trabajo AUDI
-                            </a>
-                        </li>
-                        {% if is_admin %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('manage_users') }}">
-                                <i class="fas fa-users"></i>
-                                Usuarios
-                            </a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
+                <div class="username">
+                  <span>{{ session['username'] }}</span>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
+  </body>
 </html>

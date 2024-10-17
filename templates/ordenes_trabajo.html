@@ -1,126 +1,195 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ordenes de Trabajo</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/menu.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-</head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebar" class="col-12 col-md-3 col-lg-2 d-md-block bg-dark sidebar">
-                <div class="position-sticky">
-                    <div class="sidebar-header text-center my-4">
-                        <img src="{{ url_for('static', filename='images/logo ipl_BLANCO.png') }}" alt="Logo IPL" class="img-fluid" style="max-width: 80%;">
-                    </div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="{{ url_for('menu') }}">
-                                <i class="fas fa-tachometer-alt"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{{ url_for('ordenes_trabajo') }}">
-                                <i class="fas fa-clipboard-list"></i>
-                                Ordenes de trabajo
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-check"></i>
-                                Ordenes de trabajo AUDI
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('manage_users') }}">
-                                <i class="fas fa-users"></i>
-                                Usuarios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+{% extends "menu.html" %}
 
-            <!-- Main content -->
-            <main class="col-12 col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <button type="button" class="btn btn-dark d-lg-none me-2" data-toggle="modal" data-target="#sidebarModal">
-                        <i class="fas fa-bars"></i> <!-- Icono de 3 rayitas -->
-                    </button>
-                    <h1 class="h2 mb-0 flex-grow-1">Ordenes de Trabajo</h1>
-                </div>
+{% block title %}
+Ordenes de Trabajo - IPL
+{% endblock %}
 
-                <!-- Aquí va el contenido de Ordenes de Trabajo -->
-                <div>
-                    <p>Aquí puedes gestionar las órdenes de trabajo.</p>
-                    <!-- Agrega tu contenido relacionado con ordenes de trabajo aquí -->
-                </div>
-            </main>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <button type="button" class="btn btn-dark d-lg-none me-2" data-toggle="modal" data-target="#sidebarModal">
+        <i class="fas fa-bars"></i> <!-- Icono de 3 rayitas -->
+    </button>
+    <h1 class="h2 mb-0 flex-grow-1">Crear Orden de Trabajo</h1>
+</div>
+<div class="container mt-4">
+    <form id="ordenTrabajoForm">
+        <!-- Usuario de Creación de OT -->
+        <div class="form-group">
+            <label for="usuarioCreacion">Usuario de Creación de OT:</label>
+            <input type="text" class="form-control" id="usuarioCreacion" value="{{ session['username'] }}" readonly>
         </div>
-    </div>
 
-    <!-- Modal para el sidebar en dispositivos móviles -->
-    <div class="modal fade" id="sidebarModal" tabindex="-1" aria-labelledby="sidebarModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-slideout">
-            <div class="modal-content bg-dark">
-                <div class="modal-header">
-                    <h5 class="modal-title text-white" id="sidebarModalLabel">Menú</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="{{ url_for('ordenes_trabajo') }}">
-                                <i class="fas fa-clipboard-list"></i>
-                                Ordenes de trabajo
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('menu') }}">
-                                <i class="fas fa-tachometer-alt"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-check"></i>
-                                Ordenes de trabajo AUDI
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('manage_users') }}">
-                                <i class="fas fa-users"></i>
-                                Usuarios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+        <!-- Serie -->
+        <div class="form-group">
+            <label for="serie">Serie:</label>
+            <select class="form-control" id="serie">
+                <option value="AGS">AGS</option>
+                <option value="CLY">CLY</option>
+                <option value="GDL">GDL</option>
+                <option value="IRA">IRA</option>
+                <option value="MEX">MEX</option>
+                <option value="MTY">MTY</option>
+                <option value="QRO">QRO</option>
+                <option value="SLP">SLP</option>
+                <option value="TOL">TOL</option>
+            </select>
+        </div>
+
+        <!-- Folio y Folio Base -->
+        <div class="form-group">
+            <label for="folio">Folio:</label>
+            <input type="text" class="form-control" id="folio">
+        </div>
+
+        <div class="form-group">
+            <label for="folioBase">Folio Base:</label>
+            <input type="text" class="form-control" id="folioBase">
+        </div>
+
+        <!-- Fecha Inicio -->
+        <div class="form-group">
+            <label for="fechaInicio">Fecha Inicio:</label>
+            <input type="date" class="form-control" id="fechaInicio">
+        </div>
+
+        <!-- Hora Inicio Trabajo -->
+        <div class="form-group">
+            <label for="horaInicioTrabajo">Hora Inicio Trabajo:</label>
+            <input type="time" class="form-control" id="horaInicioTrabajo">
+        </div>
+
+        <!-- Tipo de Orden -->
+        <div class="form-group">
+            <label for="tipoOrden">Tipo de Orden:</label>
+            <select class="form-control" id="tipoOrden">
+                <!-- Add options as necessary -->
+            </select>
+        </div>
+
+        <!-- Tipo de Falla -->
+        <div class="form-group">
+            <label for="tipoFalla">Tipo de Falla:</label>
+            <input type="text" class="form-control" id="tipoFalla">
+        </div>
+
+        <!-- Persona que Reporta -->
+        <div class="form-group">
+            <label for="personaReporta">Persona que Reporta:</label>
+            <input type="text" class="form-control" id="personaReporta">
+        </div>
+
+        <!-- Código de Cliente -->
+        <div class="form-group">
+            <label for="codigoCliente">Código de Cliente:</label>
+            <input type="text" class="form-control" id="codigoCliente">
+        </div>
+
+        <!-- Nombre del Cliente -->
+        <div class="form-group">
+            <label for="nombreCliente">Nombre del Cliente:</label>
+            <input type="text" class="form-control" id="nombreCliente" readonly>
+        </div>
+
+        <!-- No de Serie -->
+        <div class="form-group">
+            <label for="noSerie">No de Serie:</label>
+            <input type="text" class="form-control" id="noSerie" onblur="consultarServiceLayer()">
+        </div>
+
+        <!-- Marca -->
+        <div class="form-group">
+            <label for="marca">Marca:</label>
+            <input type="text" class="form-control" id="marca" readonly>
+        </div>
+
+        <!-- Modelo -->
+        <div class="form-group">
+            <label for="modelo">Modelo:</label>
+            <input type="text" class="form-control" id="modelo" readonly>
+        </div>
+
+        <!-- N° Económico -->
+        <div class="form-group">
+            <label for="noEconomico">N° Económico:</label>
+            <input type="text" class="form-control" id="noEconomico" readonly>
+        </div>
+
+        <!-- Horómetro -->
+        <div class="form-group">
+            <label for="horometro">Horómetro:</label>
+            <input type="number" class="form-control" id="horometro">
+        </div>
+
+        <!-- Descripción de la Falla -->
+        <div class="form-group">
+            <label for="descripcionFalla">Descripción de la Falla:</label>
+            <textarea class="form-control" id="descripcionFalla"></textarea>
+        </div>
+
+        <!-- Trabajo Realizado -->
+        <div class="form-group">
+            <label for="trabajoRealizado">Trabajo Realizado:</label>
+            <textarea class="form-control" id="trabajoRealizado"></textarea>
+        </div>
+
+        <!-- Equipo en Funcionamiento -->
+        <div class="form-group">
+            <label>Equipo en Funcionamiento:</label><br>
+            <input type="checkbox" id="equipoFuncionamientoSi" name="equipoFuncionamiento"> Sí
+            <input type="checkbox" id="equipoFuncionamientoNo" name="equipoFuncionamiento"> No
+        </div>
+
+        <!-- Refacciones -->
+        <div class="form-group">
+            <label>Refacciones:</label><br>
+            <input type="checkbox" id="refaccionesInstaladas" name="refacciones"> Instaladas
+            <input type="checkbox" id="refaccionesRequeridas" name="refacciones"> Requeridas
+            <input type="checkbox" id="refaccionesAmbas" name="refacciones"> Ambas
+        </div>
+
+        <!-- Campos de Refacciones (20 Filas) -->
+        <div id="refaccionesContainer">
+            {% for i in range(20) %}
+            <div class="form-group">
+                <input type="number" class="form-control d-inline" placeholder="Cantidad" style="width: 10%;">
+                <input type="text" class="form-control d-inline" placeholder="Número de Parte" style="width: 30%;">
+                <input type="text" class="form-control d-inline" placeholder="Descripción" style="width: 55%;">
             </div>
+            {% endfor %}
         </div>
-    </div>
 
-    <!-- Incluir jQuery, Bootstrap JS y tu script personalizado -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+        <!-- Fecha de Término -->
+        <div class="form-group">
+            <label for="fechaTermino">Fecha de Término:</label>
+            <input type="date" class="form-control" id="fechaTermino">
+        </div>
+
+        <!-- Hora de Salida -->
+        <div class="form-group">
+            <label for="horaSalida">Hora de Salida:</label>
+            <input type="time" class="form-control" id="horaSalida">
+        </div>
+
+        <!-- Realizó Trabajo -->
+        <div class="form-group">
+            <label for="realizoTrabajo">Realizó Trabajo:</label>
+            <input type="text" class="form-control" id="realizoTrabajo">
+        </div>
+
+        <!-- Revisó Trabajo -->
+        <div class="form-group">
+            <label for="revisoTrabajo">Revisó Trabajo:</label>
+            <input type="text" class="form-control" id="revisoTrabajo">
+        </div>
+
+        <!-- Visto Bueno del Cliente -->
+        <div class="form-group">
+            <label for="vistoBuenoCliente">Visto Bueno del Cliente:</label>
+            <input type="text" class="form-control" id="vistoBuenoCliente">
+        </div>
+
+        <!-- Botón de Guardar -->
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+</div>
+{% endblock %}
