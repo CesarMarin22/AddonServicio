@@ -1,207 +1,146 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Usuarios</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/menu.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="anonymous">
-    <!-- Incluir Axios -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-</head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebar" class="col-12 col-md-3 col-lg-2 d-md-block bg-dark sidebar">
-                <div class="position-sticky">
-                    <div class="sidebar-header text-center my-4">
-                        <img src="{{ url_for('static', filename='images/logo_ipl.jpg') }}" alt="Logo IPL" class="img-fluid" style="max-width: 80%;">
-                    </div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="{{ url_for('menu') }}">
-                                <i class="fas fa-tachometer-alt"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-list"></i>
-                                Ordenes de trabajo
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-check"></i>
-                                Ordenes de trabajo AUDI
-                            </a>
-                        </li>
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#" id="loadUsers">
-                                <i class="fas fa-users"></i>
-                                Usuarios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+{% extends "menu.html" %} {% block title %} Gestión de Usuarios - IPL {%
+endblock %} {% block content %}
+<div
+  class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <button
+    type="button"
+    class="btn btn-dark d-lg-none me-2"
+    data-toggle="modal"
+    data-target="#sidebarModal"
+  >
+    <i class="fas fa-bars"></i>
+    <!-- Icono de 3 rayitas -->
+  </button>
+  <h1 class="h2 mb-0 flex-grow-1">Gestión de Usuarios</h1>
+  <button type="button" class="btn btn-primary" onclick="createUser()">
+    Crear Usuario
+  </button>
+</div>
 
-            <!-- Main content -->
-            <main class="col-12 col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <button type="button" class="btn btn-dark d-lg-none me-2" data-toggle="modal" data-target="#sidebarModal">
-                        <i class="fas fa-bars"></i> <!-- Icono de 3 rayitas -->
-                    </button>
-                    <h1 class="h2 mb-0 flex-grow-1">Gestión de Usuarios</h1>
-                    <button type="button" class="btn btn-primary" onclick="createUser()">Crear Usuario</button>
-                </div>
+<!-- Users content -->
+<div id="usersContent">
+  <h2>Usuarios</h2>
+  <table class="table" id="usersTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Perfil</th>
+        <th>Activo</th>
+        <th>Socio</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.ID }}</td>
+        <td>{{ user.USUARIO }}</td>
+        <td>{{ user.PERFIL }}</td>
+        <td>{{ user.ACTIVO }}</td>
+        <td>{{ user.SOCIO }}</td>
+        <td>
+          <button
+            class="btn btn-warning btn-sm"
+            onclick="editUser({{ user.ID }})"
+          >
+            Editar
+          </button>
+          <button
+            class="btn btn-danger btn-sm"
+            onclick="deleteUser({{ user.ID }})"
+          >
+            Eliminar
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-                <!-- Users content -->
-                <div id="usersContent">
-                    <h2>Usuarios</h2>
-                    <table class="table" id="usersTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Usuario</th>
-                                <th>Perfil</th>
-                                <th>Activo</th>
-                                <th>Socio</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for user in users %}
-                            <tr>
-                                <td>{{ user.ID }}</td>
-                                <td>{{ user.USUARIO }}</td>
-                                <td>{{ user.PERFIL }}</td>
-                                <td>{{ user.ACTIVO }}</td>
-                                <td>{{ user.SOCIO }}</td>
-                                <td>
-                                    <button class="btn btn-warning btn-sm" onclick="editUser({{ user.ID }})">Editar</button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteUser({{ user.ID }})">Eliminar</button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- Modal para Crear/Editar Usuario -->
-    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="userModalLabel">Crear Usuario</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form id="userForm">
-                    <div class="modal-body">
-                        <input type="hidden" id="userId">
-                        <div class="form-group">
-                            <label for="usuario">Usuario</label>
-                            <input type="text" class="form-control" id="usuario" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="perfil">Perfil</label>
-                            <select class="form-control" id="perfil">
-                                <option value="1">Administrador</option>
-                                <option value="2">Supervisor</option>
-                                <option value="3">Empleado</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="activo">Activo</label>
-                            <select class="form-control" id="activo">
-                                <option value="1">Sí</option>
-                                <option value="0">No</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="socio">Socio</label>
-                            <select class="form-control" id="socio" required></select>
-                                <option value="">Seleccione un socio</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="pwd">Contraseña</label>
-                            <input type="password" class="form-control" id="pwd" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                    </div>
-                </form>
+<!-- Modal para Crear/Editar Usuario -->
+<div
+  class="modal fade"
+  id="userModal"
+  tabindex="-1"
+  aria-labelledby="userModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userModalLabel">Crear Usuario</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="userForm">
+        <div class="modal-body">
+          <input type="hidden" id="userId" />
+          <div class="form-group">
+            <label for="usuario">Usuario</label>
+            <input type="text" class="form-control" id="usuario" required />
+          </div>
+          <div class="form-group">
+            <label for="perfil">Perfil</label>
+            <select class="form-control" id="perfil">
+              <option value="1">Administrador</option>
+              <option value="2">Supervisor</option>
+              <option value="3">Empleado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="activo">Activo</label>
+            <select class="form-control" id="activo">
+              <option value="1">Sí</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="socio">Socio</label>
+            <select class="form-control" id="socio" required>
+              <option value="">Seleccione un socio</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="pwd">Contraseña</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="pwd" required />
+              <div class="input-group-append">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  id="togglePwdVisibility"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-
-    <!-- Modal para el sidebar en dispositivos móviles -->
-    <div class="modal fade" id="sidebarModal" tabindex="-1" aria-labelledby="sidebarModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-slideout">
-            <div class="modal-content bg-dark">
-                <div class="modal-header">
-                    <h5 class="modal-title text-white" id="sidebarModalLabel">Menú</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('menu') }}">
-                                <i class="fas fa-tachometer-alt"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-list"></i>
-                                Ordenes de trabajo
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-check"></i>
-                                Ordenes de trabajo AUDI
-                            </a>
-                        </li>
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#" id="loadUsersModal">
-                                <i class="fas fa-users"></i>
-                                Usuarios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
+      </form>
     </div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
 
-    <!-- Incluir jQuery, Bootstrap JS y tu script personalizado -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Incluye axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- Incluye tu script -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

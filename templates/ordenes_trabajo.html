@@ -1,0 +1,195 @@
+{% extends "menu.html" %}
+
+{% block title %}
+Ordenes de Trabajo - IPL
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <button type="button" class="btn btn-dark d-lg-none me-2" data-toggle="modal" data-target="#sidebarModal">
+        <i class="fas fa-bars"></i> <!-- Icono de 3 rayitas -->
+    </button>
+    <h1 class="h2 mb-0 flex-grow-1">Crear Orden de Trabajo</h1>
+</div>
+<div class="container mt-4">
+    <form id="ordenTrabajoForm">
+        <!-- Usuario de Creación de OT -->
+        <div class="form-group">
+            <label for="usuarioCreacion">Usuario de Creación de OT:</label>
+            <input type="text" class="form-control" id="usuarioCreacion" value="{{ session['username'] }}" readonly>
+        </div>
+
+        <!-- Serie -->
+        <div class="form-group">
+            <label for="serie">Serie:</label>
+            <select class="form-control" id="serie">
+                <option value="AGS">AGS</option>
+                <option value="CLY">CLY</option>
+                <option value="GDL">GDL</option>
+                <option value="IRA">IRA</option>
+                <option value="MEX">MEX</option>
+                <option value="MTY">MTY</option>
+                <option value="QRO">QRO</option>
+                <option value="SLP">SLP</option>
+                <option value="TOL">TOL</option>
+            </select>
+        </div>
+
+        <!-- Folio y Folio Base -->
+        <div class="form-group">
+            <label for="folio">Folio:</label>
+            <input type="text" class="form-control" id="folio">
+        </div>
+
+        <div class="form-group">
+            <label for="folioBase">Folio Base:</label>
+            <input type="text" class="form-control" id="folioBase">
+        </div>
+
+        <!-- Fecha Inicio -->
+        <div class="form-group">
+            <label for="fechaInicio">Fecha Inicio:</label>
+            <input type="date" class="form-control" id="fechaInicio">
+        </div>
+
+        <!-- Hora Inicio Trabajo -->
+        <div class="form-group">
+            <label for="horaInicioTrabajo">Hora Inicio Trabajo:</label>
+            <input type="time" class="form-control" id="horaInicioTrabajo">
+        </div>
+
+        <!-- Tipo de Orden -->
+        <div class="form-group">
+            <label for="tipoOrden">Tipo de Orden:</label>
+            <select class="form-control" id="tipoOrden">
+                <!-- Add options as necessary -->
+            </select>
+        </div>
+
+        <!-- Tipo de Falla -->
+        <div class="form-group">
+            <label for="tipoFalla">Tipo de Falla:</label>
+            <input type="text" class="form-control" id="tipoFalla">
+        </div>
+
+        <!-- Persona que Reporta -->
+        <div class="form-group">
+            <label for="personaReporta">Persona que Reporta:</label>
+            <input type="text" class="form-control" id="personaReporta">
+        </div>
+
+        <!-- Código de Cliente -->
+        <div class="form-group">
+            <label for="codigoCliente">Código de Cliente:</label>
+            <input type="text" class="form-control" id="codigoCliente">
+        </div>
+
+        <!-- Nombre del Cliente -->
+        <div class="form-group">
+            <label for="nombreCliente">Nombre del Cliente:</label>
+            <input type="text" class="form-control" id="nombreCliente" readonly>
+        </div>
+
+        <!-- No de Serie -->
+        <div class="form-group">
+            <label for="noSerie">No de Serie:</label>
+            <input type="text" class="form-control" id="noSerie" onblur="consultarServiceLayer()">
+        </div>
+
+        <!-- Marca -->
+        <div class="form-group">
+            <label for="marca">Marca:</label>
+            <input type="text" class="form-control" id="marca" readonly>
+        </div>
+
+        <!-- Modelo -->
+        <div class="form-group">
+            <label for="modelo">Modelo:</label>
+            <input type="text" class="form-control" id="modelo" readonly>
+        </div>
+
+        <!-- N° Económico -->
+        <div class="form-group">
+            <label for="noEconomico">N° Económico:</label>
+            <input type="text" class="form-control" id="noEconomico" readonly>
+        </div>
+
+        <!-- Horómetro -->
+        <div class="form-group">
+            <label for="horometro">Horómetro:</label>
+            <input type="number" class="form-control" id="horometro">
+        </div>
+
+        <!-- Descripción de la Falla -->
+        <div class="form-group">
+            <label for="descripcionFalla">Descripción de la Falla:</label>
+            <textarea class="form-control" id="descripcionFalla"></textarea>
+        </div>
+
+        <!-- Trabajo Realizado -->
+        <div class="form-group">
+            <label for="trabajoRealizado">Trabajo Realizado:</label>
+            <textarea class="form-control" id="trabajoRealizado"></textarea>
+        </div>
+
+        <!-- Equipo en Funcionamiento -->
+        <div class="form-group">
+            <label>Equipo en Funcionamiento:</label><br>
+            <input type="checkbox" id="equipoFuncionamientoSi" name="equipoFuncionamiento"> Sí
+            <input type="checkbox" id="equipoFuncionamientoNo" name="equipoFuncionamiento"> No
+        </div>
+
+        <!-- Refacciones -->
+        <div class="form-group">
+            <label>Refacciones:</label><br>
+            <input type="checkbox" id="refaccionesInstaladas" name="refacciones"> Instaladas
+            <input type="checkbox" id="refaccionesRequeridas" name="refacciones"> Requeridas
+            <input type="checkbox" id="refaccionesAmbas" name="refacciones"> Ambas
+        </div>
+
+        <!-- Campos de Refacciones (20 Filas) -->
+        <div id="refaccionesContainer">
+            {% for i in range(20) %}
+            <div class="form-group">
+                <input type="number" class="form-control d-inline" placeholder="Cantidad" style="width: 10%;">
+                <input type="text" class="form-control d-inline" placeholder="Número de Parte" style="width: 30%;">
+                <input type="text" class="form-control d-inline" placeholder="Descripción" style="width: 55%;">
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Fecha de Término -->
+        <div class="form-group">
+            <label for="fechaTermino">Fecha de Término:</label>
+            <input type="date" class="form-control" id="fechaTermino">
+        </div>
+
+        <!-- Hora de Salida -->
+        <div class="form-group">
+            <label for="horaSalida">Hora de Salida:</label>
+            <input type="time" class="form-control" id="horaSalida">
+        </div>
+
+        <!-- Realizó Trabajo -->
+        <div class="form-group">
+            <label for="realizoTrabajo">Realizó Trabajo:</label>
+            <input type="text" class="form-control" id="realizoTrabajo">
+        </div>
+
+        <!-- Revisó Trabajo -->
+        <div class="form-group">
+            <label for="revisoTrabajo">Revisó Trabajo:</label>
+            <input type="text" class="form-control" id="revisoTrabajo">
+        </div>
+
+        <!-- Visto Bueno del Cliente -->
+        <div class="form-group">
+            <label for="vistoBuenoCliente">Visto Bueno del Cliente:</label>
+            <input type="text" class="form-control" id="vistoBuenoCliente">
+        </div>
+
+        <!-- Botón de Guardar -->
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+</div>
+{% endblock %}

@@ -15,7 +15,7 @@ app.secret_key = os.getenv('SECRET_KEY')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
 # URL de la API de usuarios
-USERS_API_URL = 'http://20.97.20.115:8081/api/usuarios'
+USERS_API_URL = 'http://52.153.228.209:8081/api/usuarios'
 
 # Datos para la autenticación en SAP B1
 SAP_LOGIN_URL = 'https://52.152.107.200:50000/b1s/v1/Login'
@@ -80,6 +80,7 @@ def login():
                 session['ROUTEID'] = route_id
                 session['B1SESSION'] = b1session
                 session['is_admin'] = user['PERFIL'] == 1
+                session['username'] = user['USUARIO']
 
                 return jsonify({"message": "Login successful", "ROUTEID": route_id, "B1SESSION": b1session, "is_admin": session['is_admin']}), 200
             else:
@@ -87,7 +88,7 @@ def login():
     return jsonify({"message": "Usuario no encontrado"}), 404
 
 @app.route('/usuarios', methods=['GET'])
-def manage_users():
+def usuarios():
     response = requests.get(USERS_API_URL)
     if response.status_code == 200:
         users = response.json()
@@ -99,6 +100,10 @@ def manage_users():
 def menu():
     is_admin = session.get('is_admin', False)
     return render_template('menu.html', is_admin=is_admin)
+
+@app.route('/ordenes_trabajo')
+def ordenes_trabajo():
+    return render_template('ordenes_trabajo.html')
 
 @app.route('/logout')
 def logout():
