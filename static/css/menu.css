@@ -73,6 +73,21 @@ body {
     color: white !important;
 }
 
+.dropdown-menu {
+    position: absolute;
+    top: 100%; /* Coloca el dropdown justo debajo del campo de entrada */
+    left: 0;
+    width: 100%; /* Hace que el dropdown tenga el mismo ancho que el campo de entrada */
+    z-index: 1000;
+    margin-top: 4px; /* Añade un pequeño espacio entre el campo de entrada y el dropdown */
+    max-height: 200px; /* Limita la altura máxima del dropdown */
+    overflow-y: auto; /* Agrega scroll si el contenido supera la altura máxima */
+    background-color: white; /* Establece el fondo blanco para visibilidad */
+    border: 1px solid #ddd; /* Añade un borde para distinguir el dropdown */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Agrega sombra para un efecto visual */
+}
+
+
 .sidebar .nav-link.active {
     background-color: #1d1d1b !important; /* Color negro */
 }

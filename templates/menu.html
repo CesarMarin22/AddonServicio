@@ -48,12 +48,12 @@
                   class="nav-link {% if request.endpoint == 'menu' %}active{% endif %}"
                   href="{{ url_for('menu') }}"
                 >
-                  <i class="fas fa-tachometer-alt"></i> Dashboard
+                  <i class="fas fa-tachometer-alt"></i> Ordenes de Trabajo
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <i class="fas fa-clipboard-check"></i> OT AUDI
+                  <i class="fas fa-clipboard-check"></i>  Crear OT AUDI
                 </a>
               </li>
               <li class="nav-item">
@@ -61,7 +61,7 @@
                   class="nav-link {% if request.endpoint == 'ordenes_trabajo' %}active{% endif %}"
                   href="{{ url_for('ordenes_trabajo') }}"
                 >
-                  <i class="fas fa-clipboard-list"></i> Ordenes de trabajo
+                  <i class="fas fa-clipboard-list"></i> Crear OT
                 </a>
               </li>
               {% if session.get('is_admin') %}
@@ -135,12 +135,12 @@
                   class="nav-link {% if request.endpoint == 'menu' %}active{% endif %}"
                   href="{{ url_for('menu') }}"
                 >
-                  <i class="fas fa-tachometer-alt"></i> Dashboard
+                  <i class="fas fa-tachometer-alt"></i> Ordenes de Trabajo
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <i class="fas fa-clipboard-check"></i> OT AUDI
+                  <i class="fas fa-clipboard-check"></i> Crear OT AUDI
                 </a>
               </li>
               <li class="nav-item">
@@ -148,7 +148,7 @@
                   class="nav-link {% if request.endpoint == 'ordenes_trabajo' %}active{% endif %}"
                   href="{{ url_for('ordenes_trabajo') }}"
                 >
-                  <i class="fas fa-clipboard-list"></i> Ordenes de trabajo
+                  <i class="fas fa-clipboard-list"></i> Crear OT
                 </a>
               </li>
               {% if session.get('is_admin') %}
