@@ -87,6 +87,35 @@ body {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Agrega sombra para un efecto visual */
 }
 
+.tipo-problema-dropdown {
+    display: block;
+    max-height: 200px; /* Altura máxima visible */
+    overflow-y: auto; /* Activa el scroll si hay muchas opciones */
+    background-color: white; /* Fondo blanco */
+    position: relative; /* Para evitar desbordes */
+    word-wrap: break-word; /* Ajusta textos largos */
+    white-space: normal; /* Permite múltiples líneas si el texto es largo */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Añade sombra para mejor visibilidad */
+}
+
+
+.tipo-problema-dropdown:focus {
+    overflow-y: auto; /* Asegura que el scroll funcione al desplegar */
+}
+
+
+.dropdown-menu-scroll {
+    max-height: 200px; /* Limita la altura del dropdown */
+    overflow-y: auto; /* Agrega scroll vertical si es necesario */
+}
+
+/* Estilos específicos para pantallas pequeñas */
+@media (max-width: 768px) {
+    .tipo-problema-dropdown {
+        max-height: 150px; /* Reduce la altura máxima en pantallas pequeñas */
+        font-size: 14px; /* Ajusta el tamaño del texto */
+    }
+}
 
 .sidebar .nav-link.active {
     background-color: #1d1d1b !important; /* Color negro */

@@ -563,6 +563,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
     setupUniqueCheckboxes("equipoFuncionamiento");
     setupUniqueCheckboxes("refacciones");
+    cargarTiposDeProblema();
 
   // Función para habilitar/deshabilitar el botón de inicio de sesión
   function toggleLoginButton() {
@@ -660,19 +661,52 @@ document.addEventListener("DOMContentLoaded", function () {
       function validarFormulario() {
         const form = document.getElementById("ordenTrabajoForm");
         const camposRequeridos = Array.from(
-            form.querySelectorAll("input:not(.refaccion), select:not(.refaccion), textarea:not(.refaccion)")
+            form.querySelectorAll("input:not(.refaccion):not(#tecnico3):not(#tecnico4):not(#tecnico3EmployeeID):not(#tecnico4EmployeeID), select:not(.refaccion):not(#tipoProblema), textarea:not(.refaccion)")
         );
 
         const camposFaltantes = camposRequeridos.filter((campo) => campo.value.trim() === "");
 
         if (camposFaltantes.length > 0) {
             const nombresCampos = camposFaltantes
-                .map((campo) => campo.previousElementSibling?.innerText || "Campo sin nombre")
+            .map((campo) => {
+              const label = campo.closest(".form-group")?.querySelector("label");
+              return label ? label.innerText : "Campo sin nombre";
+            })
                 .join(", ");
             alert(`Por favor, completa los siguientes campos: ${nombresCampos}`);
             return false;
         }
         return true;
+    }
+
+    function cargarTiposDeProblema() {
+      const tipoProblemaDropdown = document.getElementById("tipoProblema");
+  
+      axios
+        .get("/tipos_problema") // Endpoint Flask que devolverá los datos de la API
+        .then(function (response) {
+          const tiposProblema = response.data.value;
+  
+          // Limpiar las opciones actuales
+          tipoProblemaDropdown.innerHTML = "";
+  
+          // Añadir una opción predeterminada
+          const defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.textContent = "Seleccione un tipo de problema";
+          tipoProblemaDropdown.appendChild(defaultOption);
+  
+          // Añadir las opciones de la API
+          tiposProblema.forEach((tipo) => {
+            const option = document.createElement("option");
+            option.value = tipo.ProblemTypeID; // Usar el ID como valor
+            option.textContent = tipo.Name; // Mostrar el nombre
+            tipoProblemaDropdown.appendChild(option);
+          });
+        })
+        .catch(function (error) {
+          console.error("Error al cargar los tipos de problema:", error);
+        });
     }
 
     function capturarRefacciones() {

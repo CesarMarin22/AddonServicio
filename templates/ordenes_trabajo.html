@@ -95,15 +95,11 @@
     </div>
 
     <!-- Tipo de Problema -->
-    <div class="form-group">
-      <label for="tipoProblema">Tipo de Problema:</label>
-      <input
-        type="text"
-        class="form-control"
-        id="tipoProblema"
-        name="tipoProblema"
-        placeholder="Ingresa el tipo de problema"
-      />
+    <div class="form-group position-relative">
+      <label for="tipoProblema">Tipo de Problema (opcional) :</label>
+      <select class="form-control tipo-problema-dropdown" id="tipoProblema" name="tipoProblema">
+        <!-- Las opciones serán cargadas dinámicamente -->
+      </select>
     </div>
 
     <!-- Persona que Reporta -->
@@ -385,7 +381,7 @@
 
     <!-- Técnico 3 -->
     <div class="form-group position-relative">
-      <label for="tecnico3">Técnico 3:</label>
+      <label for="tecnico3">Técnico 3 (opcional):</label>
       <input
         type="text"
         class="form-control"
@@ -404,7 +400,7 @@
 
     <!-- Técnico 4 -->
     <div class="form-group position-relative">
-      <label for="tecnico4">Técnico 4:</label>
+      <label for="tecnico4">Técnico 4 (opcional):</label>
       <input
         type="text"
         class="form-control"
@@ -421,7 +417,6 @@
       ></div>
     </div>
 
-    <!-- Nombre de CSSR -->
     <!-- Nombre de CSSR -->
     <div class="form-group position-relative">
       <label for="nombreCssr">Nombre de CSSR:</label>

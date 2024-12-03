@@ -304,6 +304,55 @@ def buscar_cssrs():
     except Exception as e:
         return jsonify({"message": "Error en la solicitud", "error": str(e)}), 500
 
+###################################################################################################################################################
+    
+@app.route('/tipos_problema', methods=['GET'])
+def tipos_problema():
+    route_id = session.get('ROUTEID')
+    b1session = session.get('B1SESSION')
+
+    if not route_id or not b1session:
+        return jsonify({"message": "No active session"}), 403
+
+    sap_url_base = "https://10.2.0.6:50000/b1s/v1/ServiceCallProblemTypes"
+    headers = {
+        'Cookie': f'B1SESSION={b1session}; ROUTEID={route_id}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        all_tipos_problema = []
+        skip = 0
+        top = 20  # Cantidad máxima por página
+
+        while True:
+            # Construir la URL con el filtro y los parámetros de paginación
+            sap_url = (
+                f"{sap_url_base}?"
+                f"$filter=Active eq 'Y'&$orderby=Name asc&$skip={skip}&$top={top}"
+            )
+            response = requests.get(sap_url, headers=headers, verify=False)  # Ignorar verificación SSL
+
+            if response.status_code != 200:
+                return jsonify({"message": "Error al consultar SAP B1", "error": response.text}), response.status_code
+
+            # Parsear los datos de la respuesta
+            data = response.json().get("value", [])
+            all_tipos_problema.extend(data)
+
+            # Si la cantidad de datos obtenidos es menor al máximo, terminamos
+            if len(data) < top:
+                break
+
+            # Incrementar el valor de `skip` para obtener la siguiente página
+            skip += top
+
+        # Devolver todos los datos acumulados
+        return jsonify({"value": all_tipos_problema}), 200
+    except Exception as e:
+        return jsonify({"message": "Error en la solicitud", "error": str(e)}), 500
+
+
 #######################################################################################################################################################
     
 @app.route('/guardar_excel', methods=['POST'])
@@ -398,7 +447,7 @@ def guardar_excel():
             datos.get("equipoFuncionamiento", ""),  # Columna 28: Equipo en Funcionamiento
             "0" if datos.get("tipoRefacciones") == "Requeridas" else "1" if datos.get("tipoRefacciones") == "Instaladas" else "2",  # Columna 29
             # Columnas adicionales
-        ] + [""] * (55 - len(refacciones_planas)) + [datos.get("nombreCssr", "")] + refacciones_planas  # Columna 55: Nombre CSSR
+        ] + [""] * (65 - len(refacciones_planas)) + [datos.get("nombreCssr", "")] + refacciones_planas  # Columna 55: Nombre CSSR
 
         # Agregar la fila de datos al Excel
         ws.append(fila_datos)
