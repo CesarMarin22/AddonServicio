@@ -52,6 +52,12 @@ h1.title-orange {
     width: 100%;
 }
 
+input[type="text"],
+textarea {
+    text-transform: uppercase; /* Convierte el texto a mayúsculas mientras se escribe */
+}
+
+
 .form-group .form-control {
     padding-right: 40px;
     -webkit-appearance: none;

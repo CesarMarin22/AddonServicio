@@ -8,7 +8,16 @@ window.logout = function () {
     })
     .catch(function (error) {
       console.error("Error al cerrar sesión:", error);
-      alert("Hubo un problema al cerrar la sesión. Inténtalo de nuevo.");
+      Swal.fire({
+        icon: "error", // Icono de error
+        title: "Error",
+        text: "Hubo un problema al cerrar la sesión. Inténtalo de nuevo.", // Mensaje
+        toast: true, // Indica que es un toast
+        position: "top-end", // Posición del toast
+        showConfirmButton: false, // No muestra botón de confirmación
+        timer: 3000, // Tiempo en milisegundos que se muestra el mensaje (3 segundos)
+        timerProgressBar: true, // Añade una barra de progreso visual
+      });
     });
 };
 
@@ -18,7 +27,7 @@ let debounceTimeout; // Variable para almacenar el temporizador de debounce
 
 // Función para buscar clientes
 function buscarClientes() {
-  const input = document.getElementById("codigoCliente").value;
+  const input = document.getElementById("codigoCliente").value.toUpperCase();
   const dropdown = document.getElementById("dropdownClientes");
 
   // Limpiar el temporizador previo
@@ -71,9 +80,9 @@ function buscarClientes() {
 let debounceTimeoutItems = {}; // Variable para almacenar temporizadores de debounce para cada fila
 
 function buscarItemConDebounce(inputElement, rowIndex) {
-  const searchValue = inputElement.value;
+  const searchValue = inputElement.value.toUpperCase();
   const dropdown = document.getElementById(`dropdownItems${rowIndex}`);
-  
+
   // Limpiar el temporizador de debounce previo para la fila específica
   clearTimeout(debounceTimeoutItems[rowIndex]);
 
@@ -101,7 +110,8 @@ function buscarItemConDebounce(inputElement, rowIndex) {
             itemElement.innerText = `${item.ItemCode} - ${item.ItemName}`;
             itemElement.onclick = function () {
               inputElement.value = item.ItemCode;
-              document.querySelectorAll(".item-name")[rowIndex].value = item.ItemName;
+              document.querySelectorAll(".item-name")[rowIndex].value =
+                item.ItemName;
               dropdown.style.display = "none";
             };
             dropdown.appendChild(itemElement);
@@ -128,8 +138,10 @@ function limpiarDescripcion(rowIndex) {
 let debounceTimeoutCssrs = {}; // Variable para almacenar temporizadores de debounce
 
 function buscarCssrsConDebounce(inputId) {
-  const searchValue = document.getElementById(inputId).value;
-  const dropdown = document.getElementById(`dropdown${capitalizeFirstLetter(inputId)}`);
+  const searchValue = document.getElementById(inputId).value.toUpperCase();
+  const dropdown = document.getElementById(
+    `dropdown${capitalizeFirstLetter(inputId)}`
+  );
 
   // Limpiar el temporizador previo para el campo específico
   clearTimeout(debounceTimeoutCssrs[inputId]);
@@ -158,7 +170,8 @@ function buscarCssrsConDebounce(inputId) {
             item.innerText = `${cssr.FullName} (${cssr.EmployeeID})`; // Mostrar el nombre completo
             item.onclick = function () {
               document.getElementById(inputId).value = cssr.FullName; // Colocar el nombre completo en el input
-              document.getElementById(`${inputId}EmployeeID`).value = cssr.EmployeeID; // Colocar el EmployeeID en un input oculto
+              document.getElementById(`${inputId}EmployeeID`).value =
+                cssr.EmployeeID; // Colocar el EmployeeID en un input oculto
               dropdown.style.display = "none";
             };
             dropdown.appendChild(item);
@@ -175,9 +188,6 @@ function buscarCssrsConDebounce(inputId) {
   }, 500); // 500 ms de debounce
 }
 
-
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 let debounceTimeoutEquipos; // Variable para el temporizador de debounce
@@ -185,8 +195,10 @@ let equiposCliente = []; // Variable global para almacenar los equipos activos d
 
 // Función para buscar equipos en el backend con debounce
 function buscarEquiposConDebounce() {
-  const searchValue = document.getElementById("noSerie").value;
-  const customerCode = document.getElementById("codigoCliente").value;
+  const searchValue = document.getElementById("noSerie").value.toUpperCase();
+  const customerCode = document
+    .getElementById("codigoCliente")
+    .value.toUpperCase();
   const dropdown = document.getElementById("dropdownEquipos");
 
   // Limpiar el temporizador previo
@@ -197,7 +209,6 @@ function buscarEquiposConDebounce() {
     limpiarCamposDependientes(); // Llama a la función para limpiar los campos dependientes
     dropdown.style.display = "none";
     return;
-    
   }
 
   // Establecemos el temporizador de debounce
@@ -217,7 +228,7 @@ function buscarEquiposConDebounce() {
   }, 500); // 500 ms de debounce
 }
 
-///LIMPIAR CAMPOS 
+///LIMPIAR CAMPOS
 function limpiarCamposDependientes() {
   document.getElementById("marca").value = ""; // Limpiar el campo "Marca"
   document.getElementById("modelo").value = ""; // Limpiar el campo "Modelo"
@@ -226,10 +237,13 @@ function limpiarCamposDependientes() {
 }
 
 function seleccionarEquipo(equipo) {
-  document.getElementById("marca").value = equipo.Manufacturers.ManufacturerName; // Marca
+  document.getElementById("marca").value =
+    equipo.Manufacturers.ManufacturerName; // Marca
   document.getElementById("modelo").value = equipo.Items.U_Modelo; // Modelo
-  document.getElementById("noEconomico").value = equipo.CustomerEquipmentCards.U_NoEconomico; // Número Económico
-  document.getElementById("itemCode").value = equipo.CustomerEquipmentCards.ItemCode; // ItemCode (campo oculto)
+  document.getElementById("noEconomico").value =
+    equipo.CustomerEquipmentCards.U_NoEconomico; // Número Económico
+  document.getElementById("itemCode").value =
+    equipo.CustomerEquipmentCards.ItemCode; // ItemCode (campo oculto)
 }
 
 // Función para mostrar los equipos en el dropdown
@@ -260,7 +274,8 @@ function seleccionarEquipo(equipo) {
   document.getElementById("noEconomico").value =
     equipo.CustomerEquipmentCards.U_NoEconomico;
   document.getElementById("noSerie").value = equipo.Items.ForeignName;
-  document.getElementById("itemCode").value = equipo.CustomerEquipmentCards.ItemCode;
+  document.getElementById("itemCode").value =
+    equipo.CustomerEquipmentCards.ItemCode;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -271,7 +286,9 @@ function habilitarRefacciones() {
   const requeridasCheckbox = document.getElementById("refaccionesRequeridas");
   const ambasCheckbox = document.getElementById("refaccionesAmbas");
   const refaccionesTitulo = document.getElementById("refaccionesTitulo");
-  const refacciones = document.querySelectorAll("#refaccionesContainer .form-group");
+  const refacciones = document.querySelectorAll(
+    "#refaccionesContainer .form-group"
+  );
 
   // Deshabilitar todos los campos de refacciones inicialmente
   refacciones.forEach((refaccion) => {
@@ -311,24 +328,33 @@ function habilitarRefacciones() {
   }
 }
 
-document.querySelectorAll('input[name="refacciones"]').forEach((checkbox) => {
-  checkbox.addEventListener("change", function () {
-    if (this.checked) {
-      document.querySelectorAll('input[name="refacciones"]').forEach((cb) => {
-        if (cb !== this) cb.checked = false;
-      });
-    }
-    habilitarRefacciones(); // Llamar a habilitarRefacciones para actualizar los campos según la selección
+document
+  .querySelectorAll('input[name="tipoRefacciones"]')
+  .forEach((checkbox) => {
+    checkbox.addEventListener("change", function () {
+      if (this.checked) {
+        document
+          .querySelectorAll('input[name="tipoRefacciones"]')
+          .forEach((cb) => {
+            if (cb !== this) cb.checked = false;
+          });
+      }
+      habilitarRefacciones(); // Llamar a habilitarRefacciones para actualizar los campos según la selección
+    });
   });
-});
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let debounceTimeoutEmpleados = {}; // Variable para almacenar temporizadores de debounce por campo
 
 // Función de búsqueda de empleados con debounce
 function buscarEmpleadoConDebounce(inputId) {
-  const searchValue = document.getElementById(inputId).value.trim();
-  const dropdown = document.getElementById(`dropdown${capitalizeFirstLetter(inputId)}`);
+  const searchValue = document
+    .getElementById(inputId)
+    .value.trim()
+    .toUpperCase();
+  const dropdown = document.getElementById(
+    `dropdown${capitalizeFirstLetter(inputId)}`
+  );
 
   // Limpiar el temporizador previo para el campo específico
   clearTimeout(debounceTimeoutEmpleados[inputId]);
@@ -358,7 +384,8 @@ function buscarEmpleadoConDebounce(inputId) {
             item.innerText = `${empleado.FullName} (${empleado.EmployeeID})`; // Mostrar el nombre completo
             item.onclick = function () {
               document.getElementById(inputId).value = empleado.FullName; // Colocar el nombre completo en el input
-              document.getElementById(`${inputId}EmployeeID`).value = empleado.EmployeeID; // Colocar el EmployeeID en un input oculto
+              document.getElementById(`${inputId}EmployeeID`).value =
+                empleado.EmployeeID; // Colocar el EmployeeID en un input oculto
               dropdown.style.display = "none";
             };
             dropdown.appendChild(item);
@@ -418,7 +445,16 @@ function loadSocios(selectedSocioId) {
     })
     .catch(function (error) {
       console.error("Error al cargar los socios:", error);
-      alert("Error al cargar los socios.");
+      Swal.fire({
+        icon: "error", // Icono de error
+        title: "Error",
+        text: "Error al cargar los socios.", // Mensaje
+        toast: true, // Estilo de toast
+        position: "top-end", // Ubicación del toast
+        showConfirmButton: false, // Sin botón de confirmación
+        timer: 3000, // Tiempo que se muestra (3 segundos)
+        timerProgressBar: true, // Barra de progreso visual
+      });
     });
 }
 
@@ -446,7 +482,17 @@ window.editUser = function (id) {
     })
     .catch(function (error) {
       console.error("Error al cargar el usuario:", error);
-      alert("Error al cargar el usuario.");
+      Swal.fire({
+        icon: "error", // Icono de error
+        title: "Error",
+        text: "Error al cargar los socios.", // Mensaje
+        toast: true, // Estilo de toast
+        position: "top-end", // Ubicación del toast
+        showConfirmButton: false, // Sin botón de confirmación
+        timer: 3000, // Tiempo que se muestra (3 segundos)
+        timerProgressBar: true, // Barra de progreso visual
+      });
+      
     });
 };
 
@@ -459,11 +505,30 @@ window.deleteUser = function (id) {
       .then(function (response) {
         console.log("User deleted:", response.data);
         loadUsers();
-        alert("Usuario eliminado correctamente.");
+        Swal.fire({
+          icon: "success", // Icono de éxito
+          title: "Éxito",
+          text: "Usuario eliminado correctamente.", // Mensaje
+          toast: true, // Estilo de toast
+          position: "top-end", // Ubicación del toast
+          showConfirmButton: false, // Sin botón de confirmación
+          timer: 3000, // Duración (3 segundos)
+          timerProgressBar: true, // Barra de progreso visual
+        });
       })
       .catch(function (error) {
         console.error("Error al eliminar el usuario:", error);
-        alert("Error al eliminar el usuario.");
+        Swal.fire({
+          icon: "error", // Icono indicando error
+          title: "Error",
+          text: "Error al eliminar el usuario.", // Mensaje
+          toast: true, // Estilo de toast
+          position: "top-end", // Ubicación del toast
+          showConfirmButton: false, // Sin botón de confirmación
+          timer: 3000, // Duración (3 segundos)
+          timerProgressBar: true, // Barra de progreso visual
+        });
+        
       });
   }
 };
@@ -497,12 +562,32 @@ function loadUsers() {
         console.log("Users successfully loaded and displayed.");
       } else {
         console.error("Failed to load users. Status code:", response.status);
-        alert("Error al cargar los usuarios.");
+        Swal.fire({
+          icon: "error", // Icono indicando error
+          title: "Error",
+          text: "Error al cargar los usuarios.", // Mensaje de error
+          toast: true, // Estilo de toast
+          position: "top-end", // Ubicación del toast
+          showConfirmButton: false, // Sin botón de confirmación
+          timer: 3000, // Duración (3 segundos)
+          timerProgressBar: true, // Barra de progreso visual
+        });
+        
       }
     })
     .catch(function (error) {
       console.error("Error al cargar los usuarios:", error);
-      alert("Error al cargar los usuarios.");
+      Swal.fire({
+        icon: "error", // Icono indicando error
+        title: "Error",
+        text: "Error al cargar los usuarios.", // Mensaje de error
+        toast: true, // Estilo de toast
+        position: "top-end", // Ubicación del toast
+        showConfirmButton: false, // Sin botón de confirmación
+        timer: 3000, // Duración (3 segundos)
+        timerProgressBar: true, // Barra de progreso visual
+      });
+      
     });
 }
 
@@ -536,34 +621,102 @@ if (userForm) {
         console.log("User saved:", response.data);
         $("#userModal").modal("hide");
         loadUsers();
-        alert("Usuario guardado correctamente.");
+        Swal.fire({
+          icon: "success", // Icono indicando éxito
+          title: "¡Éxito!",
+          text: "Usuario guardado correctamente.", // Mensaje de éxito
+          toast: true, // Estilo de toast
+          position: "top-end", // Ubicación del toast
+          showConfirmButton: false, // Sin botón de confirmación
+          timer: 3000, // Duración (3 segundos)
+          timerProgressBar: true, // Barra de progreso visual
+        });
+        
       })
       .catch(function (error) {
         console.error("Error al guardar el usuario:", error);
-        alert("Error al guardar el usuario.");
+        Swal.fire({
+          icon: "error", // Icono indicando error
+          title: "¡Error!",
+          text: "Error al guardar el usuario.", // Mensaje de error
+          toast: true, // Estilo de toast
+          position: "top-end", // Ubicación del toast
+          showConfirmButton: false, // Sin botón de confirmación
+          timer: 3000, // Duración (3 segundos)
+          timerProgressBar: true, // Barra de progreso visual
+        });
+        
       });
   });
 }
 /////////////////////////////////////////////////////////AQUI SE CARGA LA PAGINA /////////////////////////////////////////////////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", function () {
+  // Validar que las horas sean coherentes
+  const fechaInicio = document.getElementById("fechaInicio");
+  const horaInicioTrabajo = document.getElementById("horaInicioTrabajo");
+  const fechaTermino = document.getElementById("fechaTermino");
+  const horaSalida = document.getElementById("horaSalida");
 
-    // Selección única de checkboxes para equipo en funcionamiento y refacciones
-    function setupUniqueCheckboxes(groupName) {
-      const checkboxes = document.querySelectorAll(`input[name="${groupName}"]`);
-      checkboxes.forEach((checkbox) => {
-        checkbox.addEventListener("change", function () {
-          if (this.checked) {
-            checkboxes.forEach((cb) => {
-              if (cb !== this) cb.checked = false;
-            });
-          }
+  if (fechaInicio && horaInicioTrabajo && fechaTermino && horaSalida) {
+    fechaInicio.addEventListener("change", validarFechasHoras);
+    horaInicioTrabajo.addEventListener("change", validarFechasHoras);
+    fechaTermino.addEventListener("change", validarFechasHoras);
+    horaSalida.addEventListener("change", validarFechasHoras);
+
+    function validarFechasHoras() {
+      const inicioFecha = fechaInicio.value;
+      const inicioHora = horaInicioTrabajo.value;
+      const terminoFecha = fechaTermino.value;
+      const terminoHora = horaSalida.value;
+
+      if (!inicioFecha || !inicioHora || !terminoFecha || !terminoHora) {
+        return;
+      }
+
+      // Crear objetos Date para comparar fechas y horas juntas
+      const inicio = new Date(`${inicioFecha}T${inicioHora}`);
+      const termino = new Date(`${terminoFecha}T${terminoHora}`);
+
+      if (termino < inicio) {
+        Swal.fire({
+          icon: "error",
+          title: "Error en la validación",
+          text: "La fecha y hora de término no pueden ser menores que la fecha y hora de inicio.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
         });
-      });
+        // Limpiar los campos erróneos
+        fechaTermino.value = "";
+        horaSalida.value = "";
+      }
     }
-    
-    setupUniqueCheckboxes("equipoFuncionamiento");
-    setupUniqueCheckboxes("refacciones");
-    cargarTiposDeProblema();
+  }
+  // Convertir texto automáticamente a mayúsculas
+  document.querySelectorAll("input[type='text'], textarea").forEach((input) => {
+    input.addEventListener("input", function () {
+      this.value = this.value.toUpperCase();
+    });
+  });
+  // Selección única de checkboxes para equipo en funcionamiento y refacciones
+  function setupUniqueCheckboxes(groupName) {
+    const checkboxes = document.querySelectorAll(`input[name="${groupName}"]`);
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", function () {
+        if (this.checked) {
+          checkboxes.forEach((cb) => {
+            if (cb !== this) cb.checked = false;
+          });
+        }
+      });
+    });
+  }
+
+  setupUniqueCheckboxes("equipoFuncionamiento");
+  setupUniqueCheckboxes("refacciones");
+  cargarTiposDeProblema();
 
   // Función para habilitar/deshabilitar el botón de inicio de sesión
   function toggleLoginButton() {
@@ -577,8 +730,6 @@ document.addEventListener("DOMContentLoaded", function () {
       loginButton.disabled = true;
     }
   }
-
-  
 
   // Manejo del inicio de sesión
   var loginForm = document.getElementById("loginForm");
@@ -603,9 +754,17 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(function (response) {
           if (response.data.ROUTEID && response.data.B1SESSION) {
             if (response.data.ACTIVO === 0) {
-              alert(
-                "Usuario inactivo, favor de checarlo con el departamento de sistemas de IPL"
-              );
+              Swal.fire({
+                icon: "warning", // Icono indicando advertencia
+                title: "Usuario Inactivo",
+                text: "Favor de checarlo con el departamento de sistemas de IPL.", // Mensaje detallado
+                toast: true, // Estilo de toast
+                position: "top-end", // Ubicación del toast
+                showConfirmButton: false, // Sin botón de confirmación
+                timer: 4000, // Duración (4 segundos)
+                timerProgressBar: true, // Barra de progreso visual
+              });
+              
               document.getElementById("loadingSpinner").style.display = "none";
               loginButton.innerText = "Entrar";
               loginButton.disabled = false;
@@ -621,7 +780,16 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("loadingSpinner").style.display = "none";
             loginButton.innerText = "Entrar";
             loginButton.disabled = false;
-            alert(response.data.message);
+            Swal.fire({
+              icon: "info", // Cambia el icono según el contexto ('success', 'error', 'warning', 'info', etc.)
+              title: response.data.message, // Mensaje dinámico desde la respuesta
+              toast: true,
+              position: "top-end", // Ubicación del toast
+              showConfirmButton: false, // Sin botón de confirmación
+              timer: 4000, // Duración de 4 segundos
+              timerProgressBar: true, // Barra de progreso
+            });
+            
           }
         })
         .catch(function (error) {
@@ -630,7 +798,17 @@ document.addEventListener("DOMContentLoaded", function () {
           loginButton.disabled = false;
 
           var errorMessage = error.response.data.message;
-          alert(errorMessage);
+          Swal.fire({
+            icon: "error", // Icono para indicar error
+            title: "Error", // Título del toast
+            text: errorMessage, // Mensaje dinámico
+            toast: true,
+            position: "top-end", // Ubicación en la esquina superior derecha
+            showConfirmButton: false, // Sin botón de confirmación
+            timer: 4000, // Duración de 4 segundos
+            timerProgressBar: true, // Barra de progreso visual
+          });
+          
 
           // Manejo de casos específicos de error
           if (errorMessage.includes("Contraseña incorrecta")) {
@@ -657,108 +835,149 @@ document.addEventListener("DOMContentLoaded", function () {
 
   habilitarRefacciones();
 
-      // Validar formulario
-      function validarFormulario() {
-        const form = document.getElementById("ordenTrabajoForm");
-        const camposRequeridos = Array.from(
-            form.querySelectorAll("input:not(.refaccion):not(#tecnico3):not(#tecnico4):not(#tecnico3EmployeeID):not(#tecnico4EmployeeID), select:not(.refaccion):not(#tipoProblema), textarea:not(.refaccion)")
-        );
+  // Validar formulario
+  function validarFormulario() {
+    const form = document.getElementById("ordenTrabajoForm");
+    const camposRequeridos = Array.from(
+      form.querySelectorAll(
+        "input:not(.refaccion):not(#tecnico3):not(#tecnico4):not(#tecnico3EmployeeID):not(#tecnico4EmployeeID), select:not(.refaccion):not(#tipoProblema), textarea:not(.refaccion)"
+      )
+    );
 
-        const camposFaltantes = camposRequeridos.filter((campo) => campo.value.trim() === "");
+    const camposFaltantes = camposRequeridos.filter(
+      (campo) => campo.value.trim() === ""
+    );
 
-        if (camposFaltantes.length > 0) {
-            const nombresCampos = camposFaltantes
-            .map((campo) => {
-              const label = campo.closest(".form-group")?.querySelector("label");
-              return label ? label.innerText : "Campo sin nombre";
-            })
-                .join(", ");
-            alert(`Por favor, completa los siguientes campos: ${nombresCampos}`);
-            return false;
-        }
-        return true;
+    if (camposFaltantes.length > 0) {
+      const nombresCampos = camposFaltantes
+        .map((campo) => {
+          const label = campo.closest(".form-group")?.querySelector("label");
+          return label ? label.innerText : "Campo sin nombre";
+        })
+        .join(", ");
+        Swal.fire({
+          icon: "warning", // Icono para advertencias
+          title: "Campos incompletos", // Título del mensaje
+          html: `Por favor, completa los siguientes campos: <br><b>${nombresCampos}</b>`, // Mensaje dinámico con HTML
+          toast: true,
+          position: "top-end", // Ubicación en la esquina superior derecha
+          showConfirmButton: false, // Sin botón de confirmación
+          timer: 5000, // Duración de 5 segundos
+          timerProgressBar: true, // Barra de progreso visual
+        });
+        
+      return false;
+    }
+    return true;
+  }
+
+  function cargarTiposDeProblema() {
+    const tipoProblemaDropdown = document.getElementById("tipoProblema");
+
+    axios
+      .get("/tipos_problema") // Endpoint Flask que devolverá los datos de la API
+      .then(function (response) {
+        const tiposProblema = response.data.value;
+
+        // Limpiar las opciones actuales
+        tipoProblemaDropdown.innerHTML = "";
+
+        // Añadir una opción predeterminada
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Seleccione un tipo de problema";
+        tipoProblemaDropdown.appendChild(defaultOption);
+
+        // Añadir las opciones de la API
+        tiposProblema.forEach((tipo) => {
+          const option = document.createElement("option");
+          option.value = tipo.ProblemTypeID; // Usar el ID como valor
+          option.textContent = tipo.Name; // Mostrar el nombre
+          tipoProblemaDropdown.appendChild(option);
+        });
+      })
+      .catch(function (error) {
+        console.error("Error al cargar los tipos de problema:", error);
+      });
+  }
+
+  function capturarRefacciones() {
+    const refacciones = [];
+
+    // Iterar sobre los 20 campos de refacciones
+    for (let i = 0; i < 20; i++) {
+      const cantidad =
+        document.querySelector(`[name="cantidad_${i}"]`)?.value || "";
+      const numeroParte =
+        document.querySelector(`[name="numeroParte_${i}"]`)?.value || "";
+      const descripcion =
+        document.querySelector(`[name="descripcion_${i}"]`)?.value || "";
+
+      // Solo agregar si hay datos en al menos uno de los campos
+      if (cantidad || numeroParte || descripcion) {
+        refacciones.push({
+          cantidad,
+          numeroParte,
+          descripcion,
+        });
+      }
     }
 
-    function cargarTiposDeProblema() {
-      const tipoProblemaDropdown = document.getElementById("tipoProblema");
-  
+    return refacciones;
+  }
+
+  // Manejar envío del formulario
+  document
+    .getElementById("ordenTrabajoForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      if (!validarFormulario()) {
+        return; // Detener si hay errores de validación
+      }
+
+      const formData = new FormData(this);
+      const datos = Object.fromEntries(formData.entries());
+
+      datos.horometro = document.getElementById("horometro").value || "";
+      datos.descripcionFalla =
+        document.getElementById("descripcionFalla").value || "";
+      datos.trabajoRealizado =
+        document.getElementById("trabajoRealizado").value || "";
+
+      datos.refacciones = capturarRefacciones();
+
       axios
-        .get("/tipos_problema") // Endpoint Flask que devolverá los datos de la API
+        .post("/guardar_excel", datos)
         .then(function (response) {
-          const tiposProblema = response.data.value;
-  
-          // Limpiar las opciones actuales
-          tipoProblemaDropdown.innerHTML = "";
-  
-          // Añadir una opción predeterminada
-          const defaultOption = document.createElement("option");
-          defaultOption.value = "";
-          defaultOption.textContent = "Seleccione un tipo de problema";
-          tipoProblemaDropdown.appendChild(defaultOption);
-  
-          // Añadir las opciones de la API
-          tiposProblema.forEach((tipo) => {
-            const option = document.createElement("option");
-            option.value = tipo.ProblemTypeID; // Usar el ID como valor
-            option.textContent = tipo.Name; // Mostrar el nombre
-            tipoProblemaDropdown.appendChild(option);
+          Swal.fire({
+            icon: "success", // Icono de éxito
+            title: "Guardado exitoso", // Título del mensaje
+            text: "Orden de trabajo guardada exitosamente en Excel.", // Mensaje informativo
+            toast: true,
+            position: "top-end", // Ubicación en la esquina superior derecha
+            showConfirmButton: false, // Sin botón de confirmación
+            timer: 5000, // Duración de 5 segundos
+            timerProgressBar: true, // Barra de progreso visual
           });
+          
+          document.getElementById("ordenTrabajoForm").reset();
+          habilitarRefacciones(); // Reinicia la configuración de las refacciones
         })
         .catch(function (error) {
-          console.error("Error al cargar los tipos de problema:", error);
-        });
-    }
-
-    function capturarRefacciones() {
-      const refacciones = [];
-    
-      // Iterar sobre los 20 campos de refacciones
-      for (let i = 0; i < 20; i++) {
-        const cantidad = document.querySelector(`[name="cantidad_${i}"]`)?.value || "";
-        const numeroParte = document.querySelector(`[name="numeroParte_${i}"]`)?.value || "";
-        const descripcion = document.querySelector(`[name="descripcion_${i}"]`)?.value || "";
-    
-        // Solo agregar si hay datos en al menos uno de los campos
-        if (cantidad || numeroParte || descripcion) {
-          refacciones.push({
-            cantidad,
-            numeroParte,
-            descripcion,
+          console.error("Error al guardar la orden:", error);
+          Swal.fire({
+            icon: "error", // Icono de error
+            title: "Error", // Título del mensaje
+            text: "Hubo un problema al guardar la orden.", // Mensaje informativo
+            toast: true,
+            position: "top-end", // Ubicación en la esquina superior derecha
+            showConfirmButton: false, // Sin botón de confirmación
+            timer: 5000, // Duración de 5 segundos
+            timerProgressBar: true, // Barra de progreso visual
           });
-        }
-      }
-    
-      return refacciones;
-    }
-
-    // Manejar envío del formulario
-    document.getElementById("ordenTrabajoForm").addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        if (!validarFormulario()) {
-            return; // Detener si hay errores de validación
-        }
-
-        const formData = new FormData(this);
-        const datos = Object.fromEntries(formData.entries());
-
-        datos.horometro = document.getElementById("horometro").value || "";
-        datos.descripcionFalla = document.getElementById("descripcionFalla").value || "";
-        datos.trabajoRealizado = document.getElementById("trabajoRealizado").value || "";
-
-        datos.refacciones=capturarRefacciones();
-
-        axios
-            .post("/guardar_excel", datos)
-            .then(function (response) {
-                alert("Orden de trabajo guardada exitosamente en Excel.");
-                document.getElementById("ordenTrabajoForm").reset();
-                habilitarRefacciones(); // Reinicia la configuración de las refacciones
-            })
-            .catch(function (error) {
-                console.error("Error al guardar la orden:", error);
-                alert("Hubo un problema al guardar la orden.");
-            });
+          
+        });
     });
 
   // Función para alternar la visibilidad de la contraseña
@@ -778,9 +997,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-     
-
-   // Llamar a habilitarRefacciones para actualizar los campos según la selección
+  // Llamar a habilitarRefacciones para actualizar los campos según la selección
 
   // Función para manejar la visibilidad del menú de usuarios según el perfil
   function handleMenuVisibility() {
@@ -807,4 +1024,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-

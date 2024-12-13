@@ -268,7 +268,7 @@
         type="checkbox"
         id="refaccionesInstaladas"
         value="1"
-        name="refacciones"
+        name="tipoRefacciones"
         onclick="habilitarRefacciones()"
         checked
       />
@@ -277,7 +277,7 @@
         type="checkbox"
         id="refaccionesRequeridas"
         value="0"
-        name="refacciones"
+        name="tipoRefacciones"
         onclick="habilitarRefacciones()"
       />
       Requeridas
@@ -285,7 +285,7 @@
         type="checkbox"
         id="refaccionesAmbas"
         value="2"
-        name="refacciones"
+        name="tipoRefacciones"
         onclick="habilitarRefacciones()"
       />
       Ambas
@@ -300,12 +300,14 @@
         <input
           type="number"
           class="form-control d-inline refaccion"
+          name="cantidad_{{ i }}"
           placeholder="Cantidad"
           style="width: 10%"
         />
         <input
           type="text"
           class="form-control d-inline refaccion item-code"
+          name="numeroParte_{{ i }}"
           placeholder="Número de Parte"
           style="width: 30%"
           oninput="buscarItemConDebounce(this, {{ i }})"
@@ -319,6 +321,7 @@
         <input
           type="text"
           class="form-control d-inline refaccion item-name"
+          name="descripcion_{{ i }}"
           placeholder="Descripción"
           style="width: 55%"
           readonly

@@ -164,12 +164,12 @@ def equipos_cliente():
 
     # Construye la consulta para obtener todos los equipos activos del cliente
     sap_url = (
-         "https://10.2.0.6:50000/b1s/v1/$crossjoin(Items, CustomerEquipmentCards, Manufacturers)"
-        "?$expand=Items($select=ItemCode, U_Modelo, ForeignName),CustomerEquipmentCards($select=U_NoEconomico, ItemCode),Manufacturers($select=ManufacturerName)"
-        f"&$filter=Items/ItemCode eq CustomerEquipmentCards/ItemCode and Items/Manufacturer eq Manufacturers/Code "
-        f"and startswith(CustomerEquipmentCards/CustomerCode,'{customer_code}') and CustomerEquipmentCards/StatusOfSerialNumber eq 'A' "
-        f"and (Items/ForeignName eq '{search_value}' or CustomerEquipmentCards/U_NoEconomico eq '{search_value}')"
-    )
+    "https://10.2.0.6:50000/b1s/v1/$crossjoin(Items, CustomerEquipmentCards, Manufacturers)"
+    "?$expand=Items($select=ItemCode, U_Modelo, ForeignName),CustomerEquipmentCards($select=U_NoEconomico, ItemCode),Manufacturers($select=ManufacturerName)"
+    f"&$filter=Items/ItemCode eq CustomerEquipmentCards/ItemCode and Items/Manufacturer eq Manufacturers/Code "
+    f"and startswith(CustomerEquipmentCards/CustomerCode,'{customer_code}') and CustomerEquipmentCards/StatusOfSerialNumber eq 'A' "
+    f"and (startswith(Items/ForeignName,'{search_value}') or startswith(CustomerEquipmentCards/U_NoEconomico,'{search_value}'))"
+)
 
     try:
         response = requests.get(sap_url, headers={
@@ -404,16 +404,27 @@ def guardar_excel():
 
         # Extraer las refacciones
         refacciones = datos.pop("refacciones", [])
+        tipo_refacciones = datos.get("tipoRefacciones", "1")  # Default: Instaladas
         refacciones_planas = []
-        for i, ref in enumerate(refacciones, start=1):
-            refacciones_planas.extend([
-                ref.get("cantidad", ""),
-                ref.get("numeroParte", ""),
-            ])
+        for i in range(20):
+            if i < len(refacciones):
+                ref = refacciones[i]
+                refacciones_planas.append(ref.get("cantidad", ""))
+                refacciones_planas.append(ref.get("numeroParte", ""))
+            else:
+                refacciones_planas.append("")
+                refacciones_planas.append("")
 
-        # Rellenar hasta 20 refacciones con espacios vacíos
-        while len(refacciones_planas) < 40:
-            refacciones_planas.append("")
+        tipo_refacciones = datos.get("tipoRefacciones")
+        if tipo_refacciones == "0":  # Requeridas
+            refacciones_instaladas = [""] * 20  # Vaciar U_Qty1 a U_Qty10
+            refacciones_requeridas = refacciones_planas[:20]  # U_Qty11 a U_Code20
+        elif tipo_refacciones == "1":  # Instaladas
+            refacciones_instaladas = refacciones_planas[:20]
+            refacciones_requeridas = [""] * 20  # U_Qty11 a U_Qty20
+        else:  # Ambas
+            refacciones_instaladas = refacciones_planas[:20]  # U_Qty1 a U_Qty10
+            refacciones_requeridas = refacciones_planas[20:]  # U_Qty11 a U_Qty20
 
         # Organizar los datos para las columnas
         fila_datos = [
@@ -445,9 +456,9 @@ def guardar_excel():
             "",  # Columna 26: Vacío
             datos.get("usuarioCreacion", ""),  # Columna 27: Usuario Creación
             datos.get("equipoFuncionamiento", ""),  # Columna 28: Equipo en Funcionamiento
-            "0" if datos.get("tipoRefacciones") == "Requeridas" else "1" if datos.get("tipoRefacciones") == "Instaladas" else "2",  # Columna 29
+           tipo_refacciones,
             # Columnas adicionales
-        ] + [""] * (65 - len(refacciones_planas)) + [datos.get("nombreCssr", "")] + refacciones_planas  # Columna 55: Nombre CSSR
+        ] + refacciones_instaladas + [""] * (55-30-len(refacciones_instaladas)) + [datos.get("nombreCssr", "")] + refacciones_requeridas
 
         # Agregar la fila de datos al Excel
         ws.append(fila_datos)
