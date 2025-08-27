@@ -364,11 +364,19 @@ function buscarEmpleadoConDebounce(inputId) {
     return;
   }
 
+  // ✅ Detectar si el form tiene data-tipo="seguridad"
+  const isSeguridad =
+    document.querySelector("#ordenTrabajoForm[data-tipo='seguridad']") !== null;
+
+  const endpoint = isSeguridad
+    ? `/buscar_empleados_todos?query=${searchValue}`
+    : `/buscar_empleados?query=${searchValue}`;
+
   debounceTimeoutEmpleados[inputId] = setTimeout(() => {
     axios
-      .get(`/buscar_empleados?query=${searchValue}`)
+      .get(endpoint)
       .then(function (response) {
-        const empleados = response.data.value;
+        const empleados = response.data.value || [];
         dropdown.innerHTML = "";
 
         if (empleados.length > 0) {
@@ -379,7 +387,7 @@ function buscarEmpleadoConDebounce(inputId) {
             item.innerText = `${empleado.FullName} (${empleado.EmployeeID})`;
 
             item.addEventListener("click", function (event) {
-              event.preventDefault(); // Evitar scroll al top
+              event.preventDefault();
               document.getElementById(inputId).value = empleado.FullName;
               document.getElementById(`${inputId}EmployeeID`).value =
                 empleado.EmployeeID;
@@ -388,10 +396,6 @@ function buscarEmpleadoConDebounce(inputId) {
               if (roleField) {
                 roleField.value = empleado.RoleID || "";
               }
-
-              console.log(
-                `Seleccionado: ${empleado.FullName} | RoleID: ${empleado.RoleID}`
-              );
 
               dropdown.style.display = "none";
               dropdown.innerHTML = "";
@@ -656,99 +660,155 @@ if (userForm) {
       });
   });
 }
+
 /////////////////////////////////////////////////////////AQUI SE CARGA LA PAGINA /////////////////////////////////////////////////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", function () {
-const fechaInicio = document.getElementById("fechaInicio");
-const fechaTermino = document.getElementById("fechaTermino");
-const horaInicioTrabajo = document.getElementById("horaInicioTrabajo");
-const horaSalida = document.getElementById("horaSalida");
-const year = new Date().getFullYear();
+  const fechaInicio = document.getElementById("fechaInicio");
+  const fechaTermino = document.getElementById("fechaTermino");
+  const horaInicioTrabajo = document.getElementById("horaInicioTrabajo");
+  const horaSalida = document.getElementById("horaSalida");
+  const year = new Date().getFullYear();
 
-// Insertar / automáticamente mientras se escribe
-function aplicarFormatoFecha(input) {
-  input.addEventListener("input", function () {
-    let valor = input.value.replace(/\D/g, ""); // Solo números
-    if (valor.length > 4) valor = valor.slice(0, 4); // Máximo 4 dígitos (ddmm)
-    if (valor.length >= 3) {
-      valor = valor.slice(0, 2) + "/" + valor.slice(2);
-    }
-    input.value = valor;
-  });
-
-  // Al perder foco, completar con año automáticamente si está bien escrito
-  input.addEventListener("blur", function () {
-    completarFechaConAnio(input);
-  });
-}
-
-// Completar dd/mm → dd/mm/yyyy
-function completarFechaConAnio(input) {
-  const partes = input.value.split("/");
-  if (partes.length === 2 && partes[0].length === 2 && partes[1].length === 2) {
-    input.value = `${partes[0]}/${partes[1]}/${year}`;
-  }
-}
-
-// Convertir dd/mm/yyyy → yyyy/mm/dd (para backend)
-function convertirFechaAFormatoBackend(fechaStr) {
-  const partes = fechaStr.split("/");
-  if (partes.length === 3) {
-    const [dia, mes, anio] = partes;
-    return `${anio}${mes}${dia}`; // <- yyyyMMdd como lo requiere el backend
-  }
-  return fechaStr;
-}
-
-// Aplicar formato a ambos campos
-if (fechaInicio) aplicarFormatoFecha(fechaInicio);
-if (fechaTermino) aplicarFormatoFecha(fechaTermino);
-
-// Validar coherencia de fechas y horas
-function validarFechasHoras() {
-  if (!fechaInicio.value || !horaInicioTrabajo.value || !fechaTermino.value || !horaSalida.value) return;
-  const inicioFechaISO = convertirFechaAFormatoBackend(fechaInicio.value);
-  const terminoFechaISO = convertirFechaAFormatoBackend(fechaTermino.value);
-  const h1 = horaInicioTrabajo.value;
-  const h2 = horaSalida.value;
-
-  const inicio = new Date(`${inicioFechaISO.slice(0, 4)}-${inicioFechaISO.slice(4, 6)}-${inicioFechaISO.slice(6)}T${h1}`);
-  const termino = new Date(`${terminoFechaISO.slice(0, 4)}-${terminoFechaISO.slice(4, 6)}-${terminoFechaISO.slice(6)}T${h2}`);
-
-  if (termino < inicio) {
-    Swal.fire({
-      icon: "error",
-      title: "Error en la validación",
-      text: "La fecha y hora de término no pueden ser menores que la de inicio.",
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
+  // Insertar / automáticamente mientras se escribe
+  function aplicarFormatoFecha(input) {
+    input.addEventListener("input", function () {
+      let valor = input.value.replace(/\D/g, ""); // Solo números
+      if (valor.length > 4) valor = valor.slice(0, 4); // Máximo 4 dígitos (ddmm)
+      if (valor.length >= 3) {
+        valor = valor.slice(0, 2) + "/" + valor.slice(2);
+      }
+      input.value = valor;
     });
-    fechaTermino.value = "";
-    horaSalida.value = "";
+
+    // Al perder foco, completar con año automáticamente si está bien escrito
+    input.addEventListener("blur", function () {
+      completarFechaConAnio(input);
+    });
   }
-}
 
-if (fechaInicio && horaInicioTrabajo && fechaTermino && horaSalida) {
-  fechaInicio.addEventListener("change", validarFechasHoras);
-  horaInicioTrabajo.addEventListener("change", validarFechasHoras);
-  fechaTermino.addEventListener("change", validarFechasHoras);
-  horaSalida.addEventListener("change", validarFechasHoras);
-}
+  // Completar dd/mm → dd/mm/yyyy
+  function completarFechaConAnio(input) {
+    const partes = input.value.split("/");
+    if (
+      partes.length === 2 &&
+      partes[0].length === 2 &&
+      partes[1].length === 2
+    ) {
+      input.value = `${partes[0]}/${partes[1]}/${year}`;
+    }
+  }
 
-// Antes de enviar: completar año y transformar formato para backend
-const form = document.getElementById("ordenTrabajoForm");
-if (form) {
-  form.addEventListener("submit", function () {
-    completarFechaConAnio(fechaInicio);
-    completarFechaConAnio(fechaTermino);
+  // Convertir dd/mm/yyyy → yyyy/mm/dd (para backend)
+  function convertirFechaAFormatoBackend(fechaStr) {
+    const partes = fechaStr.split("/");
+    if (partes.length === 3) {
+      const [dia, mes, anio] = partes;
+      return `${anio}${mes}${dia}`; // <- yyyyMMdd como lo requiere el backend
+    }
+    return fechaStr;
+  }
 
-    fechaInicio.value = convertirFechaAFormatoBackend(fechaInicio.value);
-    fechaTermino.value = convertirFechaAFormatoBackend(fechaTermino.value);
-  });
-}
+  // Aplicar formato a ambos campos
+  if (fechaInicio) aplicarFormatoFecha(fechaInicio);
+  if (fechaTermino) aplicarFormatoFecha(fechaTermino);
 
+  // Validar coherencia de fechas y horas
+  function validarFechasHoras() {
+    if (
+      !fechaInicio.value ||
+      !horaInicioTrabajo.value ||
+      !fechaTermino.value ||
+      !horaSalida.value
+    )
+      return;
+    const inicioFechaISO = convertirFechaAFormatoBackend(fechaInicio.value);
+    const terminoFechaISO = convertirFechaAFormatoBackend(fechaTermino.value);
+    const h1 = horaInicioTrabajo.value;
+    const h2 = horaSalida.value;
+
+    const inicio = new Date(
+      `${inicioFechaISO.slice(0, 4)}-${inicioFechaISO.slice(
+        4,
+        6
+      )}-${inicioFechaISO.slice(6)}T${h1}`
+    );
+    const termino = new Date(
+      `${terminoFechaISO.slice(0, 4)}-${terminoFechaISO.slice(
+        4,
+        6
+      )}-${terminoFechaISO.slice(6)}T${h2}`
+    );
+
+    if (termino < inicio) {
+      Swal.fire({
+        icon: "error",
+        title: "Error en la validación",
+        text: "La fecha y hora de término no pueden ser menores que la de inicio.",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+      fechaTermino.value = "";
+      horaSalida.value = "";
+    }
+  }
+
+  if (fechaInicio && horaInicioTrabajo && fechaTermino && horaSalida) {
+    fechaInicio.addEventListener("change", validarFechasHoras);
+    horaInicioTrabajo.addEventListener("change", validarFechasHoras);
+    fechaTermino.addEventListener("change", validarFechasHoras);
+    horaSalida.addEventListener("change", validarFechasHoras);
+  }
+
+  // Antes de enviar: completar año y transformar formato para backend
+  const form = document.getElementById("ordenTrabajoForm");
+  if (form) {
+    form.addEventListener("submit", function () {
+      completarFechaConAnio(fechaInicio);
+      completarFechaConAnio(fechaTermino);
+
+      fechaInicio.value = convertirFechaAFormatoBackend(fechaInicio.value);
+      fechaTermino.value = convertirFechaAFormatoBackend(fechaTermino.value);
+    });
+  }
+
+  
+  const costoInput = document.getElementById("costoAproximado");
+
+  if (costoInput) {
+    costoInput.addEventListener("input", function (e) {
+      let cursorPos = this.selectionStart;
+
+      // Quitar comas y caracteres no numéricos excepto el punto
+      let rawValue = this.value.replace(/,/g, "").replace(/[^\d.]/g, "");
+
+      // Dividir parte entera y decimal
+      let parts = rawValue.split(".");
+      let integerPart = parts[0];
+      let decimalPart = parts[1] ? parts[1].slice(0, 2) : ""; // Máximo 2 decimales
+
+      // Agregar comas a la parte entera
+      integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+      // Reconstruir el valor
+      let formattedValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
+
+      // Asignar el valor formateado
+      this.value = formattedValue;
+
+      // Colocar el cursor al final siempre
+      this.setSelectionRange(this.value.length, this.value.length);
+    });
+
+    costoInput.addEventListener("blur", function () {
+      // Al salir, si hay valor y no hay decimales, poner .00
+      if (this.value && !this.value.includes(".")) {
+        this.value += ".00";
+      }
+    });
+  }
 });
 
 // Convertir texto automáticamente a mayúsculas
@@ -1063,26 +1123,28 @@ document
   .addEventListener("submit", function (event) {
     event.preventDefault();
 
-    if (!validarFormulario()) {
-      return; // Detener si hay errores de validación
+    const isSeguridad = !!document.getElementById("ordenTrabajoSeguridadForm");
+    if (!isSeguridad) {
+      const roleID = parseInt(
+        document.getElementById("realizoTrabajoRoleID").value
+      );
+      if (isNaN(roleID) || roleID !== -2) {
+        Swal.fire({
+          icon: "error",
+          title: "Rol inválido",
+          text: "Este usuario no tiene el rol 'TÉCNICO' asignado.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 4000,
+          timerProgressBar: true,
+        });
+        return; // 🚫 Se corta el guardado si no es técnico
+      }
     }
 
-    // ✅ Validación del RoleID del técnico
-    const roleID = parseInt(
-      document.getElementById("realizoTrabajoRoleID").value
-    );
-    if (isNaN(roleID) || roleID !== -2) {
-      Swal.fire({
-        icon: "error",
-        title: "Rol inválido",
-        text: "Este usuario no tiene el rol 'TÉCNICO' asignado.",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 4000,
-        timerProgressBar: true,
-      });
-      return; // ❌ Detener envío
+    if (!validarFormulario()) {
+      return; // Detener si hay errores de validación
     }
 
     // 🔁 Convertir fechas a formato yyyymmdd para backend
@@ -1095,7 +1157,6 @@ document
       return fechaStr;
     }
 
-    // Aplicar formato antes de enviar
     const fi = document.getElementById("fechaInicio");
     const ft = document.getElementById("fechaTermino");
     if (fi && ft) {
@@ -1103,16 +1164,15 @@ document
       ft.value = convertirFechaAFormatoBackend(ft.value);
     }
 
-    // 🧠 Recoger todos los datos
     const formData = new FormData(this);
     const datos = Object.fromEntries(formData.entries());
 
-    datos.horometro = document.getElementById("horometro").value || "";
+    datos.horometro = document.getElementById("horometro")?.value || "";
     datos.descripcionFalla = document
       .getElementById("descripcionFalla")
-      .value.replace(/[\r\n]+/g, " ") // elimina saltos de línea
-      .replace(/,/g, ".") // reemplaza comas por puntos
-      .trim(); // elimina espacios extra
+      .value.replace(/[\r\n]+/g, " ")
+      .replace(/,/g, ".")
+      .trim();
     datos.trabajoRealizado = document
       .getElementById("trabajoRealizado")
       .value.replace(/[\r\n]+/g, " ")
@@ -1123,7 +1183,7 @@ document
 
     axios
       .post("/guardar_csv", datos)
-      .then(function (response) {
+      .then(function () {
         Swal.fire({
           icon: "success",
           title: "Guardado exitoso",
@@ -1152,7 +1212,6 @@ document
         });
       });
   });
-
 
 // Función para alternar la visibilidad de la contraseña
 document

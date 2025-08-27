@@ -59,11 +59,11 @@
             {% endif %}
 
             <!-- Crear OT Seguridad (solo perfil 4) -->
-            {% if perfil == 4 %}
+            {% if perfil in [1,2,3,4] %}
             <li class="nav-item">
               <a class="nav-link {% if request.endpoint == 'ot_seguridad' %}active{% endif %}"
                 href="{{ url_for('ot_seguridad') }}">
-                <i class="fas fa-shield-alt"></i> OT Seguridad
+                <i class="fas fa-shield-alt"></i> Flash Report
               </a>
             </li>
             {% endif %}
@@ -206,7 +206,7 @@
             {% endif %}
 
             <!-- Crear OT Seguridad (solo perfil 4) -->
-            {% if perfil == 4 %}
+            {% if perfil == 1,2,3,4 %}
             <li class="nav-item">
               <a class="nav-link {% if request.endpoint == 'ot_seguridad' %}active{% endif %}"
                 href="{{ url_for('ot_seguridad') }}">
