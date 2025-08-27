@@ -367,7 +367,13 @@ def tipos_problema():
 def guardar_csv():
     datos = request.json
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    csv_path = f"C:\\Publish\\addonServicioweb\\ordenes_trabajo_{timestamp}.csv"
+    tipo=datos.get("tipo", "") or datos.get("data-tipo", "")
+    if tipo == "seguridad":
+        prefix = "flash_report"
+    else:
+        prefix = "ordenes_trabajo"
+
+    csv_path = f"C:\\Publish\\addonServicioweb\\{prefix}_{timestamp}.csv"
 
      # Definir los encabezados personalizados
     encabezados_1 = [
@@ -381,7 +387,8 @@ def guardar_csv():
         "U_Qty8", "U_Code8", "U_Qty9", "U_Code9", "U_Qty10", "U_Code10", "U_Qty11", "U_Code11",
         "U_Qty12", "U_Code12", "U_Qty13", "U_Code13", "U_Qty14", "U_Code14", "U_Qty15", "U_Code15",
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
-        "U_Qty20", "U_Code20", "U_Version", "U_CSSR"
+        "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Sveridad", "U_AreaTrabajo", "U_AccionesR",
+        "U_Plan", "U_Leccion", "U_Costo"
     ]
 
     encabezados_2 = [
@@ -395,7 +402,8 @@ def guardar_csv():
         "U_Qty9", "U_Code9", "U_Qty10", "U_Code10", "U_Qty11", "U_Code11", "U_Qty12", "U_Code12",
         "U_Qty13", "U_Code13", "U_Qty14", "U_Code14", "U_Qty15", "U_Code15",
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
-        "U_Qty20", "U_Code20", "U_Version", "U_CSSR"
+        "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR", 
+        "U_Plan", "U_Leccion", "U_Costo"
     ]
 
     try:
@@ -460,7 +468,14 @@ def guardar_csv():
                 tipo_refacciones,
             ] + refacciones_instaladas + refacciones_requeridas + [
                 "1",  # U_Version (siempre 1)
-                datos.get("nombreCssr", ""),  # U_CSSR
+                datos.get("nombreCssr", ""),
+                datos.get("U_Severidad", ""),  # U_CSSR
+                datos.get("U_Severidad", ""),
+                datos.get("areaTrabajo", ""),
+                datos.get("accionesSituacion", ""),
+                datos.get("planAccion", ""),
+                datos.get("leccionesAprendidas", ""),
+                datos.get("costoAproximado", ""),
             ]
 
             # Escribir los datos en el archivo CSV
@@ -508,10 +523,54 @@ def menu():
 
 @app.route('/ot_seguridad')
 def ot_seguridad():
-    if session.get('perfil') == 4:  # Solo personal de seguridad puede entrar
+    if session.get('perfil') in [1,4]:  # Solo personal de seguridad puede entrar
         return render_template('ot_seguridad.html')
     else:
         return redirect(url_for('menu'))  # Redirigir si no tiene permiso
+    
+@app.route('/buscar_empleados_todos', methods=['GET'])
+def buscar_empleados_todos():
+    query = request.args.get('query', '')
+
+    if not query:
+        return jsonify({"message": "No query provided"}), 400
+
+    route_id = session.get('ROUTEID')
+    b1session = session.get('B1SESSION')
+
+    if not route_id or not b1session:
+        return jsonify({"message": "No active session"}), 403
+
+    # Mismo select, pero SIN filtro de JobTitle (solo activos)
+    sap_url = (
+        f"https://158.23.90.252:50000/b1s/v1/EmployeesInfo?"
+        f"$select=FirstName,LastName,MiddleName,EmployeeID,Active,EmployeeRolesInfoLines"
+        f"&$filter=(Active eq 'tYES') and "
+        f"(contains(LastName, '{query}') or contains(FirstName, '{query}') or contains(MiddleName, '{query}'))"
+    )
+
+    try:
+        response = requests.get(sap_url, headers={
+            'Cookie': f'B1SESSION={b1session}; ROUTEID={route_id}',
+            'Content-Type': 'application/json'
+        }, verify=False)
+
+        if response.status_code == 200:
+            empleados = response.json().get("value", [])
+
+            # Formateo de nombre y RoleID igual que el otro endpoint
+            for empleado in empleados:
+                empleado["FullName"] = " ".join(
+                    part for part in [empleado.get("LastName"), empleado.get("FirstName"), empleado.get("MiddleName")] if part
+                )
+                roles = empleado.get("EmployeeRolesInfoLines", [])
+                empleado["RoleID"] = roles[0]["RoleID"] if roles else None
+
+            return jsonify({"value": empleados}), 200
+        else:
+            return jsonify({"message": "Error al consultar SAP B1", "error": response.text}), response.status_code
+    except Exception as e:
+        return jsonify({"message": "Error en la solicitud", "error": str(e)}), 500
 
 
 @app.route('/logout')
