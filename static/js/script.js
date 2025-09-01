@@ -1123,11 +1123,11 @@ document
   .addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const isSeguridad = !!document.getElementById("ordenTrabajoSeguridadForm");
+    const tipo = this.getAttribute("data-tipo") || "ot";
+    const isSeguridad = tipo === "seguridad";
+
     if (!isSeguridad) {
-      const roleID = parseInt(
-        document.getElementById("realizoTrabajoRoleID").value
-      );
+      const roleID = parseInt(document.getElementById("realizoTrabajoRoleID").value);
       if (isNaN(roleID) || roleID !== -2) {
         Swal.fire({
           icon: "error",
@@ -1139,15 +1139,15 @@ document
           timer: 4000,
           timerProgressBar: true,
         });
-        return; // 🚫 Se corta el guardado si no es técnico
+        return;
+      }
+
+      if (!validarFormulario()) {
+        return; // 🚫 Se corta si hay campos vacíos
       }
     }
 
-    if (!validarFormulario()) {
-      return; // Detener si hay errores de validación
-    }
-
-    // 🔁 Convertir fechas a formato yyyymmdd para backend
+    // 🔁 Convertir fechas si existen
     function convertirFechaAFormatoBackend(fechaStr) {
       const partes = fechaStr.split("/");
       if (partes.length === 3) {
@@ -1166,28 +1166,30 @@ document
 
     const formData = new FormData(this);
     const datos = Object.fromEntries(formData.entries());
+    datos["data-tipo"] = tipo;
 
     datos.horometro = document.getElementById("horometro")?.value || "";
-    datos.descripcionFalla = document
-      .getElementById("descripcionFalla")
-      .value.replace(/[\r\n]+/g, " ")
+    datos.descripcionFalla = document.getElementById("descripcionFalla")?.value
+      .replace(/[\r\n]+/g, " ")
       .replace(/,/g, ".")
-      .trim();
-    datos.trabajoRealizado = document
-      .getElementById("trabajoRealizado")
-      .value.replace(/[\r\n]+/g, " ")
+      .trim() || "";
+    datos.trabajoRealizado = document.getElementById("trabajoRealizado")?.value
+      .replace(/[\r\n]+/g, " ")
       .replace(/,/g, ".")
-      .trim();
+      .trim() || "";
 
     datos.refacciones = capturarRefacciones();
 
+    console.log("📤 Enviando datos:", datos);
+
     axios
       .post("/guardar_csv", datos)
-      .then(function () {
+      .then(function (res) {
+        console.log("📥 Respuesta backend:", res.data);
         Swal.fire({
           icon: "success",
           title: "Guardado exitoso",
-          text: "Orden de trabajo guardada exitosamente en el archivo CSV.",
+          text: `Se guardó ${isSeguridad ? "Flash Report" : "Orden de Trabajo"} correctamente en el archivo CSV.`,
           toast: true,
           position: "top-end",
           showConfirmButton: false,
@@ -1199,11 +1201,11 @@ document
         habilitarRefacciones();
       })
       .catch(function (error) {
-        console.error("Error al guardar la orden:", error);
+        console.error("❌ Error al guardar:", error.response?.data || error);
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "Hubo un problema al guardar la orden.",
+          text: "Hubo un problema al guardar.",
           toast: true,
           position: "top-end",
           showConfirmButton: false,
@@ -1212,6 +1214,7 @@ document
         });
       });
   });
+
 
 // Función para alternar la visibilidad de la contraseña
 document

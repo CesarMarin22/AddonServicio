@@ -365,9 +365,9 @@ def tipos_problema():
     
 @app.route('/guardar_csv', methods=['POST'])
 def guardar_csv():
-    datos = request.json
+    datos = request.get_json() or request.form.to_dict() 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    tipo=datos.get("tipo", "") or datos.get("data-tipo", "")
+    tipo = datos.get("data-tipo", "") or datos.get("tipo", "")
     if tipo == "seguridad":
         prefix = "flash_report"
     else:
@@ -387,7 +387,7 @@ def guardar_csv():
         "U_Qty8", "U_Code8", "U_Qty9", "U_Code9", "U_Qty10", "U_Code10", "U_Qty11", "U_Code11",
         "U_Qty12", "U_Code12", "U_Qty13", "U_Code13", "U_Qty14", "U_Code14", "U_Qty15", "U_Code15",
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
-        "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Sveridad", "U_AreaTrabajo", "U_AccionesR",
+        "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR",
         "U_Plan", "U_Leccion", "U_Costo"
     ]
 
@@ -469,7 +469,6 @@ def guardar_csv():
             ] + refacciones_instaladas + refacciones_requeridas + [
                 "1",  # U_Version (siempre 1)
                 datos.get("nombreCssr", ""),
-                datos.get("U_Severidad", ""),  # U_CSSR
                 datos.get("U_Severidad", ""),
                 datos.get("areaTrabajo", ""),
                 datos.get("accionesSituacion", ""),
