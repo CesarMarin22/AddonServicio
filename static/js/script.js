@@ -688,6 +688,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Completar dd/mm → dd/mm/yyyy
   function completarFechaConAnio(input) {
+    if (!input) return;
     const partes = input.value.split("/");
     if (
       partes.length === 2 &&
@@ -714,6 +715,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Validar coherencia de fechas y horas
   function validarFechasHoras() {
+    if (!fechaInicio || !horaInicioTrabajo || !fechaTermino || !horaSalida)
+      return;
     if (
       !fechaInicio.value ||
       !horaInicioTrabajo.value ||
@@ -721,6 +724,7 @@ document.addEventListener("DOMContentLoaded", function () {
       !horaSalida.value
     )
       return;
+
     const inicioFechaISO = convertirFechaAFormatoBackend(fechaInicio.value);
     const terminoFechaISO = convertirFechaAFormatoBackend(fechaTermino.value);
     const h1 = horaInicioTrabajo.value;
@@ -762,19 +766,122 @@ document.addEventListener("DOMContentLoaded", function () {
     horaSalida.addEventListener("change", validarFechasHoras);
   }
 
-  // Antes de enviar: completar año y transformar formato para backend
   const form = document.getElementById("ordenTrabajoForm");
   if (form) {
-    form.addEventListener("submit", function () {
-      completarFechaConAnio(fechaInicio);
-      completarFechaConAnio(fechaTermino);
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
 
-      fechaInicio.value = convertirFechaAFormatoBackend(fechaInicio.value);
-      fechaTermino.value = convertirFechaAFormatoBackend(fechaTermino.value);
+      const tipo = this.getAttribute("data-tipo") || "ot";
+      const isSeguridad = tipo === "seguridad";
+      const isAudi = tipo === "audi";
+
+      if (!isSeguridad && !isAudi) {
+        const roleID = parseInt(
+          document.getElementById("realizoTrabajoRoleID")?.value
+        );
+        if (isNaN(roleID) || roleID !== -2) {
+          Swal.fire({
+            icon: "error",
+            title: "Rol inválido",
+            text: "Este usuario no tiene el rol 'TÉCNICO' asignado.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true,
+          });
+          return;
+        }
+
+        if (!validarFormulario()) {
+          return;
+        }
+      }
+
+      function convertirFechaAFormatoBackend(fechaStr) {
+        const partes = fechaStr.split("/");
+        if (partes.length === 3) {
+          const [dia, mes, anio] = partes;
+          return `${anio}${mes}${dia}`;
+        }
+        return fechaStr;
+      }
+
+      const fi = document.getElementById("fechaInicio");
+      const ft = document.getElementById("fechaTermino");
+      if (fi) fi.value = convertirFechaAFormatoBackend(fi.value);
+      if (ft) ft.value = convertirFechaAFormatoBackend(ft.value);
+
+      const formData = new FormData(this);
+      const datos = Object.fromEntries(formData.entries());
+      datos["data-tipo"] = tipo;
+
+      datos.horometro = document.getElementById("horometro")?.value || "";
+      datos.descripcionFalla =
+        document
+          .getElementById("descripcionFalla")
+          ?.value?.replace(/[\r\n]+/g, " ")
+          .replace(/,/g, ".")
+          .trim() || "";
+      datos.trabajoRealizado =
+        document
+          .getElementById("trabajoRealizado")
+          ?.value?.replace(/[\r\n]+/g, " ")
+          .replace(/,/g, ".")
+          .trim() || "";
+
+      if (document.querySelectorAll("[name^='cantidad_']").length > 0) {
+        datos.refacciones = capturarRefacciones();
+      }
+
+      console.log("📤 Enviando datos:", datos);
+
+      axios
+        .post("/guardar_csv", datos)
+        .then(function (res) {
+          console.log("📥 Respuesta backend:", res.data);
+          Swal.fire({
+            icon: "success",
+            title: "Guardado exitoso",
+            text: `Se guardó ${
+              isSeguridad
+                ? "Flash Report"
+                : isAudi
+                ? "OT Audi"
+                : "Orden de Trabajo"
+            } correctamente en el archivo CSV.`,
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true,
+          });
+
+          form.reset();
+          if (
+            !isSeguridad &&
+            !isAudi &&
+            typeof habilitarRefacciones === "function"
+          ) {
+            habilitarRefacciones();
+          }
+        })
+        .catch(function (error) {
+          console.error("❌ Error al guardar:", error.response?.data || error);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Hubo un problema al guardar.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true,
+          });
+        });
     });
   }
 
-  
   const costoInput = document.getElementById("costoAproximado");
 
   if (costoInput) {
@@ -793,7 +900,9 @@ document.addEventListener("DOMContentLoaded", function () {
       integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
       // Reconstruir el valor
-      let formattedValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
+      let formattedValue = decimalPart
+        ? `${integerPart}.${decimalPart}`
+        : integerPart;
 
       // Asignar el valor formateado
       this.value = formattedValue;
@@ -1118,103 +1227,7 @@ function capturarRefacciones() {
 }
 
 // Manejar envío del formulario
-document
-  .getElementById("ordenTrabajoForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const tipo = this.getAttribute("data-tipo") || "ot";
-    const isSeguridad = tipo === "seguridad";
-
-    if (!isSeguridad) {
-      const roleID = parseInt(document.getElementById("realizoTrabajoRoleID").value);
-      if (isNaN(roleID) || roleID !== -2) {
-        Swal.fire({
-          icon: "error",
-          title: "Rol inválido",
-          text: "Este usuario no tiene el rol 'TÉCNICO' asignado.",
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 4000,
-          timerProgressBar: true,
-        });
-        return;
-      }
-
-      if (!validarFormulario()) {
-        return; // 🚫 Se corta si hay campos vacíos
-      }
-    }
-
-    // 🔁 Convertir fechas si existen
-    function convertirFechaAFormatoBackend(fechaStr) {
-      const partes = fechaStr.split("/");
-      if (partes.length === 3) {
-        const [dia, mes, anio] = partes;
-        return `${anio}${mes}${dia}`;
-      }
-      return fechaStr;
-    }
-
-    const fi = document.getElementById("fechaInicio");
-    const ft = document.getElementById("fechaTermino");
-    if (fi && ft) {
-      fi.value = convertirFechaAFormatoBackend(fi.value);
-      ft.value = convertirFechaAFormatoBackend(ft.value);
-    }
-
-    const formData = new FormData(this);
-    const datos = Object.fromEntries(formData.entries());
-    datos["data-tipo"] = tipo;
-
-    datos.horometro = document.getElementById("horometro")?.value || "";
-    datos.descripcionFalla = document.getElementById("descripcionFalla")?.value
-      .replace(/[\r\n]+/g, " ")
-      .replace(/,/g, ".")
-      .trim() || "";
-    datos.trabajoRealizado = document.getElementById("trabajoRealizado")?.value
-      .replace(/[\r\n]+/g, " ")
-      .replace(/,/g, ".")
-      .trim() || "";
-
-    datos.refacciones = capturarRefacciones();
-
-    console.log("📤 Enviando datos:", datos);
-
-    axios
-      .post("/guardar_csv", datos)
-      .then(function (res) {
-        console.log("📥 Respuesta backend:", res.data);
-        Swal.fire({
-          icon: "success",
-          title: "Guardado exitoso",
-          text: `Se guardó ${isSeguridad ? "Flash Report" : "Orden de Trabajo"} correctamente en el archivo CSV.`,
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-        });
-
-        document.getElementById("ordenTrabajoForm").reset();
-        habilitarRefacciones();
-      })
-      .catch(function (error) {
-        console.error("❌ Error al guardar:", error.response?.data || error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Hubo un problema al guardar.",
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-        });
-      });
-  });
-
+// Manejar envío del formulario (OT, Flash Report, Audi futuro)
 
 // Función para alternar la visibilidad de la contraseña
 document

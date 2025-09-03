@@ -16,7 +16,12 @@
 
 <div class="container mt-4">
   <!-- IMPORTANTE: usar el MISMO id para aprovechar toda la lógica de script.js -->
-  <form id="ordenTrabajoForm" data-tipo="seguridad">
+  <form
+    id="ordenTrabajoForm"
+    data-tipo="seguridad"
+    method="post"
+    action="javascript:void(0);"
+  >
     <!-- Usuario de Creación de OT -->
     <div class="form-group">
       <label for="usuarioCreacion">Usuario que elaboro Flash Report:</label>
@@ -158,8 +163,6 @@
         style="display: none; position: absolute; z-index: 1000; width: 100%"
       ></div>
     </div>
-
-
 
     <!-- Nombre del Cliente -->
     <div class="form-group">
