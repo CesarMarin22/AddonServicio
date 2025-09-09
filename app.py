@@ -370,6 +370,8 @@ def guardar_csv():
     tipo = datos.get("data-tipo", "") or datos.get("tipo", "")
     if tipo == "seguridad":
         prefix = "flash_report"
+    elif tipo == "audi":
+        prefix = "audi_ot"
     else:
         prefix = "ordenes_trabajo"
 
@@ -388,7 +390,7 @@ def guardar_csv():
         "U_Qty12", "U_Code12", "U_Qty13", "U_Code13", "U_Qty14", "U_Code14", "U_Qty15", "U_Code15",
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR",
-        "U_Plan", "U_Leccion", "U_Costo"
+        "U_Plan", "U_Leccion", "U_Costo", "U_A_FolioE", "U_A_Orden", "U_A_NumTec", "U_A_Horas"
     ]
 
     encabezados_2 = [
@@ -403,7 +405,7 @@ def guardar_csv():
         "U_Qty13", "U_Code13", "U_Qty14", "U_Code14", "U_Qty15", "U_Code15",
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR", 
-        "U_Plan", "U_Leccion", "U_Costo"
+        "U_Plan", "U_Leccion", "U_Costo", "U_A_FolioE", "U_A_Orden", "U_A_NumTec", "U_A_Horas"
     ]
 
     try:
@@ -475,6 +477,10 @@ def guardar_csv():
                 datos.get("planAccion", ""),
                 datos.get("leccionesAprendidas", ""),
                 datos.get("costoAproximado", ""),
+                datos.get("folioEx", ""),
+                datos.get("tipoOrdenAudi", ""),
+                datos.get("NumPersonas", ""),
+                datos.get("horasTrabajadas", "")
             ]
 
             # Escribir los datos en el archivo CSV
@@ -526,6 +532,11 @@ def ot_seguridad():
         return render_template('ot_seguridad.html')
     else:
         return redirect(url_for('menu'))  # Redirigir si no tiene permiso
+
+@app.route('/ot_audi')
+def ot_audi():
+    return render_template('ot_audi.html')
+
     
 @app.route('/buscar_empleados_todos', methods=['GET'])
 def buscar_empleados_todos():

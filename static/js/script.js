@@ -767,7 +767,51 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const form = document.getElementById("ordenTrabajoForm");
-  if (form) {
+  if (form && form.dataset.tipo === "audi") {
+    const horasTrabajadasInput = document.getElementById("horasTrabajadas");
+
+    function calcularTermino(){
+      const fechaInicioVal = fechaInicio.value;
+      const horaInicioVal = horaInicioTrabajo.value;
+      const horasTrabajadas = parseFloat(horasTrabajadasInput.value);
+
+      if (!fechaInicioVal || !horaInicioVal || isNaN(horasTrabajadas)) return;
+
+      //Parsear fecha dd/mm o dd/mm/yyyy
+      const partes = fechaInicioVal.split("/");
+      if (partes.length < 2 ) return;
+      const dia = parseInt(partes[0], 10);
+      const mes = parseInt(partes[1], 10);
+      const anio = partes.length === 3 ? parseInt(partes[2], 10) : new Date().getFullYear();
+      const fechaBase = new Date(anio, mes - 1, dia);
+
+      //Hora Inicio
+      const [h, m] = horaInicioVal.split(":").map(Number);
+      fechaBase.setHours(h);
+      fechaBase.setMinutes(m);
+
+      //Sumar Horas trabajadas
+      fechaBase.setMinutes(fechaBase.getMinutes() + horasTrabajadas * 60);
+
+      //Fecha de termino
+      const diaTermino = String(fechaBase.getDate()).padStart(2, "0");
+      const mesTermino = String(fechaBase.getMonth()+1).padStart(2, "0");
+      fechaTermino.value = `${diaTermino}/${mesTermino}/${fechaBase.getFullYear()}`;
+
+      //Hora de Salida
+      const hora = String(fechaBase.getHours()).padStart(2, "0");
+      const minutos = String(fechaBase.getMinutes()).padStart(2, "0");
+      horaSalida.value = `${hora}:${minutos}`;
+    }
+    horasTrabajadasInput.addEventListener("input", calcularTermino);
+    horaInicioTrabajo.addEventListener("input", calcularTermino);
+    fechaInicio.addEventListener("input", calcularTermino);
+  
+    
+  }
+
+  if (form){
+
     form.addEventListener("submit", function (event) {
       event.preventDefault();
 
