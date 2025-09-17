@@ -925,43 +925,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
   }
-
-  const costoInput = document.getElementById("costoAproximado");
-
-  if (costoInput) {
-    costoInput.addEventListener("input", function (e) {
-      let cursorPos = this.selectionStart;
-
-      // Quitar comas y caracteres no numéricos excepto el punto
-      let rawValue = this.value.replace(/,/g, "").replace(/[^\d.]/g, "");
-
-      // Dividir parte entera y decimal
-      let parts = rawValue.split(".");
-      let integerPart = parts[0];
-      let decimalPart = parts[1] ? parts[1].slice(0, 2) : ""; // Máximo 2 decimales
-
-      // Agregar comas a la parte entera
-      integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-      // Reconstruir el valor
-      let formattedValue = decimalPart
-        ? `${integerPart}.${decimalPart}`
-        : integerPart;
-
-      // Asignar el valor formateado
-      this.value = formattedValue;
-
-      // Colocar el cursor al final siempre
-      this.setSelectionRange(this.value.length, this.value.length);
-    });
-
-    costoInput.addEventListener("blur", function () {
-      // Al salir, si hay valor y no hay decimales, poner .00
-      if (this.value && !this.value.includes(".")) {
-        this.value += ".00";
-      }
-    });
-  }
 });
 
 // Convertir texto automáticamente a mayúsculas

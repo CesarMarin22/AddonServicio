@@ -75,19 +75,12 @@
       {% endif %}
     </div>
 
-    <!-- Tipo de Orden -->
     <div class="form-group">
       <label for="tipoOrden">Tipo de Orden:</label>
-      <select class="form-control" id="tipoOrden" name="tipoOrden">
-        <option value="1">Daños</option>
-        <option value="2">Especial</option>
-        <option value="3">Preventivo Equipo</option>
-        <option value="15">Correctivo</option>
-        <option value="18">Preventivo Bateria</option>
-        <option value="19">Preventivo Cargador</option>
-        <option value="20">Diagnostico</option>
-        <option value="24">Seguridad</option>
-      </select>
+      <!-- Campo de solo lectura para mostrar Seguridad -->
+      <input type="text" class="form-control" value="Seguridad" readonly />
+      <!-- Campo oculto para enviar el valor correcto al backend -->
+      <input type="hidden" id="tipoOrden" name="tipoOrden" value="24" />
     </div>
 
     <!-- Fecha Inicio -->
@@ -263,8 +256,9 @@
     <div class="form-group">
       <label for="costoAproximado">Costo aproximado:</label>
       <input
-        type="text"
+        type="number"
         class="form-control"
+        min="0"
         id="costoAproximado"
         name="costoAproximado"
         placeholder="Ingrese el costo en pesos"
@@ -272,53 +266,25 @@
     </div>
 
     <!-- Realizó Trabajo (con misma búsqueda de empleados y validación de RoleID -2) -->
-    <div class="form-group position-relative">
-      <label for="realizoTrabajo">Persona Involucrada:</label>
+    <div class="form-group">
+      <label for="personaReporta">Persona Involucrada:</label>
       <input
         type="text"
         class="form-control"
-        id="realizoTrabajo"
-        oninput="buscarEmpleadoConDebounce('realizoTrabajo')"
-        autocomplete="off"
+        id="personaReporta"
+        name="personaReporta"
       />
-      <input
-        type="hidden"
-        id="realizoTrabajoEmployeeID"
-        name="realizoTrabajoEmployeeID"
-      />
-      <input
-        type="hidden"
-        id="realizoTrabajoRoleID"
-        name="realizoTrabajoRoleID"
-      />
-      <div
-        id="dropdownRealizoTrabajo"
-        class="dropdown-menu"
-        style="display: none; position: absolute; z-index: 1000; width: 100%"
-      ></div>
     </div>
 
     <!-- Revisó Trabajo -->
-    <div class="form-group position-relative">
-      <label for="revisoTrabajo">Nombre del Supervisor:</label>
+     <div class="form-group">
+      <label for="vistoBuenoCliente">Nombre del Supervisor:</label>
       <input
         type="text"
         class="form-control"
-        id="revisoTrabajo"
-        name="revisoTrabajo"
-        oninput="buscarEmpleadoConDebounce('revisoTrabajo')"
-        autocomplete="off"
+        id="vistoBuenoCliente"
+        name="vistoBuenoCliente"
       />
-      <input
-        type="hidden"
-        id="revisoTrabajoEmployeeID"
-        name="revisoTrabajoEmployeeID"
-      />
-      <div
-        id="dropdownRevisoTrabajo"
-        class="dropdown-menu"
-        style="display: none; position: absolute; z-index: 1000; width: 100%"
-      ></div>
     </div>
 
     <!-- Botones -->
