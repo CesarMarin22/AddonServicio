@@ -7,6 +7,7 @@ import csv
 from openpyxl import Workbook, load_workbook
 import openpyxl
 from datetime import datetime
+import unicodedata
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
@@ -48,6 +49,98 @@ def ensure_session_is_active():
 @app.route('/')
 def index():
     return render_template('login.html')
+
+def limpiar_texto(texto: str) -> str:
+    if not texto:
+        return ""
+    # Normalizar a NFD para separar letras de acentos
+    texto = unicodedata.normalize('NFD', texto)
+    # Quitar acentos y caracteres no ASCII
+    texto = texto.encode('ascii', 'ignore').decode('utf-8')
+    # Reemplazar ñ explícitamente
+    texto = texto.replace("ñ", "n").replace("Ñ", "N")
+    return texto
+
+@app.route('/dashboard')
+def dashboard():
+    username = session.get('username')
+    is_admin = session.get('is_admin', False)
+
+    route_id = session.get('ROUTEID')
+    b1session = session.get('B1SESSION')
+
+    # Parámetros (siempre 10 por página)
+    page = int(request.args.get('page', 1))
+    per_page = 10  
+
+    headers = {
+        'Cookie': f'B1SESSION={b1session}; ROUTEID={route_id}',
+        'Content-Type': 'application/json'
+    }
+
+    llamadas = []
+    total_registros = 0
+
+    try:
+        skip = (page - 1) * per_page
+        top = per_page
+
+        sap_url = (
+            f"https://158.23.90.252:50000/b1s/v1/ServiceCalls?"
+            f"$filter=U_CreateUser eq '{username}'"
+            f"&$orderby=AssignedDate desc"
+            f"&$skip={skip}&$top={top}"
+            f"&$select=DocNum,CustomerRefNo,CustomerName,ManufacturerSerialNum,AssignedDate"
+            f"&$inlinecount=allpages"
+        )
+
+        response = requests.get(sap_url, headers=headers, verify=False)
+        if response.status_code == 200:
+            data = response.json()
+            if "odata.count" in data:
+                total_registros = int(data["odata.count"])
+
+            llamadas_raw = data.get("value", [])
+            for llamada in llamadas_raw:
+                fecha_iso = llamada.get("AssignedDate", "")
+                try:
+                    fecha_obj = datetime.strptime(fecha_iso, "%Y-%m-%dT%H:%M:%SZ")
+                    llamada["FechaFormateada"] = fecha_obj.strftime("%d/%m/%Y")
+                except:
+                    llamada["FechaFormateada"] = fecha_iso
+                llamadas.append(llamada)
+
+    except Exception as e:
+        print("Error al obtener llamadas:", e)
+
+    # Calcular número total de páginas
+    total_paginas = (total_registros + per_page - 1) // per_page if total_registros else 1
+
+    return render_template(
+        "dashboard.html",
+        llamadas=llamadas,
+        is_admin=is_admin,
+        perfil=session.get('perfil'),
+        page=page,
+        per_page=per_page,
+        total_registros=total_registros,
+        total_paginas=total_paginas
+    )
+
+
+
+    return render_template(
+        "dashboard.html",
+        llamadas=llamadas,
+        is_admin=is_admin,
+        perfil=session.get('perfil'),
+        page=page,
+        per_page=per_page,
+        total_registros=total_registros,
+        total_paginas=total_paginas
+    )
+
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -94,7 +187,8 @@ def login():
                     "message": "Login successful",
                     "ROUTEID": route_id,
                     "B1SESSION": b1session,
-                    "is_admin": session['is_admin']
+                    "is_admin": session['is_admin'],
+                    "redirect": url_for("dashboard")
                 }), 200
             else:
                 return jsonify({"status": "error", "message": "Error al iniciar sesión en SAP B1"}), 401
@@ -391,6 +485,7 @@ def guardar_csv():
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR",
         "U_Plan", "U_Leccion", "U_Costo", "U_A_FolioE", "U_A_Orden", "U_A_NumTec", "U_A_Horas", "U_VoBoT"
+        "U_Plan", "U_Leccion", "U_Costo", "U_A_FolioE", "U_A_Orden", "U_A_NumTec", "U_A_Horas, U_NoOT, U_A_Orden "
     ]
 
     encabezados_2 = [
@@ -406,6 +501,7 @@ def guardar_csv():
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR", 
         "U_Plan", "U_Leccion", "U_Costo", "U_A_FolioE", "U_A_Orden", "U_A_NumTec", "U_A_Horas", "U_VoBoT"
+        "U_Plan", "U_Leccion", "U_Costo", "U_A_FolioE", "U_A_Orden", "U_A_NumTec", "U_A_Horas, U_NoOT, U_A_Orden"
     ]
 
     try:
@@ -440,15 +536,15 @@ def guardar_csv():
             # Organizar los datos para las columnas
             fila_datos = [
                 1,  # Columna 1: Número Consecutivo
-                datos.get("descripcionFalla", ""),
+                limpiar_texto(datos.get("descripcionFalla", "")),
                 datos.get("codigoCliente", ""),
                 datos.get("tipoOrden", ""),
-                datos.get("ProblemType", ""),
+                limpiar_texto(datos.get("ProblemType", "")),
                 "1",
                 datos.get("fechaInicio", "").replace("/", ""),
                 datos.get("horaInicioTrabajo", "").replace(":", ""),
                 datos.get("realizoTrabajoEmployeeID", ""),
-                datos.get("trabajoRealizado", ""),
+                limpiar_texto(datos.get("trabajoRealizado", "")),
                 datos.get("serie", ""),
                 datos.get("fechaInicio", "").replace("/", ""),
                 datos.get("horaInicioTrabajo", "").replace(":", ""),
@@ -461,7 +557,7 @@ def guardar_csv():
                 datos.get("horaInicioTrabajo", "").replace(":", ""),
                 datos.get("horaSalida", "").replace(":", ""),
                 datos.get("ProSubType", ""),
-                datos.get("personaReporta", ""),
+                limpiar_texto(datos.get("personaReporta", "")),
                 datos.get("revisoTrabajo", ""),
                 datos.get("tecnico3", ""),
                 datos.get("tecnico4", ""),
@@ -482,6 +578,9 @@ def guardar_csv():
                 datos.get("NumPersonas", ""),
                 datos.get("horasTrabajadas", ""),
                 datos.get("vistoBuenoCliente", "")
+                datos.get("horasTrabajadas", ""),
+                datos.get("otBase", ""),
+                datos.get("U_A_Orden", ""),
             ]
 
             # Escribir los datos en el archivo CSV
@@ -491,48 +590,14 @@ def guardar_csv():
 
     except Exception as e:
         return jsonify({"message": "Error al guardar en CSV.", "error": str(e)}), 500
-
-
-@app.route('/menu')
-def menu():
-    username = session.get('username')
-    is_admin = session.get('is_admin', False)
-
-    route_id = session.get('ROUTEID')
-    b1session = session.get('B1SESSION')
-
-    sap_url = f"https://158.23.90.252:50000/b1s/v1/ServiceCalls?$filter=U_CreateUser eq '{username}'&$orderby=AssignedDate desc&$top=10&$select=DocNum,CustomerRefNo,CustomerName,ManufacturerSerialNum,AssignedDate"
-
-    headers = {
-        'Cookie': f'B1SESSION={b1session}; ROUTEID={route_id}',
-        'Content-Type': 'application/json'
-    }
-
-    llamadas = []
-    try:
-        response = requests.get(sap_url, headers=headers, verify=False)
-        if response.status_code == 200:
-            llamadas_raw = response.json().get("value", [])
-            for llamada in llamadas_raw:
-                fecha_iso = llamada.get("AssignedDate", "")
-                try:
-                    fecha_obj = datetime.strptime(fecha_iso, "%Y-%m-%dT%H:%M:%SZ")
-                    llamada["FechaFormateada"] = fecha_obj.strftime("%d/%m/%Y")
-                except:
-                    llamada["FechaFormateada"] = fecha_iso  # fallback por si algo sale mal
-                llamadas.append(llamada)
-    except Exception as e:
-        print("Error al obtener llamadas:", e)
-
-    return render_template("menu.html", llamadas=llamadas, is_admin=is_admin, perfil=session.get('perfil'))
-
+    
 
 @app.route('/ot_seguridad')
 def ot_seguridad():
     if session.get('perfil') in [1,4]:  # Solo personal de seguridad puede entrar
         return render_template('ot_seguridad.html')
     else:
-        return redirect(url_for('menu'))  # Redirigir si no tiene permiso
+        return redirect(url_for('dashboard'))  # Redirigir si no tiene permiso
 
 @app.route('/ot_audi')
 def ot_audi():

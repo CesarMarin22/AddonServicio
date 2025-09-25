@@ -41,8 +41,31 @@
       <input type="hidden" name="serie" value="374" />
     </div>
 
-    <!-- Folio y Folio Base -->
+    <!-- Tipo de Orden -->
     <div class="form-group">
+      <label>¿Qué tipo de orden es?</label><br />
+
+      <input type="radio" id="ordenBase" name="U_A_Orden" value="B" checked />
+      <label for="ordenBase">Base</label>
+
+      <input type="radio" id="ordenNotificacion" name="U_A_Orden" value="N" />
+      <label for="ordenNotificacion">Notificación</label>
+    </div>
+
+    <!-- OT Base (solo visible si es Notificación) -->
+    <div class="form-group" id="otBaseContainer" style="display: none">
+      <label for="otBase">Número de OT Base:</label>
+      <input
+        type="number"
+        class="form-control"
+        id="otBase"
+        name="otBase"
+        min="0"
+      />
+    </div>
+
+    <!-- Folio IPL (solo visible si es Notificación) -->
+    <div class="form-group" id="folioContainer" style="display: none">
       <label for="folio">Folio IPL:</label>
       <input
         type="number"
@@ -53,7 +76,7 @@
       />
     </div>
 
-    <div class="form-group">
+    <!-- <div class="form-group">
       <label for="folioEx">Folio AUDI:</label>
       <input
         type="number"
@@ -62,17 +85,13 @@
         name="folioEx"
         min="0"
       />
-    </div>
-
-    <!--
-    <div class="form-group">
-      <label for="folioBase">Folio Base:</label>
-      <input type="text" class="form-control" id="folioBase" name="folioBase" />
     </div> -->
 
-    <!-- Fecha Inicio -->
+    <!-- Fecha Inicio (reutilizada como fecha de inicio o de llegada) -->
     <div class="form-group">
-      <label for="fechaInicio">Fecha Inicio:</label>
+      <label id="labelFechaInicio" for="fechaInicio"
+        >Fecha Inicio de Trabajo:</label
+      >
       <input
         type="text"
         class="form-control"
@@ -83,9 +102,11 @@
       />
     </div>
 
-    <!-- Hora Inicio Trabajo -->
+    <!-- Hora Inicio (reutilizada como hora de inicio o de llegada) -->
     <div class="form-group">
-      <label for="horaInicioTrabajo">Hora Inicio Trabajo:</label>
+      <label id="labelHoraInicio" for="horaInicioTrabajo"
+        >Hora Inicio de Trabajo:</label
+      >
       <input
         type="time"
         class="form-control"
@@ -97,16 +118,18 @@
     <!-- Tipo de Orden -->
     <div class="form-group">
       <label for="tipoOrdenAudi">Tipo de Orden:</label>
-      <select class="form-control" id="tipoOrdenAudi" name="tipoOrdenAudi">
-        <option value="ZPM2">Preventivo</option>
-        <option value="ZPM3">Correctivo</option>
-        <option value="ZPM8">Ajustes</option>
+      <select class="form-control" id="tipoOrdenAudi" name="U_A_Orden">
+        <option value="ZPM2" data-calltype="3">Preventivo</option>
+        <option value="ZPM3" data-calltype="15">Correctivo</option>
+        <option value="ZPM8" data-calltype="2">Ajustes</option>
       </select>
+      <!-- Campo oculto para guardar el callType -->
+      <input type="hidden" id="callType" name="callType" />
     </div>
 
     <!-- Tipo de Problema -->
     <div class="form-group position-relative">
-      <label for="tipoProblema">Tipo de Problema (opcional) :</label>
+      <label for="tipoProblema">Tipo de Problema :</label>
       <select
         class="form-control tipo-problema-dropdown"
         id="tipoProblema"
@@ -375,7 +398,7 @@
 
     <!-- Fecha de Término -->
     <div class="form-group">
-      <label for="fechaTermino">Fecha de Término:</label>
+      <label for="fechaTermino">Fecha de Término de Trabajo:</label>
       <input
         type="text"
         class="form-control"
@@ -389,7 +412,7 @@
 
     <!-- Hora de Salida -->
     <div class="form-group">
-      <label for="horaSalida">Hora de Salida:</label>
+      <label for="horaSalida">Hora de termino de Trabajo:</label>
       <input
         type="time"
         class="form-control"
@@ -429,7 +452,7 @@
 
     <!-- Técnico 3 -->
     <div class="form-group position-relative">
-      <label for="tecnico3">Técnico 3 (opcional):</label>
+      <label for="tecnico3">Técnico 2 (opcional):</label>
       <input
         type="text"
         class="form-control"
@@ -448,7 +471,7 @@
 
     <!-- Técnico 4 -->
     <div class="form-group position-relative">
-      <label for="tecnico4">Técnico 4 (opcional):</label>
+      <label for="tecnico4">Técnico 3 (opcional):</label>
       <input
         type="text"
         class="form-control"
@@ -467,7 +490,7 @@
 
     <!-- Nombre de CSSR -->
     <div class="form-group position-relative">
-      <label for="nombreCssr">Nombre de CSSR:</label>
+      <label for="nombreCssr">Nombre de REV:</label>
       <input
         type="text"
         class="form-control"
