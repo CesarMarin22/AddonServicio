@@ -663,6 +663,17 @@ if (userForm) {
 
 /////////////////////////////////////////////////////////AQUI SE CARGA LA PAGINA /////////////////////////////////////////////////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", function () {
+  const tipoOrdenAudi = document.getElementById("tipoOrdenAudi");
+  const callTypeInput = document.getElementById("callType");
+
+  const radiosNotificacion = document.querySelectorAll(
+    'input[name="U_A_Orden"]'
+  );
+  const otBaseContainer = document.getElementById("otBaseContainer");
+  const folioContainer = document.getElementById("folioContainer");
+  const labelFechaInicio = document.getElementById("labelFechaInicio");
+  const labelHoraInicio = document.getElementById("labelHoraInicio");
+
   const fechaInicio = document.getElementById("fechaInicio");
   const fechaTermino = document.getElementById("fechaTermino");
   const horaInicioTrabajo = document.getElementById("horaInicioTrabajo");
@@ -770,7 +781,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (form && form.dataset.tipo === "audi") {
     const horasTrabajadasInput = document.getElementById("horasTrabajadas");
 
-    function calcularTermino(){
+    function calcularTermino() {
       const fechaInicioVal = fechaInicio.value;
       const horaInicioVal = horaInicioTrabajo.value;
       const horasTrabajadas = parseFloat(horasTrabajadasInput.value);
@@ -779,10 +790,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       //Parsear fecha dd/mm o dd/mm/yyyy
       const partes = fechaInicioVal.split("/");
-      if (partes.length < 2 ) return;
+      if (partes.length < 2) return;
       const dia = parseInt(partes[0], 10);
       const mes = parseInt(partes[1], 10);
-      const anio = partes.length === 3 ? parseInt(partes[2], 10) : new Date().getFullYear();
+      const anio =
+        partes.length === 3
+          ? parseInt(partes[2], 10)
+          : new Date().getFullYear();
       const fechaBase = new Date(anio, mes - 1, dia);
 
       //Hora Inicio
@@ -795,7 +809,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       //Fecha de termino
       const diaTermino = String(fechaBase.getDate()).padStart(2, "0");
-      const mesTermino = String(fechaBase.getMonth()+1).padStart(2, "0");
+      const mesTermino = String(fechaBase.getMonth() + 1).padStart(2, "0");
       fechaTermino.value = `${diaTermino}/${mesTermino}/${fechaBase.getFullYear()}`;
 
       //Hora de Salida
@@ -806,12 +820,9 @@ document.addEventListener("DOMContentLoaded", function () {
     horasTrabajadasInput.addEventListener("input", calcularTermino);
     horaInicioTrabajo.addEventListener("input", calcularTermino);
     fechaInicio.addEventListener("input", calcularTermino);
-  
-    
   }
 
-  if (form){
-
+  if (form) {
     form.addEventListener("submit", function (event) {
       event.preventDefault();
 
@@ -925,6 +936,57 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
   }
+
+  /////////////toggle de orden de notificacion/////////////////////////////////////////////
+
+  function toggleTipoOrden() {
+    const tipo = document.querySelector(
+      'input[name="U_A_Orden"]:checked'
+    ).value;
+
+    if (tipo === "B") {
+      // 🚀 BASE
+      otBaseContainer.style.display = "none"; // ocultar OT Base
+      folioContainer.style.display = "block"; // mostrar Folio IPL
+
+      labelFechaInicio.textContent = "Fecha de llegada al taller:";
+      labelHoraInicio.textContent = "Hora de llegada al taller:";
+
+      fechaTermino.setAttribute("readonly", true);
+      horaSalida.setAttribute("readonly", true);
+      fechaTermino.value = "";
+      horaSalida.value = "";
+    } else {
+      // 🚀 NOTIFICACIÓN
+      otBaseContainer.style.display = "block"; // mostrar OT Base
+      folioContainer.style.display = "block"; // mostrar Folio IPL
+
+      labelFechaInicio.textContent = "Fecha de Inicio de Trabajo:";
+      labelHoraInicio.textContent = "Hora de Inicio de Trabajo:";
+
+      fechaTermino.removeAttribute("readonly");
+      horaSalida.removeAttribute("readonly");
+    }
+  }
+
+  radiosNotificacion.forEach((radio) => {
+    radio.addEventListener("change", toggleTipoOrden);
+  });
+
+  // ⚡ Ejecutar siempre al cargar la página
+  toggleTipoOrden();
+
+  ////////////////////se llena el tipo de orden de uadi y su equivalente al tipo de orden que se usa en ipl
+
+  if (tipoOrdenAudi && callTypeInput) {
+    function syncCallType() {
+      const selected = tipoOrdenAudi.options[tipoOrdenAudi.selectedIndex];
+      callTypeInput.value = selected.getAttribute("data-calltype") || "";
+    }
+
+    tipoOrdenAudi.addEventListener("change", syncCallType);
+    syncCallType(); // ejecutar al cargar
+  }
 });
 
 // Convertir texto automáticamente a mayúsculas
@@ -1003,7 +1065,7 @@ if (loginForm) {
           });
 
           // Redirige al menú principal
-          window.location.href = "/menu";
+          window.location.href = "/dashboard";
         }
       })
       .catch(function (error) {
@@ -1142,15 +1204,30 @@ document
     doc.save("orden_trabajo.pdf");
   });
 
-// Validar formulario
+/////////////////////////////////////Validar formulario para campos obligatorios//////////////////////////////////////
 function validarFormulario() {
   const form = document.getElementById("ordenTrabajoForm");
-  const camposRequeridos = Array.from(
-    form.querySelectorAll(
-      "input:not(.refaccion):not(#tecnico3):not(#noEconomico):not(#modelo):not(#tecnico4):not(#revisoTrabajo):not(#revisoTrabajoEmployeeID):not(#realizoTrabajoRoleID):not(#tecnico3EmployeeID):not(#tecnico4EmployeeID), select:not(.refaccion):not(#tipoProblema), textarea:not(.refaccion)"
-    )
-  );
+  const isAudi = form.dataset.tipo === "audi";
 
+  let camposRequeridos = [];
+
+  if (isAudi) {
+    // 📌 En Audi → todo obligatorio excepto técnico3 y técnico4
+    camposRequeridos = Array.from(
+      form.querySelectorAll(
+        "input:not(.refaccion):not(#tecnico3):not(#tecnico4), select:not(.refaccion), textarea:not(.refaccion)"
+      )
+    );
+  } else {
+    // 📌 En OT normal → tu lógica actual
+    camposRequeridos = Array.from(
+      form.querySelectorAll(
+        "input:not(.refaccion):not(#tecnico3):not(#noEconomico):not(#modelo):not(#tecnico4):not(#revisoTrabajo):not(#revisoTrabajoEmployeeID):not(#realizoTrabajoRoleID):not(#tecnico3EmployeeID):not(#tecnico4EmployeeID), select:not(.refaccion):not(#tipoProblema), textarea:not(.refaccion)"
+      )
+    );
+  }
+
+  // 🔍 Buscar campos vacíos
   const camposFaltantes = camposRequeridos.filter(
     (campo) => campo.value.trim() === ""
   );
@@ -1163,14 +1240,14 @@ function validarFormulario() {
       })
       .join(", ");
     Swal.fire({
-      icon: "warning", // Icono para advertencias
-      title: "Campos incompletos", // Título del mensaje
-      html: `Por favor, completa los siguientes campos: <br><b>${nombresCampos}</b>`, // Mensaje dinámico con HTML
+      icon: "warning",
+      title: "Campos incompletos",
+      html: `Por favor, completa los siguientes campos: <br><b>${nombresCampos}</b>`,
       toast: true,
-      position: "top-end", // Ubicación en la esquina superior derecha
-      showConfirmButton: false, // Sin botón de confirmación
-      timer: 5000, // Duración de 5 segundos
-      timerProgressBar: true, // Barra de progreso visual
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true,
     });
 
     return false;
@@ -1195,8 +1272,21 @@ function cargarTiposDeProblema() {
       defaultOption.textContent = "Seleccione un tipo de problema";
       tipoProblemaDropdown.appendChild(defaultOption);
 
+      const isAudi =
+        document.getElementById("ordenTrabajoForm")?.dataset.tipo === "audi";
+
+      let lista = tiposProblema;
+
+      if (isAudi) {
+        // 🔹 IDs permitidos SOLO para Audi
+        const idsAudi = ["2", "7", "8", "11", "197"];
+        lista = tiposProblema.filter((t) =>
+          idsAudi.includes(String(t.ProblemTypeID))
+        );
+      }
+
       // Añadir las opciones de la API
-      tiposProblema.forEach((tipo) => {
+      lista.forEach((tipo) => {
         const option = document.createElement("option");
         option.value = tipo.ProblemTypeID; // Usar el ID como valor
         option.textContent = tipo.Name; // Mostrar el nombre

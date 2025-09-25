@@ -14,12 +14,6 @@
     />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMTni8aMm9qeyfW1vXptG1XnKwQ8w6EqOc1TTn"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
     <link
@@ -29,11 +23,9 @@
   </head>
 
   <body>
-    <!-- Botón de hamburguesa -->
-
     <div class="container-fluid">
       <div class="row">
-        <!-- Sidebar (solo visible en pantallas grandes) -->
+        <!-- Sidebar (pantallas grandes) -->
         <nav
           id="sidebar"
           class="col-12 col-md-3 col-lg-2 d-none d-md-block bg-dark sidebar"
@@ -49,21 +41,18 @@
             </div>
 
             {% set perfil = session.get('perfil') %}
-
             <ul class="nav flex-column">
-              <!-- Ordenes de Trabajo (todos los perfiles) -->
               {% if perfil in [1, 2, 3, 4] %}
               <li class="nav-item">
                 <a
-                  class="nav-link {% if request.endpoint == 'menu' %}active{% endif %}"
-                  href="{{ url_for('menu') }}"
+                  class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
+                  href="{{ url_for('dashboard') }}"
                 >
-                  <i class="fas fa-tachometer-alt"></i> Ordenes de Trabajo
+                  <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
               </li>
               {% endif %}
 
-              <!-- Crear OT AUDI (solo perfil 1 - Administrador) -->
               {% if perfil == 1 %}
               <li class="nav-item">
                 <a
@@ -75,7 +64,6 @@
               </li>
               {% endif %}
 
-              <!-- Crear OT (todos excepto Seguridad - perfil 4) -->
               {% if perfil in [1, 2, 3] %}
               <li class="nav-item">
                 <a
@@ -87,8 +75,7 @@
               </li>
               {% endif %}
 
-              <!-- Crear OT Seguridad (solo perfil 4) -->
-              {% if perfil in [1,2,3,4] %}
+              {% if perfil in [1, 2, 3, 4] %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.endpoint == 'ot_seguridad' %}active{% endif %}"
@@ -99,7 +86,6 @@
               </li>
               {% endif %}
 
-              <!-- Usuarios (solo perfil 1 - Administrador) -->
               {% if perfil == 1 %}
               <li class="nav-item">
                 <a
@@ -109,51 +95,40 @@
                   <i class="fas fa-users"></i> Usuarios
                 </a>
               </li>
-              {% endif %} {% if perfil in [1, 2, 3, 4] %}
-              <!-- Cerrar Sesión (todos los perfiles) -->
+              {% endif %}
+
+              {% if perfil in [1, 2, 3, 4] %}
               <li class="nav-item">
                 <a class="nav-link" href="#" onclick="logout()">
                   <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                 </a>
               </li>
               {% endif %}
-
-              <!-- Línea divisoria -->
-              <li class="nav-item px-3">
-                <hr
-                  style="
-                    border: none;
-                    height: 1px;
-                    background-color: rgba(255, 255, 255, 0.2);
-                    margin: 0.5rem 0;
-                  "
-                />
-              </li>
-
-              <!-- Avatar y nombre del usuario -->
-              {% if session.get('username') %} {% set partes =
-              session['username'].split('.') %} {% set inicial_1 =
-              partes[0][0]|upper %} {% set inicial_2 = partes[1][0]|upper if
-              partes|length > 1 else '' %}
-              <li class="nav-item d-flex align-items-center px-3 mb-2">
-                <div
-                  class="rounded-circle text-white text-center"
-                  style="
-                    background-color: #1d1d1b;
-                    width: 35px;
-                    height: 35px;
-                    line-height: 35px;
-                    font-weight: bold;
-                  "
-                >
-                  {{ inicial_1 }}{{ inicial_2 }}
-                </div>
-                <span class="text-white font-weight-bold ms-2"
-                  >{{ session['username'] }}</span
-                >
-              </li>
-              {% endif %}
             </ul>
+
+            <!-- Avatar -->
+            {% if session.get('username') %}
+            {% set partes = session['username'].split('.') %}
+            {% set inicial_1 = partes[0][0]|upper %}
+            {% set inicial_2 = partes[1][0]|upper if partes|length > 1 else '' %}
+            <li class="nav-item d-flex align-items-center px-3 mb-2">
+              <div
+                class="rounded-circle text-white text-center"
+                style="
+                  background-color: #1d1d1b;
+                  width: 35px;
+                  height: 35px;
+                  line-height: 35px;
+                  font-weight: bold;
+                "
+              >
+                {{ inicial_1 }}{{ inicial_2 }}
+              </div>
+              <span class="text-white font-weight-bold ms-2">
+                {{ session['username'] }}
+              </span>
+            </li>
+            {% endif %}
           </div>
         </nav>
 
@@ -162,72 +137,12 @@
           id="main-content"
           class="col-12 col-md-9 ms-sm-auto col-lg-10 px-md-4"
         >
-          {% block content %}
-          <div class="container mt-5">
-            <h2 class="mb-4 text-center text-break">
-              Últimas 10 OT de {{ session['username'] }}
-            </h2>
-
-            <div class="table-responsive">
-              <table
-                class="table table-striped table-hover table-bordered mb-3"
-              >
-                <thead style="background-color: #1d1d1b; color: white">
-                  <tr>
-                    <th scope="col">Numero de OT SAP</th>
-                    <th scope="col">Folio de OT Fisica</th>
-                    <th scope="col">Cliente</th>
-                    <th scope="col">Serie</th>
-                    <th scope="col">Fecha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for llamada in llamadas %}
-                  <tr>
-                    <td class="text-break">{{ llamada.DocNum }}</td>
-                    <td class="text-break">{{ llamada.CustomerRefNo }}</td>
-                    <td class="text-break">{{ llamada.CustomerName }}</td>
-                    <td class="text-break">
-                      {{ llamada.ManufacturerSerialNum }}
-                    </td>
-                    <td class="text-break">{{ llamada.FechaFormateada }}</td>
-                  </tr>
-                  {% else %}
-                  <tr>
-                    <td colspan="5" class="text-center">
-                      No hay llamadas registradas.
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Botón para ir a Órdenes de Trabajo (siempre visible) -->
-            <div class="d-flex justify-content-center">
-              {% if session.get('perfil') == 4 %}
-              <a
-                href="{{ url_for('ot_seguridad') }}"
-                class="btn btn-ipl mt-2 mb-4"
-              >
-                Ir a OT Seguridad <i class="fas fa-shield-alt ml-2"></i>
-              </a>
-              {% else %}
-              <a
-                href="{{ url_for('ordenes_trabajo') }}"
-                class="btn btn-ipl mt-2 mb-4"
-              >
-                Ir a Órdenes de Trabajo <i class="fas fa-arrow-right ml-2"></i>
-              </a>
-              {% endif %}
-            </div>
-          </div>
-          {% endblock %}
+          {% block content %}{% endblock %}
         </main>
       </div>
     </div>
 
-    <!-- Modal para mostrar el sidebar en dispositivos pequeños -->
+    <!-- Modal para sidebar en dispositivos pequeños -->
     <div
       class="modal fade"
       id="sidebarModal"
@@ -252,18 +167,16 @@
             {% set perfil = session.get('perfil') %}
             <ul class="nav flex-column">
               {% if perfil in [1, 2, 3, 4] %}
-              <!-- Ordenes de Trabajo (todos los perfiles) -->
               <li class="nav-item">
                 <a
-                  class="nav-link {% if request.endpoint == 'menu' %}active{% endif %}"
-                  href="{{ url_for('menu') }}"
+                  class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
+                  href="{{ url_for('dashboard') }}"
                 >
-                  <i class="fas fa-tachometer-alt"></i> Ordenes de Trabajo
+                  <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
               </li>
               {% endif %}
 
-              <!-- Crear OT AUDI (solo perfil 1 - Administrador) -->
               {% if perfil == 1 %}
               <li class="nav-item">
                 <a
@@ -275,8 +188,7 @@
               </li>
               {% endif %}
 
-              <!-- Crear OT (todos excepto Seguridad - perfil 4) -->
-              {% if perfil in [1, 2, 3, 4] %}
+              {% if perfil in [1, 2, 3] %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.endpoint == 'ordenes_trabajo' %}active{% endif %}"
@@ -287,8 +199,7 @@
               </li>
               {% endif %}
 
-              <!-- Crear OT Seguridad (solo perfil 4) -->
-              {% if perfil == 1,2,3,4 %}
+              {% if perfil in [1, 2, 3, 4] %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.endpoint == 'ot_seguridad' %}active{% endif %}"
@@ -299,7 +210,6 @@
               </li>
               {% endif %}
 
-              <!-- Usuarios (solo perfil 1 - Administrador) -->
               {% if perfil == 1 %}
               <li class="nav-item">
                 <a
@@ -309,48 +219,13 @@
                   <i class="fas fa-users"></i> Usuarios
                 </a>
               </li>
-              {% endif %} {% if perfil in [1, 2, 3, 4] %}
-              <!-- Cerrar Sesión (todos los perfiles) -->
+              {% endif %}
+
+              {% if perfil in [1, 2, 3, 4] %}
               <li class="nav-item">
                 <a class="nav-link" href="#" onclick="logout()">
                   <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                 </a>
-              </li>
-              {% endif %}
-
-              <!-- Línea divisoria -->
-              <li class="nav-item px-3">
-                <hr
-                  style="
-                    border: none;
-                    height: 1px;
-                    background-color: rgba(255, 255, 255, 0.2);
-                    margin: 0.5rem 0;
-                  "
-                />
-              </li>
-
-              <!-- Avatar y nombre del usuario -->
-              {% if session.get('username') %} {% set partes =
-              session['username'].split('.') %} {% set inicial_1 =
-              partes[0][0]|upper %} {% set inicial_2 = partes[1][0]|upper if
-              partes|length > 1 else '' %}
-              <li class="nav-item d-flex align-items-center px-3 mb-2">
-                <div
-                  class="rounded-circle text-white text-center"
-                  style="
-                    background-color: #1d1d1b;
-                    width: 35px;
-                    height: 35px;
-                    line-height: 35px;
-                    font-weight: bold;
-                  "
-                >
-                  {{ inicial_1 }}{{ inicial_2 }}
-                </div>
-                <span class="text-white font-weight-bold ms-2"
-                  >{{ session['username'] }}</span
-                >
               </li>
               {% endif %}
             </ul>
@@ -363,9 +238,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
