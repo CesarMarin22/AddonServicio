@@ -830,6 +830,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const isSeguridad = tipo === "seguridad";
       const isAudi = tipo === "audi";
 
+      // ✅ Siempre validar formulario primero
+  if (!validarFormulario()) {
+    return;
+  }
+
       if (!isSeguridad && !isAudi) {
         const roleID = parseInt(
           document.getElementById("realizoTrabajoRoleID")?.value
@@ -1207,19 +1212,25 @@ document
 /////////////////////////////////////Validar formulario para campos obligatorios//////////////////////////////////////
 function validarFormulario() {
   const form = document.getElementById("ordenTrabajoForm");
-  const isAudi = form.dataset.tipo === "audi";
-
+  const tipo = form.dataset.tipo; // "ot", "audi", "seguridad"
   let camposRequeridos = [];
 
-  if (isAudi) {
-    // 📌 En Audi → todo obligatorio excepto técnico3 y técnico4
+  if (tipo === "audi") {
+    // 📌 Audi → todo obligatorio excepto técnico3 y técnico4
     camposRequeridos = Array.from(
       form.querySelectorAll(
         "input:not(.refaccion):not(#tecnico3):not(#tecnico4), select:not(.refaccion), textarea:not(.refaccion)"
       )
     );
+  } else if (tipo === "seguridad") {
+    // 📌 Flash Report → TODOS los campos obligatorios
+    camposRequeridos = Array.from(
+      form.querySelectorAll(
+        "input:not(.refaccion), select:not(.refaccion), textarea:not(.refaccion)"
+      )
+    );
   } else {
-    // 📌 En OT normal → tu lógica actual
+    // 📌 OT normal → como ya lo tenías
     camposRequeridos = Array.from(
       form.querySelectorAll(
         "input:not(.refaccion):not(#tecnico3):not(#noEconomico):not(#modelo):not(#tecnico4):not(#revisoTrabajo):not(#revisoTrabajoEmployeeID):not(#realizoTrabajoRoleID):not(#tecnico3EmployeeID):not(#tecnico4EmployeeID), select:not(.refaccion):not(#tipoProblema), textarea:not(.refaccion)"
@@ -1236,17 +1247,24 @@ function validarFormulario() {
     const nombresCampos = camposFaltantes
       .map((campo) => {
         const label = campo.closest(".form-group")?.querySelector("label");
-        return label ? label.innerText : "Campo sin nombre";
+        return label ? label.innerText : campo.name;
       })
       .join(", ");
+
+    let titulo = "Campos incompletos";
+    if (tipo === "audi") titulo = "Campos incompletos en OT Audi";
+    else if (tipo === "seguridad")
+      titulo = "Campos incompletos en Flash Report";
+    else titulo = "Campos incompletos en Orden de Trabajo";
+
     Swal.fire({
       icon: "warning",
-      title: "Campos incompletos",
+      title: titulo,
       html: `Por favor, completa los siguientes campos: <br><b>${nombresCampos}</b>`,
       toast: true,
       position: "top-end",
       showConfirmButton: false,
-      timer: 5000,
+      timer: 6000,
       timerProgressBar: true,
     });
 
