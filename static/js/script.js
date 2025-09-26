@@ -9,14 +9,11 @@ window.logout = function () {
     .catch(function (error) {
       console.error("Error al cerrar sesión:", error);
       Swal.fire({
-        icon: "error", // Icono de error
+        icon: "error",
         title: "Error",
-        text: "Hubo un problema al cerrar la sesión. Inténtalo de nuevo.", // Mensaje
-        toast: true, // Indica que es un toast
-        position: "top-end", // Posición del toast
-        showConfirmButton: false, // No muestra botón de confirmación
-        timer: 3000, // Tiempo en milisegundos que se muestra el mensaje (3 segundos)
-        timerProgressBar: true, // Añade una barra de progreso visual
+        html: "Hubo un problema al cerrar la sesión. Inténtalo de nuevo.", 
+        confirmButtonText: "Entendido",
+        allowOutsideClick: false
       });
     });
 };
@@ -460,14 +457,11 @@ function loadSocios(selectedSocioId) {
     .catch(function (error) {
       console.error("Error al cargar los socios:", error);
       Swal.fire({
-        icon: "error", // Icono de error
+        icon: "error", 
         title: "Error",
-        text: "Error al cargar los socios.", // Mensaje
-        toast: true, // Estilo de toast
-        position: "top-end", // Ubicación del toast
-        showConfirmButton: false, // Sin botón de confirmación
-        timer: 3000, // Tiempo que se muestra (3 segundos)
-        timerProgressBar: true, // Barra de progreso visual
+        html: "Error al cargar los socios.",
+        confirmButtonText: "Entendido",
+        allowOutsideClick: false,
       });
     });
 }
@@ -498,14 +492,11 @@ window.editUser = function (id) {
     .catch(function (error) {
       console.error("Error al cargar el usuario:", error);
       Swal.fire({
-        icon: "error", // Icono de error
+        icon: "error",
         title: "Error",
-        text: "Error al cargar los socios.", // Mensaje
-        toast: true, // Estilo de toast
-        position: "top-end", // Ubicación del toast
-        showConfirmButton: false, // Sin botón de confirmación
-        timer: 3000, // Tiempo que se muestra (3 segundos)
-        timerProgressBar: true, // Barra de progreso visual
+        html: "Error al cargar los socios.",
+        confirmButtonText: "Entendido",
+        allowOutsideClick: false,
       });
     });
 };
@@ -520,14 +511,14 @@ window.deleteUser = function (id) {
         console.log("User deleted:", response.data);
         loadUsers();
         Swal.fire({
-          icon: "success", // Icono de éxito
+          icon: "success", 
           title: "Éxito",
-          text: "Usuario eliminado correctamente.", // Mensaje
-          toast: true, // Estilo de toast
-          position: "top-end", // Ubicación del toast
-          showConfirmButton: false, // Sin botón de confirmación
-          timer: 3000, // Duración (3 segundos)
-          timerProgressBar: true, // Barra de progreso visual
+          text: "Usuario eliminado correctamente.", 
+          toast: true, 
+          position: "top-end", 
+          showConfirmButton: false, 
+          timer: 3000, 
+          timerProgressBar: true, 
         });
       })
       .catch(function (error) {
@@ -535,12 +526,9 @@ window.deleteUser = function (id) {
         Swal.fire({
           icon: "error", // Icono indicando error
           title: "Error",
-          text: "Error al eliminar el usuario.", // Mensaje
-          toast: true, // Estilo de toast
-          position: "top-end", // Ubicación del toast
-          showConfirmButton: false, // Sin botón de confirmación
-          timer: 3000, // Duración (3 segundos)
-          timerProgressBar: true, // Barra de progreso visual
+          html: "Error al eliminar el usuario.", // Mensaje
+          confirmButtonText: "Entendido",
+          allowOutsideClick: false,
         });
       });
   }
@@ -579,26 +567,21 @@ function loadUsers() {
         Swal.fire({
           icon: "error", // Icono indicando error
           title: "Error",
-          text: "Error al cargar los usuarios.", // Mensaje de error
-          toast: true, // Estilo de toast
-          position: "top-end", // Ubicación del toast
-          showConfirmButton: false, // Sin botón de confirmación
-          timer: 3000, // Duración (3 segundos)
-          timerProgressBar: true, // Barra de progreso visual
+          html: "Error al cargar los usuarios.", // Mensaje de error
+          confirmButtonText: "Entendido",
+          allowOutsideClick: false,
         });
       }
     })
     .catch(function (error) {
       console.error("Error al cargar los usuarios:", error);
       Swal.fire({
-        icon: "error", // Icono indicando error
+        icon: "error", 
         title: "Error",
-        text: "Error al cargar los usuarios.", // Mensaje de error
-        toast: true, // Estilo de toast
-        position: "top-end", // Ubicación del toast
-        showConfirmButton: false, // Sin botón de confirmación
-        timer: 3000, // Duración (3 segundos)
-        timerProgressBar: true, // Barra de progreso visual
+        html: "Error al cargar los usuarios.",
+        confirmButtonText: "Entendido",
+        allowOutsideClick: false, 
+        
       });
     });
 }
@@ -635,27 +618,24 @@ if (userForm) {
         $("#userModal").modal("hide");
         loadUsers();
         Swal.fire({
-          icon: "success", // Icono indicando éxito
+          icon: "success", 
           title: "¡Éxito!",
-          text: "Usuario guardado correctamente.", // Mensaje de éxito
-          toast: true, // Estilo de toast
-          position: "top-end", // Ubicación del toast
-          showConfirmButton: false, // Sin botón de confirmación
-          timer: 3000, // Duración (3 segundos)
-          timerProgressBar: true, // Barra de progreso visual
+          text: "Usuario guardado correctamente.", 
+          toast: true, 
+          position: "top-end", 
+          showConfirmButton: false, 
+          timer: 3000,
+          timerProgressBar: true, 
         });
       })
       .catch(function (error) {
         console.error("Error al guardar el usuario:", error);
         Swal.fire({
-          icon: "error", // Icono indicando error
+          icon: "error", 
           title: "¡Error!",
-          text: "Error al guardar el usuario.", // Mensaje de error
-          toast: true, // Estilo de toast
-          position: "top-end", // Ubicación del toast
-          showConfirmButton: false, // Sin botón de confirmación
-          timer: 3000, // Duración (3 segundos)
-          timerProgressBar: true, // Barra de progreso visual
+          html: "Error al guardar el usuario.", 
+          confirmButtonText: "Entendido",
+          allowOutsideClick: false
         });
       });
   });
@@ -667,7 +647,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const callTypeInput = document.getElementById("callType");
 
   const radiosNotificacion = document.querySelectorAll(
-    'input[name="U_A_Orden"]'
+    'input[name="ordenBase"]'
   );
   const otBaseContainer = document.getElementById("otBaseContainer");
   const folioContainer = document.getElementById("folioContainer");
@@ -758,12 +738,9 @@ document.addEventListener("DOMContentLoaded", function () {
       Swal.fire({
         icon: "error",
         title: "Error en la validación",
-        text: "La fecha y hora de término no pueden ser menores que la de inicio.",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
+        hmtl: "La fecha y hora de término no pueden ser menores que la de inicio.",
+        confirmButtonText: "Entendido",
+        allowOutsideClick: false,
       });
       fechaTermino.value = "";
       horaSalida.value = "";
@@ -830,10 +807,17 @@ document.addEventListener("DOMContentLoaded", function () {
       const isSeguridad = tipo === "seguridad";
       const isAudi = tipo === "audi";
 
+<<<<<<< HEAD
       // ✅ Siempre validar formulario primero
   if (!validarFormulario()) {
     return;
   }
+=======
+      // ✅ Siempre validar formulario
+      if (!validarFormulario()) {
+        return; // detener si faltan campos
+      }
+>>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
 
       if (!isSeguridad && !isAudi) {
         const roleID = parseInt(
@@ -843,17 +827,10 @@ document.addEventListener("DOMContentLoaded", function () {
           Swal.fire({
             icon: "error",
             title: "Rol inválido",
-            text: "Este usuario no tiene el rol 'TÉCNICO' asignado.",
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 4000,
-            timerProgressBar: true,
+            html: "Este usuario no tiene el rol 'TÉCNICO' asignado.",
+            confirmButtonText: "Entendido",
+            allowOutsideClick: false,
           });
-          return;
-        }
-
-        if (!validarFormulario()) {
           return;
         }
       }
@@ -903,13 +880,12 @@ document.addEventListener("DOMContentLoaded", function () {
           Swal.fire({
             icon: "success",
             title: "Guardado exitoso",
-            text: `Se guardó ${
-              isSeguridad
-                ? "Flash Report"
-                : isAudi
+            text: `Se guardó ${isSeguridad
+              ? "Flash Report"
+              : isAudi
                 ? "OT Audi"
                 : "Orden de Trabajo"
-            } correctamente en el archivo CSV.`,
+              } correctamente en el archivo CSV.`,
             toast: true,
             position: "top-end",
             showConfirmButton: false,
@@ -931,12 +907,9 @@ document.addEventListener("DOMContentLoaded", function () {
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Hubo un problema al guardar.",
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 5000,
-            timerProgressBar: true,
+            html: "Hubo un problema al guardar.",
+            confirmButtonText: "Entendido",
+            allowOutsideClick: false,
           });
         });
     });
@@ -946,7 +919,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function toggleTipoOrden() {
     const tipo = document.querySelector(
-      'input[name="U_A_Orden"]:checked'
+      'input[name="ordenBase"]:checked'
     ).value;
 
     if (tipo === "B") {
@@ -957,8 +930,10 @@ document.addEventListener("DOMContentLoaded", function () {
       labelFechaInicio.textContent = "Fecha de llegada al taller:";
       labelHoraInicio.textContent = "Hora de llegada al taller:";
 
-      fechaTermino.setAttribute("readonly", true);
-      horaSalida.setAttribute("readonly", true);
+      // Ocultar y limpiar Fecha de Término y Hora de Salida
+      document.getElementById("fechaTerminoContainer").style.display = "none";
+      document.getElementById("horaSalidaContainer").style.display = "none";
+
       fechaTermino.value = "";
       horaSalida.value = "";
     } else {
@@ -1086,23 +1061,17 @@ if (loginForm) {
           Swal.fire({
             icon: "warning",
             title: "Usuario Inactivo",
-            text: errorMessage,
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 4000,
-            timerProgressBar: true,
+            html: errorMessage,
+            confirmButtonText: "Entendido",
+            allowOutsideClick: false,
           });
         } else if (status === 401) {
           Swal.fire({
             icon: "error",
             title: "Error de Autenticación",
-            text: errorMessage,
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 4000,
-            timerProgressBar: true,
+            html: errorMessage,
+            confirmButtonText: "Entendido",
+            allowOutsideClick: false,
           });
 
           // Limpia los campos según el tipo de error
@@ -1115,12 +1084,9 @@ if (loginForm) {
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Ocurrió un error inesperado.",
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 4000,
-            timerProgressBar: true,
+            html: "Ocurrió un error inesperado.",
+            confirmButtonText: "Entendido",
+            allowOutsideClick: false,
           });
         }
       });
@@ -1193,8 +1159,7 @@ document
         ) {
           doc.setFontSize(12);
           doc.text(
-            `${index + 1}. Cantidad: ${refaccion.cantidad}, Número de Parte: ${
-              refaccion.numeroParte
+            `${index + 1}. Cantidad: ${refaccion.cantidad}, Número de Parte: ${refaccion.numeroParte
             }, Descripción: ${refaccion.descripcion}`,
             margin,
             yPosition
@@ -1216,10 +1181,19 @@ function validarFormulario() {
   let camposRequeridos = [];
 
   if (tipo === "audi") {
+<<<<<<< HEAD
     // 📌 Audi → todo obligatorio excepto técnico3 y técnico4
+=======
+>>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
     camposRequeridos = Array.from(
       form.querySelectorAll(
-        "input:not(.refaccion):not(#tecnico3):not(#tecnico4), select:not(.refaccion), textarea:not(.refaccion)"
+        "input:not(.refaccion):not(#tecnico3):not(#tecnico4):not(#revisoTrabajo), select:not(.refaccion), textarea:not(.refaccion)"
+      )
+    );
+  } else if (tipo === "seguridad") {
+    camposRequeridos = Array.from(
+      form.querySelectorAll(
+        "input:not(.refaccion), select:not(.refaccion), textarea:not(.refaccion)"
       )
     );
   } else if (tipo === "seguridad") {
@@ -1230,7 +1204,10 @@ function validarFormulario() {
       )
     );
   } else {
+<<<<<<< HEAD
     // 📌 OT normal → como ya lo tenías
+=======
+>>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
     camposRequeridos = Array.from(
       form.querySelectorAll(
         "input:not(.refaccion):not(#tecnico3):not(#noEconomico):not(#modelo):not(#tecnico4):not(#revisoTrabajo):not(#revisoTrabajoEmployeeID):not(#realizoTrabajoRoleID):not(#tecnico3EmployeeID):not(#tecnico4EmployeeID), select:not(.refaccion):not(#tipoProblema), textarea:not(.refaccion)"
@@ -1238,12 +1215,16 @@ function validarFormulario() {
     );
   }
 
+  // ⚡ Filtrar solo campos visibles y que realmente se deben llenar
+  camposRequeridos = camposRequeridos.filter((campo) => {
+    return campo.offsetParent !== null; // solo visibles
+  });
+
   // 🔍 Buscar campos vacíos
-  const camposFaltantes = camposRequeridos.filter(
-    (campo) => campo.value.trim() === ""
-  );
+  const camposFaltantes = camposRequeridos.filter((campo) => campo.value.trim() === "");
 
   if (camposFaltantes.length > 0) {
+    console.log("Campos faltantes:", camposFaltantes.map(c => c.id || c.name));
     const nombresCampos = camposFaltantes
       .map((campo) => {
         const label = campo.closest(".form-group")?.querySelector("label");
@@ -1253,25 +1234,37 @@ function validarFormulario() {
 
     let titulo = "Campos incompletos";
     if (tipo === "audi") titulo = "Campos incompletos en OT Audi";
+<<<<<<< HEAD
     else if (tipo === "seguridad")
       titulo = "Campos incompletos en Flash Report";
+=======
+    else if (tipo === "seguridad") titulo = "Campos incompletos en Flash Report";
+>>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
     else titulo = "Campos incompletos en Orden de Trabajo";
 
     Swal.fire({
       icon: "warning",
       title: titulo,
       html: `Por favor, completa los siguientes campos: <br><b>${nombresCampos}</b>`,
+<<<<<<< HEAD
       toast: true,
       position: "top-end",
       showConfirmButton: false,
       timer: 6000,
       timerProgressBar: true,
+=======
+      confirmButtonText: "Entendido",
+      allowOutsideClick: false,
+
+>>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
     });
 
     return false;
   }
   return true;
 }
+
+
 
 function cargarTiposDeProblema() {
   const tipoProblemaDropdown = document.getElementById("tipoProblema");

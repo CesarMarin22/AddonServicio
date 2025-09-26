@@ -484,7 +484,7 @@ def guardar_csv():
         "U_Qty12", "U_Code12", "U_Qty13", "U_Code13", "U_Qty14", "U_Code14", "U_Qty15", "U_Code15",
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR",
-        "U_Plan", "U_Leccion", "U_Costo", "U_A_FolioE", "U_A_Orden", "U_A_NumTec", "U_A_Horas, U_NoOT, U_A_Orden "
+        "U_Plan", "U_Leccion", "U_Costo", "U_Supervisor", "U_A_Orden", "U_A_NumTec", "U_A_Horas", "U_NoOT", "U_A_TipoOT", 
     ]
 
     encabezados_2 = [
@@ -499,7 +499,7 @@ def guardar_csv():
         "U_Qty13", "U_Code13", "U_Qty14", "U_Code14", "U_Qty15", "U_Code15",
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR", 
-        "U_Plan", "U_Leccion", "U_Costo", "U_A_FolioE", "U_A_Orden", "U_A_NumTec", "U_A_Horas, U_NoOT, U_A_Orden"
+        "U_Plan", "U_Leccion", "U_Costo", "U_Supervisor", "U_A_Orden", "U_A_NumTec", "U_A_Horas", "U_NoOT", "U_A_TipoOT",
     ]
 
     try:
@@ -531,13 +531,23 @@ def guardar_csv():
                 refacciones_instaladas = refacciones_planas[:20]  # U_Qty1 a U_Qty10
                 refacciones_requeridas = refacciones_planas[20:]  # U_Qty11 a U_Qty20
 
+            # Detectar si es Audi
+            is_audi = datos.get("data-tipo") == "audi"
+
+            if is_audi:
+                tipo_orden = datos.get("U_A_Orden", "")   # ZPM2 / ZPM3 / ZPM8
+                call_type = datos.get("callType", "")     # 3 / 15 / 2
+            else:
+                tipo_orden = datos.get("tipoOrden", "")   # OT normal
+                call_type = datos.get("tipoOrden", "")    # en normal el mismo valor
+
             # Organizar los datos para las columnas
             fila_datos = [
                 1,  # Columna 1: Número Consecutivo
                 limpiar_texto(datos.get("descripcionFalla", "")),
                 datos.get("codigoCliente", ""),
-                datos.get("tipoOrden", ""),
-                limpiar_texto(datos.get("ProblemType", "")),
+                datos.get("tipoOrden", "") or datos.get("callType", ""),
+                limpiar_texto(datos.get("tipoProblema", "")),
                 "1",
                 datos.get("fechaInicio", "").replace("/", ""),
                 datos.get("horaInicioTrabajo", "").replace(":", ""),
@@ -571,12 +581,13 @@ def guardar_csv():
                 datos.get("planAccion", ""),
                 datos.get("leccionesAprendidas", ""),
                 datos.get("costoAproximado", ""),
-                datos.get("folioEx", ""),
-                datos.get("tipoOrdenAudi", ""),
+                datos.get("vistoBuenoCliente", ""),
+                datos.get("U_A_Orden", ""),
                 datos.get("NumPersonas", ""),
                 datos.get("horasTrabajadas", ""),
                 datos.get("otBase", ""),
-                datos.get("U_A_Orden", ""),
+                datos.get("ordenBase", " ")
+               
             ]
 
             # Escribir los datos en el archivo CSV
