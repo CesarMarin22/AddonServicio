@@ -1185,6 +1185,13 @@ function validarFormulario() {
         "input:not(.refaccion), select:not(.refaccion), textarea:not(.refaccion)"
       )
     );
+  } else if (tipo === "seguridad") {
+    // 📌 Flash Report → TODOS los campos obligatorios
+    camposRequeridos = Array.from(
+      form.querySelectorAll(
+        "input:not(.refaccion), select:not(.refaccion), textarea:not(.refaccion)"
+      )
+    );
   } else {
     camposRequeridos = Array.from(
       form.querySelectorAll(
@@ -1206,7 +1213,7 @@ function validarFormulario() {
     const nombresCampos = camposFaltantes
       .map((campo) => {
         const label = campo.closest(".form-group")?.querySelector("label");
-        return label ? label.innerText : "Campo sin nombre";
+        return label ? label.innerText : campo.name;
       })
       .join(", ");
 
