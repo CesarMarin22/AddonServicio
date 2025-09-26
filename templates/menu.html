@@ -42,7 +42,7 @@
 
             {% set perfil = session.get('perfil') %}
             <ul class="nav flex-column">
-              {% if perfil in [1, 2, 3, 4] %}
+              {% if perfil in [1, 2, 3, 4, 5] %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
@@ -53,7 +53,7 @@
               </li>
               {% endif %}
 
-              {% if perfil == 1 %}
+              {% if perfil in [1, 5] %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.endpoint == 'ot_audi' %}active{% endif %}"
@@ -75,7 +75,7 @@
               </li>
               {% endif %}
 
-              {% if perfil in [1, 2, 3, 4] %}
+              {% if perfil in [1, 2, 3, 4, 5] %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.endpoint == 'ot_seguridad' %}active{% endif %}"
@@ -97,7 +97,7 @@
               </li>
               {% endif %}
 
-              {% if perfil in [1, 2, 3, 4] %}
+              {% if perfil in [1, 2, 3, 4, 5] %}
               <li class="nav-item">
                 <a class="nav-link" href="#" onclick="logout()">
                   <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
@@ -166,7 +166,7 @@
           <div class="modal-body">
             {% set perfil = session.get('perfil') %}
             <ul class="nav flex-column">
-              {% if perfil in [1, 2, 3, 4] %}
+              {% if perfil in [1, 2, 3, 4, 5] %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
@@ -177,7 +177,7 @@
               </li>
               {% endif %}
 
-              {% if perfil == 1 %}
+              {% if perfil in [1, 5] %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.endpoint == 'ot_audi' %}active{% endif %}"
@@ -199,7 +199,7 @@
               </li>
               {% endif %}
 
-              {% if perfil in [1, 2, 3, 4] %}
+              {% if perfil in [1, 2, 3, 4, 5] %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.endpoint == 'ot_seguridad' %}active{% endif %}"
@@ -221,7 +221,7 @@
               </li>
               {% endif %}
 
-              {% if perfil in [1, 2, 3, 4] %}
+              {% if perfil in [1, 2, 3, 4, 5] %}
               <li class="nav-item">
                 <a class="nav-link" href="#" onclick="logout()">
                   <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
