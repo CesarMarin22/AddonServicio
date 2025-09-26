@@ -807,17 +807,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const isSeguridad = tipo === "seguridad";
       const isAudi = tipo === "audi";
 
-<<<<<<< HEAD
-      // ✅ Siempre validar formulario primero
-  if (!validarFormulario()) {
-    return;
-  }
-=======
       // ✅ Siempre validar formulario
       if (!validarFormulario()) {
         return; // detener si faltan campos
       }
->>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
 
       if (!isSeguridad && !isAudi) {
         const roleID = parseInt(
@@ -1181,10 +1174,6 @@ function validarFormulario() {
   let camposRequeridos = [];
 
   if (tipo === "audi") {
-<<<<<<< HEAD
-    // 📌 Audi → todo obligatorio excepto técnico3 y técnico4
-=======
->>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
     camposRequeridos = Array.from(
       form.querySelectorAll(
         "input:not(.refaccion):not(#tecnico3):not(#tecnico4):not(#revisoTrabajo), select:not(.refaccion), textarea:not(.refaccion)"
@@ -1204,10 +1193,6 @@ function validarFormulario() {
       )
     );
   } else {
-<<<<<<< HEAD
-    // 📌 OT normal → como ya lo tenías
-=======
->>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
     camposRequeridos = Array.from(
       form.querySelectorAll(
         "input:not(.refaccion):not(#tecnico3):not(#noEconomico):not(#modelo):not(#tecnico4):not(#revisoTrabajo):not(#revisoTrabajoEmployeeID):not(#realizoTrabajoRoleID):not(#tecnico3EmployeeID):not(#tecnico4EmployeeID), select:not(.refaccion):not(#tipoProblema), textarea:not(.refaccion)"
@@ -1234,29 +1219,16 @@ function validarFormulario() {
 
     let titulo = "Campos incompletos";
     if (tipo === "audi") titulo = "Campos incompletos en OT Audi";
-<<<<<<< HEAD
-    else if (tipo === "seguridad")
-      titulo = "Campos incompletos en Flash Report";
-=======
     else if (tipo === "seguridad") titulo = "Campos incompletos en Flash Report";
->>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
     else titulo = "Campos incompletos en Orden de Trabajo";
 
     Swal.fire({
       icon: "warning",
       title: titulo,
       html: `Por favor, completa los siguientes campos: <br><b>${nombresCampos}</b>`,
-<<<<<<< HEAD
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 6000,
-      timerProgressBar: true,
-=======
       confirmButtonText: "Entendido",
       allowOutsideClick: false,
 
->>>>>>> cc604088d093bcccfcb322755d89632e4b998bc9
     });
 
     return false;
