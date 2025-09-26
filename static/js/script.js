@@ -667,7 +667,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const callTypeInput = document.getElementById("callType");
 
   const radiosNotificacion = document.querySelectorAll(
-    'input[name="U_A_Orden"]'
+    'input[name="ordenBase"]'
   );
   const otBaseContainer = document.getElementById("otBaseContainer");
   const folioContainer = document.getElementById("folioContainer");
@@ -830,6 +830,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const isSeguridad = tipo === "seguridad";
       const isAudi = tipo === "audi";
 
+      // ✅ Siempre validar formulario
+      if (!validarFormulario()) {
+        return; // detener si faltan campos
+      }
+
       if (!isSeguridad && !isAudi) {
         const roleID = parseInt(
           document.getElementById("realizoTrabajoRoleID")?.value
@@ -845,10 +850,6 @@ document.addEventListener("DOMContentLoaded", function () {
             timer: 4000,
             timerProgressBar: true,
           });
-          return;
-        }
-
-        if (!validarFormulario()) {
           return;
         }
       }
@@ -898,13 +899,12 @@ document.addEventListener("DOMContentLoaded", function () {
           Swal.fire({
             icon: "success",
             title: "Guardado exitoso",
-            text: `Se guardó ${
-              isSeguridad
-                ? "Flash Report"
-                : isAudi
+            text: `Se guardó ${isSeguridad
+              ? "Flash Report"
+              : isAudi
                 ? "OT Audi"
                 : "Orden de Trabajo"
-            } correctamente en el archivo CSV.`,
+              } correctamente en el archivo CSV.`,
             toast: true,
             position: "top-end",
             showConfirmButton: false,
@@ -941,7 +941,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function toggleTipoOrden() {
     const tipo = document.querySelector(
-      'input[name="U_A_Orden"]:checked'
+      'input[name="ordenBase"]:checked'
     ).value;
 
     if (tipo === "B") {
@@ -952,8 +952,10 @@ document.addEventListener("DOMContentLoaded", function () {
       labelFechaInicio.textContent = "Fecha de llegada al taller:";
       labelHoraInicio.textContent = "Hora de llegada al taller:";
 
-      fechaTermino.setAttribute("readonly", true);
-      horaSalida.setAttribute("readonly", true);
+      // Ocultar y limpiar Fecha de Término y Hora de Salida
+      document.getElementById("fechaTerminoContainer").style.display = "none";
+      document.getElementById("horaSalidaContainer").style.display = "none";
+
       fechaTermino.value = "";
       horaSalida.value = "";
     } else {
@@ -1188,8 +1190,7 @@ document
         ) {
           doc.setFontSize(12);
           doc.text(
-            `${index + 1}. Cantidad: ${refaccion.cantidad}, Número de Parte: ${
-              refaccion.numeroParte
+            `${index + 1}. Cantidad: ${refaccion.cantidad}, Número de Parte: ${refaccion.numeroParte
             }, Descripción: ${refaccion.descripcion}`,
             margin,
             yPosition
@@ -1207,19 +1208,22 @@ document
 /////////////////////////////////////Validar formulario para campos obligatorios//////////////////////////////////////
 function validarFormulario() {
   const form = document.getElementById("ordenTrabajoForm");
-  const isAudi = form.dataset.tipo === "audi";
-
+  const tipo = form.dataset.tipo; // "ot", "audi", "seguridad"
   let camposRequeridos = [];
 
-  if (isAudi) {
-    // 📌 En Audi → todo obligatorio excepto técnico3 y técnico4
+  if (tipo === "audi") {
     camposRequeridos = Array.from(
       form.querySelectorAll(
-        "input:not(.refaccion):not(#tecnico3):not(#tecnico4), select:not(.refaccion), textarea:not(.refaccion)"
+        "input:not(.refaccion):not(#tecnico3):not(#tecnico4):not(#revisoTrabajo), select:not(.refaccion), textarea:not(.refaccion)"
+      )
+    );
+  } else if (tipo === "seguridad") {
+    camposRequeridos = Array.from(
+      form.querySelectorAll(
+        "input:not(.refaccion), select:not(.refaccion), textarea:not(.refaccion)"
       )
     );
   } else {
-    // 📌 En OT normal → tu lógica actual
     camposRequeridos = Array.from(
       form.querySelectorAll(
         "input:not(.refaccion):not(#tecnico3):not(#noEconomico):not(#modelo):not(#tecnico4):not(#revisoTrabajo):not(#revisoTrabajoEmployeeID):not(#realizoTrabajoRoleID):not(#tecnico3EmployeeID):not(#tecnico4EmployeeID), select:not(.refaccion):not(#tipoProblema), textarea:not(.refaccion)"
@@ -1227,33 +1231,43 @@ function validarFormulario() {
     );
   }
 
+  // ⚡ Filtrar solo campos visibles y que realmente se deben llenar
+  camposRequeridos = camposRequeridos.filter((campo) => {
+    return campo.offsetParent !== null; // solo visibles
+  });
+
   // 🔍 Buscar campos vacíos
-  const camposFaltantes = camposRequeridos.filter(
-    (campo) => campo.value.trim() === ""
-  );
+  const camposFaltantes = camposRequeridos.filter((campo) => campo.value.trim() === "");
 
   if (camposFaltantes.length > 0) {
+    console.log("Campos faltantes:", camposFaltantes.map(c => c.id || c.name));
     const nombresCampos = camposFaltantes
       .map((campo) => {
         const label = campo.closest(".form-group")?.querySelector("label");
         return label ? label.innerText : "Campo sin nombre";
       })
       .join(", ");
+
+    let titulo = "Campos incompletos";
+    if (tipo === "audi") titulo = "Campos incompletos en OT Audi";
+    else if (tipo === "seguridad") titulo = "Campos incompletos en Flash Report";
+    else titulo = "Campos incompletos en Orden de Trabajo";
+
     Swal.fire({
       icon: "warning",
-      title: "Campos incompletos",
+      title: titulo,
       html: `Por favor, completa los siguientes campos: <br><b>${nombresCampos}</b>`,
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 5000,
-      timerProgressBar: true,
+      confirmButtonText: "Entendido",
+      allowOutsideClick: false,
+
     });
 
     return false;
   }
   return true;
 }
+
+
 
 function cargarTiposDeProblema() {
   const tipoProblemaDropdown = document.getElementById("tipoProblema");

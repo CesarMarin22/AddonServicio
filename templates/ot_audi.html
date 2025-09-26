@@ -45,10 +45,10 @@
     <div class="form-group">
       <label>¿Qué tipo de orden es?</label><br />
 
-      <input type="radio" id="ordenBase" name="U_A_Orden" value="B" checked />
+      <input type="radio" id="ordenBase" name="ordenBase" value="B" checked />
       <label for="ordenBase">Base</label>
 
-      <input type="radio" id="ordenNotificacion" name="U_A_Orden" value="N" />
+      <input type="radio" id="ordenNotificacion" name="ordenBase" value="N" />
       <label for="ordenNotificacion">Notificación</label>
     </div>
 
@@ -397,30 +397,30 @@
     </div>
 
     <!-- Fecha de Término -->
-    <div class="form-group">
-      <label for="fechaTermino">Fecha de Término de Trabajo:</label>
-      <input
-        type="text"
-        class="form-control"
-        id="fechaTermino"
-        name="fechaTermino"
-        placeholder="dd/mm"
-        maxlength="5"
-        readonly
-      />
-    </div>
+<div class="form-group" id="fechaTerminoContainer">
+  <label for="fechaTermino">Fecha de Término de Trabajo:</label>
+  <input
+    type="text"
+    class="form-control"
+    id="fechaTermino"
+    name="fechaTermino"
+    placeholder="dd/mm"
+    maxlength="5"
+    readonly
+  />
+</div>
 
-    <!-- Hora de Salida -->
-    <div class="form-group">
-      <label for="horaSalida">Hora de termino de Trabajo:</label>
-      <input
-        type="time"
-        class="form-control"
-        id="horaSalida"
-        name="horaSalida"
-        readonly
-      />
-    </div>
+<!-- Hora de Salida -->
+<div class="form-group" id="horaSalidaContainer">
+  <label for="horaSalida">Hora de término de Trabajo:</label>
+  <input
+    type="time"
+    class="form-control"
+    id="horaSalida"
+    name="horaSalida"
+    readonly
+  />
+</div>
 
     <!-- Realizó Trabajo -->
     <div class="form-group position-relative">
@@ -557,4 +557,8 @@
     </button>
   </form>
 </div>
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% endblock %}
