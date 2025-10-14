@@ -11,9 +11,9 @@ window.logout = function () {
       Swal.fire({
         icon: "error",
         title: "Error",
-        html: "Hubo un problema al cerrar la sesión. Inténtalo de nuevo.", 
+        html: "Hubo un problema al cerrar la sesión. Inténtalo de nuevo.",
         confirmButtonText: "Entendido",
-        allowOutsideClick: false
+        allowOutsideClick: false,
       });
     });
 };
@@ -457,7 +457,7 @@ function loadSocios(selectedSocioId) {
     .catch(function (error) {
       console.error("Error al cargar los socios:", error);
       Swal.fire({
-        icon: "error", 
+        icon: "error",
         title: "Error",
         html: "Error al cargar los socios.",
         confirmButtonText: "Entendido",
@@ -511,14 +511,14 @@ window.deleteUser = function (id) {
         console.log("User deleted:", response.data);
         loadUsers();
         Swal.fire({
-          icon: "success", 
+          icon: "success",
           title: "Éxito",
-          text: "Usuario eliminado correctamente.", 
-          toast: true, 
-          position: "top-end", 
-          showConfirmButton: false, 
-          timer: 3000, 
-          timerProgressBar: true, 
+          text: "Usuario eliminado correctamente.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
         });
       })
       .catch(function (error) {
@@ -576,12 +576,11 @@ function loadUsers() {
     .catch(function (error) {
       console.error("Error al cargar los usuarios:", error);
       Swal.fire({
-        icon: "error", 
+        icon: "error",
         title: "Error",
         html: "Error al cargar los usuarios.",
         confirmButtonText: "Entendido",
-        allowOutsideClick: false, 
-        
+        allowOutsideClick: false,
       });
     });
 }
@@ -618,24 +617,24 @@ if (userForm) {
         $("#userModal").modal("hide");
         loadUsers();
         Swal.fire({
-          icon: "success", 
+          icon: "success",
           title: "¡Éxito!",
-          text: "Usuario guardado correctamente.", 
-          toast: true, 
-          position: "top-end", 
-          showConfirmButton: false, 
+          text: "Usuario guardado correctamente.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
           timer: 3000,
-          timerProgressBar: true, 
+          timerProgressBar: true,
         });
       })
       .catch(function (error) {
         console.error("Error al guardar el usuario:", error);
         Swal.fire({
-          icon: "error", 
+          icon: "error",
           title: "¡Error!",
-          html: "Error al guardar el usuario.", 
+          html: "Error al guardar el usuario.",
           confirmButtonText: "Entendido",
-          allowOutsideClick: false
+          allowOutsideClick: false,
         });
       });
   });
@@ -853,6 +852,16 @@ document.addEventListener("DOMContentLoaded", function () {
           ?.value?.replace(/[\r\n]+/g, " ")
           .replace(/,/g, ".")
           .trim() || "";
+      if (isSeguridad) {
+        datos.personaReporta =
+          document
+            .getElementById("personaReporta")
+            ?.value?.replace(/,/g, " - ")
+            .trim() || "";
+      } else {
+        datos.personaReporta =
+          document.getElementById("personaReporta")?.value?.trim() || "";
+      }
       datos.trabajoRealizado =
         document
           .getElementById("trabajoRealizado")
@@ -873,12 +882,13 @@ document.addEventListener("DOMContentLoaded", function () {
           Swal.fire({
             icon: "success",
             title: "Guardado exitoso",
-            text: `Se guardó ${isSeguridad
-              ? "Flash Report"
-              : isAudi
+            text: `Se guardó ${
+              isSeguridad
+                ? "Flash Report"
+                : isAudi
                 ? "OT Audi"
                 : "Orden de Trabajo"
-              } correctamente en el archivo CSV.`,
+            } correctamente en el archivo CSV.`,
             toast: true,
             position: "top-end",
             showConfirmButton: false,
@@ -910,44 +920,95 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /////////////toggle de orden de notificacion/////////////////////////////////////////////
 
+  /////////////toggle de orden de notificacion/////////////////////////////////////////////
   function toggleTipoOrden() {
-    const tipo = document.querySelector(
-      'input[name="ordenBase"]:checked'
-    ).value;
+    const selected = document.querySelector('input[name="ordenBase"]:checked');
+    if (!selected) return;
+
+    const tipo = selected.value;
+    const refaccionesSection = document.getElementById("refaccionesSection");
+    const folioContainer = document.getElementById("folioContainer");
+    const labelFechaInicio = document.getElementById("labelFechaInicio");
+    const labelHoraInicio = document.getElementById("labelHoraInicio");
+    const fechaTermino = document.getElementById("fechaTermino");
+    const horaSalida = document.getElementById("horaSalida");
+    const defectosSection = document.getElementById("defectosSection");
+    const numPersonas = document
+      .getElementById("NumPersonas")
+      ?.closest(".form-group");
+    const horasTrabajadas = document
+      .getElementById("horasTrabajadas")
+      ?.closest(".form-group");
+    const tecnico2 = document
+      .getElementById("tecnico3")
+      ?.closest(".form-group");
+    const tecnico3 = document
+      .getElementById("tecnico4")
+      ?.closest(".form-group");
+    const fechaTerminoContainer = document.getElementById(
+      "fechaTerminoContainer"
+    );
+    const horaSalidaContainer = document.getElementById("horaSalidaContainer");
+    const horometroContainer = document
+      .getElementById("horometro")
+      ?.closest(".form-group");
+
+    // ✅ Verificación por seguridad
+    if (!folioContainer || !labelFechaInicio || !labelHoraInicio) return;
 
     if (tipo === "B") {
-      // 🚀 BASE
-      otBaseContainer.style.display = "none"; // ocultar OT Base
-      folioContainer.style.display = "block"; // mostrar Folio IPL
+      // 🚨 Aviso
+      folioContainer.style.display = "block";
+      refaccionesSection && (refaccionesSection.style.display = "none");
+      numPersonas && (numPersonas.style.display = "none");
+      horasTrabajadas && (horasTrabajadas.style.display = "none");
+      tecnico2 && (tecnico2.style.display = "none");
+      tecnico3 && (tecnico3.style.display = "none");
+      fechaTerminoContainer && (fechaTerminoContainer.style.display = "none");
+      horaSalidaContainer && (horaSalidaContainer.style.display = "none");
+      horometroContainer && (horometroContainer.style.display = "block");
+      defectosSection.style.display = "none";
 
       labelFechaInicio.textContent = "Fecha de llegada al taller:";
       labelHoraInicio.textContent = "Hora de llegada al taller:";
-
-      // Ocultar y limpiar Fecha de Término y Hora de Salida
-      document.getElementById("fechaTerminoContainer").style.display = "none";
-      document.getElementById("horaSalidaContainer").style.display = "none";
-
-      fechaTermino.value = "";
-      horaSalida.value = "";
+      if (fechaTermino) fechaTermino.value = "";
+      if (horaSalida) horaSalida.value = "";
     } else {
-      // 🚀 NOTIFICACIÓN
-      otBaseContainer.style.display = "block"; // mostrar OT Base
-      folioContainer.style.display = "block"; // mostrar Folio IPL
+      // 🚨 Reporte de Trabajo
+      folioContainer.style.display = "block";
+      refaccionesSection && (refaccionesSection.style.display = "block");
+      numPersonas && (numPersonas.style.display = "block");
+      horasTrabajadas && (horasTrabajadas.style.display = "block");
+      tecnico2 && (tecnico2.style.display = "block");
+      tecnico3 && (tecnico3.style.display = "block");
+      fechaTerminoContainer && (fechaTerminoContainer.style.display = "block");
+      horaSalidaContainer && (horaSalidaContainer.style.display = "block");
+      horometroContainer && (horometroContainer.style.display = "none");
+      defectosSection.style.display = "block";
 
-      labelFechaInicio.textContent = "Fecha de Inicio de Trabajo:";
-      labelHoraInicio.textContent = "Hora de Inicio de Trabajo:";
-
-      fechaTermino.removeAttribute("readonly");
-      horaSalida.removeAttribute("readonly");
+      labelFechaInicio.textContent = "Fecha de inicio de trabajo:";
+      labelHoraInicio.textContent = "Hora de inicio de trabajo:";
     }
   }
 
-  radiosNotificacion.forEach((radio) => {
-    radio.addEventListener("change", toggleTipoOrden);
-  });
+  // 🔹 Escuchar cambios en los radios
+  if (radiosNotificacion.length > 0) {
+    radiosNotificacion.forEach((radio) => {
+      radio.addEventListener("change", toggleTipoOrden);
+    });
+  }
 
-  // ⚡ Ejecutar siempre al cargar la página
-  toggleTipoOrden();
+  // 🔹 Ejecutar solo si ya hay uno seleccionado al cargar
+  window.addEventListener("load", function () {
+    setTimeout(() => {
+      const checkedRadio = document.querySelector(
+        'input[name="ordenBase"]:checked'
+      );
+      if (checkedRadio) {
+        toggleTipoOrden();
+      }
+    }, 200);
+  });
 
   ////////////////////se llena el tipo de orden de uadi y su equivalente al tipo de orden que se usa en ipl
 
@@ -1152,7 +1213,8 @@ document
         ) {
           doc.setFontSize(12);
           doc.text(
-            `${index + 1}. Cantidad: ${refaccion.cantidad}, Número de Parte: ${refaccion.numeroParte
+            `${index + 1}. Cantidad: ${refaccion.cantidad}, Número de Parte: ${
+              refaccion.numeroParte
             }, Descripción: ${refaccion.descripcion}`,
             margin,
             yPosition
@@ -1206,10 +1268,15 @@ function validarFormulario() {
   });
 
   // 🔍 Buscar campos vacíos
-  const camposFaltantes = camposRequeridos.filter((campo) => campo.value.trim() === "");
+  const camposFaltantes = camposRequeridos.filter(
+    (campo) => campo.value.trim() === ""
+  );
 
   if (camposFaltantes.length > 0) {
-    console.log("Campos faltantes:", camposFaltantes.map(c => c.id || c.name));
+    console.log(
+      "Campos faltantes:",
+      camposFaltantes.map((c) => c.id || c.name)
+    );
     const nombresCampos = camposFaltantes
       .map((campo) => {
         const label = campo.closest(".form-group")?.querySelector("label");
@@ -1219,7 +1286,8 @@ function validarFormulario() {
 
     let titulo = "Campos incompletos";
     if (tipo === "audi") titulo = "Campos incompletos en OT Audi";
-    else if (tipo === "seguridad") titulo = "Campos incompletos en Flash Report";
+    else if (tipo === "seguridad")
+      titulo = "Campos incompletos en Flash Report";
     else titulo = "Campos incompletos en Orden de Trabajo";
 
     Swal.fire({
@@ -1228,15 +1296,12 @@ function validarFormulario() {
       html: `Por favor, completa los siguientes campos: <br><b>${nombresCampos}</b>`,
       confirmButtonText: "Entendido",
       allowOutsideClick: false,
-
     });
 
     return false;
   }
   return true;
 }
-
-
 
 function cargarTiposDeProblema() {
   const tipoProblemaDropdown = document.getElementById("tipoProblema");
@@ -1262,7 +1327,7 @@ function cargarTiposDeProblema() {
 
       if (isAudi) {
         // 🔹 IDs permitidos SOLO para Audi
-        const idsAudi = ["2", "7", "8", "11", "197"];
+        const idsAudi = ["2", "7", "8", "11", "198"];
         lista = tiposProblema.filter((t) =>
           idsAudi.includes(String(t.ProblemTypeID))
         );
@@ -1280,6 +1345,176 @@ function cargarTiposDeProblema() {
       console.error("Error al cargar los tipos de problema:", error);
     });
 }
+
+////////////////////////////////////fin de tipos de problemas /////////////////////////////////////
+////////////////////////////////////empieza causas y tipos de daños////////////////////////////////
+const causasTabla = [
+  { code: "E:CONTACTOR", name: "CONTACTOR", danio: "ELECTRONICO" },
+  { code: "E:CONTROLADOR", name: "CONTROLADOR", danio: "ELECTRONICO" },
+  { code: "E:CONVERTIDOR", name: "CONVERTIDOR", danio: "ELECTRONICO" },
+  { code: "E:CPP", name: "CPP", danio: "ELECTRONICO" },
+  { code: "E:DISPLAY", name: "DISPLAY", danio: "ELECTRONICO" },
+  { code: "E:FRENO", name: "FRENO E", danio: "ELECTRONICO" },
+  { code: "E:FUSIBLES", name: "FUSIBLES E", danio: "ELECTRONICO" },
+  { code: "E:JOSTICK", name: "JOSTICK", danio: "ELECTRONICO" },
+  { code: "E:POTENCIOMENTRO", name: "POTENCIOMENTRO", danio: "ELECTRONICO" },
+  { code: "E:RCU", name: "RCU", danio: "ELECTRONICO" },
+  { code: "E:RELEVADORES", name: "RELEVADORES", danio: "ELECTRONICO" },
+  { code: "E:SENSOR", name: "SENSOR", danio: "ELECTRONICO" },
+  { code: "E:TARJETAS", name: "TARJETAS", danio: "ELECTRONICO" },
+  { code: "E:TIMON", name: "TIMON", danio: "ELECTRONICO" },
+  { code: "EL:ARNES", name: "ARNES", danio: "ELECTRICO" },
+  { code: "EL:BATERIA", name: "BATERIA", danio: "ELECTRICO" },
+  { code: "EL:BOTONERA", name: "BOTONERA", danio: "ELECTRICO" },
+  { code: "EL:CABLE VIEJERO", name: "CABLE VIEJERO", danio: "ELECTRICO" },
+  { code: "EL:CLAXON", name: "CLAXON", danio: "ELECTRICO" },
+  { code: "EL:CONECTORES", name: "CONECTORES", danio: "ELECTRICO" },
+  { code: "EL:FUSIBLES", name: "FUSIBLES", danio: "ELECTRICO" },
+  { code: "EL:LUCES", name: "LUCES", danio: "ELECTRICO" },
+  { code: "EL:MOTOR", name: "MOTOR", danio: "ELECTRICO" },
+  { code: "H:BOMBA", name: "BOMBA", danio: "HIDRAULICO" },
+  { code: "H:CILINDRO", name: "CILINDRO", danio: "HIDRAULICO" },
+  { code: "H:CONEXIONES", name: "CONEXIONES", danio: "HIDRAULICO" },
+  { code: "H:ELECTRO VALVULAS", name: "ELECTRO VALVULAS", danio: "HIDRAULICO" },
+  { code: "H:RETENES", name: "RETENES", danio: "HIDRAULICO" },
+  { code: "H:SELLOS", name: "SELLOS", danio: "HIDRAULICO" },
+  { code: "H:VALVULAS", name: "VALVULAS", danio: "HIDRAULICO" },
+  { code: "M:ABRAZADERAS", name: "ABRAZADERAS", danio: "MECANICO" },
+  { code: "M:ASIENTO", name: "ASIENTO", danio: "MECANICO" },
+  { code: "M:BAQUELITAS", name: "BAQUELITAS", danio: "MECANICO" },
+  {
+    code: "M:BIRLOS / TORNILLERIA",
+    name: "BIRLOS / TORNILLERIA",
+    danio: "MECANICO",
+  },
+  { code: "M:CADENA", name: "CADENA", danio: "MECANICO" },
+  {
+    code: "M:CARRO PORTA HORQUILLAS",
+    name: "CARRO PORTA HORQUILLAS",
+    danio: "MECANICO",
+  },
+  { code: "M:EJE DE DIRECCION", name: "EJE DE DIRECCION", danio: "MECANICO" },
+  { code: "M:EJE DE TRACCION", name: "EJE DE TRACCION", danio: "MECANICO" },
+  { code: "M:FRENO", name: "FRENO", danio: "MECANICO" },
+  { code: "M:HORQUILLAS", name: "HORQUILLAS", danio: "MECANICO" },
+  { code: "M:LLAVIN", name: "LLAVIN", danio: "MECANICO" },
+  { code: "M:POLEAS", name: "POLEAS", danio: "MECANICO" },
+  { code: "M:RESORTE", name: "RESORTE", danio: "MECANICO" },
+  { code: "M:RODAJAS", name: "RODAJAS", danio: "MECANICO" },
+  { code: "M:RODAMIENTOS", name: "RODAMIENTOS", danio: "MECANICO" },
+  { code: "M:ROTULAS / PERNOS", name: "ROTULAS / PERNOS", danio: "MECANICO" },
+  { code: "M:RUEDAS", name: "RUEDAS", danio: "MECANICO" },
+  { code: "M:SEGURO DE BATERIA", name: "SEGURO DE BATERIA", danio: "MECANICO" },
+  {
+    code: "M:SISTEMA DE ENGANCHE",
+    name: "SISTEMA DE ENGANCHE",
+    danio: "MECANICO",
+  },
+  { code: "M:VOLANTE", name: "VOLANTE", danio: "MECANICO" },
+  { code: "O:BANDA ANTIESTATICA", name: "BANDA ANTIESTATICA", danio: "OTROS" },
+  { code: "O:CHASIS", name: "CHASIS", danio: "OTROS" },
+  {
+    code: "O:CINTURON DE SEGURIDAD",
+    name: "CINTURON DE SEGURIDAD",
+    danio: "OTROS",
+  },
+  { code: "O:ESPEJO", name: "ESPEJO", danio: "OTROS" },
+  { code: "O:PAREMETROS", name: "PAREMETROS", danio: "OTROS" },
+];
+
+const tipoDanioTabla = [
+  { code: "E:CALIBRACION", name: "CALIBRACION E", danio: "ELECTRONICO" },
+  { code: "E:CODIGO DE ERROR", name: "CODIGO DE ERROR", danio: "ELECTRONICO" },
+  {
+    code: "E:COMPONENTE INOPERANTE",
+    name: "COMPONENTE INOPERANTE E",
+    danio: "ELECTRONICO",
+  },
+  { code: "EL:ARNES DANADO", name: "ARNES DANADO", danio: "ELECTRICO" },
+  {
+    code: "EL:COMPONENTE INOPERANTE",
+    name: "COMPONENTE INOPERANTE EL",
+    danio: "ELECTRICO",
+  },
+  { code: "EL:FALSO CONTACTO", name: "FALSO CONTACTO", danio: "ELECTRICO" },
+  { code: "H:AJUSTE", name: "AJUSTE", danio: "HIDRAULICO" },
+  { code: "H:CALIBRACION", name: "CALIBRACION", danio: "HIDRAULICO" },
+  {
+    code: "H:COMPONENTE INOPERANTE",
+    name: "COMPONENTE INOPERANTE",
+    danio: "HIDRAULICO",
+  },
+  { code: "H:FUGA", name: "FUGA", danio: "HIDRAULICO" },
+  { code: "M:CALIBRACION", name: "CALIBRACION M", danio: "MECANICO" },
+  { code: "M:DESGASTE NATURAL", name: "DESGASTE NATURAL", danio: "MECANICO" },
+  { code: "M:FISURA", name: "FISURA", danio: "MECANICO" },
+  { code: "M:FRACTURA", name: "FRACTURA", danio: "MECANICO" },
+  { code: "M:RUIDOS INUSUALES", name: "RUIDOS INUSUALES", danio: "MECANICO" },
+  {
+    code: "O:CALIBRACION / AJUSTE",
+    name: "CALIBRACION / AJUSTE",
+    danio: "OTROS",
+  },
+  { code: "O:DESGASTE NATURAL", name: "DESGASTE NATURAL O", danio: "OTROS" },
+  { code: "O:FRACTURA", name: "FRACTURA O", danio: "OTROS" },
+  { code: "O:GOLPE", name: "GOLPE", danio: "OTROS" },
+];
+
+// Mapa entre ID del defecto (tipoProblema) y prefijos de código
+const defectosPrefijos = {
+  2: ["EL:"], // Eléctrico
+  7: ["H:"], // Hidráulico
+  8: ["M:"], // Mecánico
+  198: ["E:"], // Electrónico
+  11: ["O:"], // Otros
+};
+
+// Función para actualizar selects
+function actualizarCausasYDanios(defectoSeleccionado) {
+  const causaSelect = document.getElementById("causa");
+  const tipoDanioSelect = document.getElementById("tipoDanio");
+
+  causaSelect.innerHTML = '<option value="">Seleccione una causa</option>';
+  tipoDanioSelect.innerHTML =
+    '<option value="">Seleccione un tipo de daño</option>';
+
+  const prefijos = defectosPrefijos[defectoSeleccionado];
+  if (!prefijos) return;
+
+  const causasFiltradas = causasTabla.filter((c) =>
+    prefijos.some((p) => c.code.startsWith(p))
+  );
+
+  const daniosFiltrados = tipoDanioTabla.filter((d) =>
+    prefijos.some((p) => d.code.startsWith(p))
+  );
+
+  causasFiltradas.forEach((c) => {
+    const option = document.createElement("option");
+    option.value = c.code;
+    option.textContent = c.name;
+    causaSelect.appendChild(option);
+  });
+
+  daniosFiltrados.forEach((d) => {
+    const option = document.createElement("option");
+    option.value = d.code;
+    option.textContent = d.name;
+    tipoDanioSelect.appendChild(option);
+  });
+}
+
+// Escuchar cambios del select de Defectos
+document.addEventListener("DOMContentLoaded", function () {
+  const tipoProblemaSelect = document.getElementById("tipoProblema");
+  if (tipoProblemaSelect) {
+    tipoProblemaSelect.addEventListener("change", function () {
+      const valor = parseInt(this.value);
+      actualizarCausasYDanios(valor);
+    });
+  }
+});
+////////////////////////////////////fin de causas y tipo de daños//////////////////////////////////
 
 function capturarRefacciones() {
   const refacciones = [];

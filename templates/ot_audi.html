@@ -45,14 +45,14 @@
     <div class="form-group">
       <label>¿Qué tipo de orden es?</label><br />
 
-      <input type="radio" id="ordenBase" name="ordenBase" value="B" checked />
-      <label for="ordenBase">Base</label>
+      <input type="radio" id="ordenAviso" name="ordenBase" value="B" checked />
+      <label for="ordenAviso">Aviso</label>
 
-      <input type="radio" id="ordenNotificacion" name="ordenBase" value="N" />
-      <label for="ordenNotificacion">Notificación</label>
+      <input type="radio" id="ordenReporte" name="ordenBase" value="N" />
+      <label for="ordenReporte">Reporte de Trabajo</label>
     </div>
 
-    <!-- OT Base (solo visible si es Notificación) -->
+    <!-- OT Base (solo visible si es Notificación) 
     <div class="form-group" id="otBaseContainer" style="display: none">
       <label for="otBase">Número de OT Base:</label>
       <input
@@ -62,11 +62,11 @@
         name="otBase"
         min="0"
       />
-    </div>
+    </div> -->
 
     <!-- Folio IPL (solo visible si es Notificación) -->
     <div class="form-group" id="folioContainer" style="display: none">
-      <label for="folio">Folio IPL:</label>
+      <label for="folio">Folio Fisico:</label>
       <input
         type="number"
         class="form-control"
@@ -76,8 +76,8 @@
       />
     </div>
 
-    <!-- <div class="form-group">
-      <label for="folioEx">Folio AUDI:</label>
+    <div class="form-group">
+      <label for="folioEx">Numero de Aviso:</label>
       <input
         type="number"
         class="form-control"
@@ -85,7 +85,7 @@
         name="folioEx"
         min="0"
       />
-    </div> -->
+    </div>
 
     <!-- Fecha Inicio (reutilizada como fecha de inicio o de llegada) -->
     <div class="form-group">
@@ -127,16 +127,30 @@
       <input type="hidden" id="callType" name="callType" />
     </div>
 
-    <!-- Tipo de Problema -->
-    <div class="form-group position-relative">
-      <label for="tipoProblema">Tipo de Problema :</label>
-      <select
-        class="form-control tipo-problema-dropdown"
-        id="tipoProblema"
-        name="tipoProblema"
-      >
-        <!-- Las opciones serán cargadas dinámicamente -->
-      </select>
+    <div id="defectosSection">
+      <!-- Tipo de Defecto -->
+      <div class="form-group position-relative">
+        <label for="tipoProblema">Defecto:</label>
+        <select class="form-control" id="tipoProblema" name="tipoProblema">
+          <option value="">Seleccione un defecto</option>
+        </select>
+      </div>
+
+      <!-- Causas -->
+      <div class="form-group position-relative">
+        <label for="causa">Causas:</label>
+        <select class="form-control" id="causa" name="causa">
+          <option value="">Seleccione una causa</option>
+        </select>
+      </div>
+
+      <!-- Tipo de Daño -->
+      <div class="form-group position-relative">
+        <label for="tipoDanio">Tipo de Daño:</label>
+        <select class="form-control" id="tipoDanio" name="tipoDanio">
+          <option value="">Seleccione un tipo de daño</option>
+        </select>
+      </div>
     </div>
 
     <!-- Persona que Reporta -->
@@ -296,74 +310,84 @@
     </div>
 
     <!-- Refacciones -->
-    <div class="form-group">
-      <label>Refacciones:</label><br />
-      <input
-        type="checkbox"
-        id="refaccionesInstaladas"
-        value="1"
-        name="tipoRefacciones"
-        onclick="habilitarRefacciones()"
-        checked
-      />
-      Instaladas
-      <input
-        type="checkbox"
-        id="refaccionesRequeridas"
-        value="0"
-        name="tipoRefacciones"
-        onclick="habilitarRefacciones()"
-      />
-      Requeridas
-      <input
-        type="checkbox"
-        id="refaccionesAmbas"
-        value="2"
-        name="tipoRefacciones"
-        onclick="habilitarRefacciones()"
-      />
-      Ambas
-    </div>
-
-    <!-- Contenedor para el título dinámico -->
-    <h5 id="refaccionesTitulo" class="mt-3">Refacciones Instaladas</h5>
-
-    <div id="refaccionesContainer">
-      {% for i in range(20) %}
-      <div class="form-group position-relative refaccion-item">
+    <!-- 🔧 INICIO bloque de refacciones -->
+    <div id="refaccionesSection">
+      <!-- Refacciones -->
+      <div class="form-group">
+        <label>Refacciones:</label><br />
         <input
-          type="number"
-          class="form-control d-inline refaccion"
-          name="cantidad_{{ i }}"
-          placeholder="Cantidad"
-          style="width: 10%"
-          min="0"
+          type="checkbox"
+          id="refaccionesInstaladas"
+          value="1"
+          name="tipoRefacciones"
+          onclick="habilitarRefacciones()"
+          checked
         />
+        Instaladas
         <input
-          type="text"
-          class="form-control d-inline refaccion item-code"
-          name="numeroParte_{{ i }}"
-          placeholder="Número de Parte"
-          style="width: 30%"
-          oninput="buscarItemConDebounce(this, {{ i }})"
-          autocomplete="off"
+          type="checkbox"
+          id="refaccionesRequeridas"
+          value="0"
+          name="tipoRefacciones"
+          onclick="habilitarRefacciones()"
         />
-        <div
-          id="dropdownItems{{ i }}"
-          class="dropdown-menu"
-          style="display: none; position: absolute; z-index: 1000; width: 100%"
-        ></div>
+        Requeridas
         <input
-          type="text"
-          class="form-control d-inline refaccion item-name"
-          name="descripcion_{{ i }}"
-          placeholder="Descripción"
-          style="width: 55%"
-          readonly
+          type="checkbox"
+          id="refaccionesAmbas"
+          value="2"
+          name="tipoRefacciones"
+          onclick="habilitarRefacciones()"
         />
+        Ambas
       </div>
-      {% endfor %}
+
+      <!-- Contenedor para el título dinámico -->
+      <h5 id="refaccionesTitulo" class="mt-3">Refacciones Instaladas</h5>
+
+      <div id="refaccionesContainer">
+        {% for i in range(20) %}
+        <div class="form-group position-relative refaccion-item">
+          <input
+            type="number"
+            class="form-control d-inline refaccion"
+            name="cantidad_{{ i }}"
+            placeholder="Cantidad"
+            style="width: 10%"
+            min="0"
+          />
+          <input
+            type="text"
+            class="form-control d-inline refaccion item-code"
+            name="numeroParte_{{ i }}"
+            placeholder="Número de Parte"
+            style="width: 30%"
+            oninput="buscarItemConDebounce(this, '{{ i }}')"
+            autocomplete="off"
+          />
+          <div
+            id="dropdownItems{{ i }}"
+            class="dropdown-menu"
+            style="
+              display: none;
+              position: absolute;
+              z-index: 1000;
+              width: 100%;
+            "
+          ></div>
+          <input
+            type="text"
+            class="form-control d-inline refaccion item-name"
+            name="descripcion_{{ i }}"
+            placeholder="Descripción"
+            style="width: 55%"
+            readonly
+          />
+        </div>
+        {% endfor %}
+      </div>
     </div>
+    <!-- 🔧 FIN bloque de refacciones -->
 
     <!-- Dropdown para mostrar sugerencias de Número de Parte -->
     <div
@@ -397,30 +421,30 @@
     </div>
 
     <!-- Fecha de Término -->
-<div class="form-group" id="fechaTerminoContainer">
-  <label for="fechaTermino">Fecha de Término de Trabajo:</label>
-  <input
-    type="text"
-    class="form-control"
-    id="fechaTermino"
-    name="fechaTermino"
-    placeholder="dd/mm"
-    maxlength="5"
-    readonly
-  />
-</div>
+    <div class="form-group" id="fechaTerminoContainer">
+      <label for="fechaTermino">Fecha de Término de Trabajo:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="fechaTermino"
+        name="fechaTermino"
+        placeholder="dd/mm"
+        maxlength="5"
+        readonly
+      />
+    </div>
 
-<!-- Hora de Salida -->
-<div class="form-group" id="horaSalidaContainer">
-  <label for="horaSalida">Hora de término de Trabajo:</label>
-  <input
-    type="time"
-    class="form-control"
-    id="horaSalida"
-    name="horaSalida"
-    readonly
-  />
-</div>
+    <!-- Hora de Salida -->
+    <div class="form-group" id="horaSalidaContainer">
+      <label for="horaSalida">Hora de término de Trabajo:</label>
+      <input
+        type="time"
+        class="form-control"
+        id="horaSalida"
+        name="horaSalida"
+        readonly
+      />
+    </div>
 
     <!-- Realizó Trabajo -->
     <div class="form-group position-relative">
