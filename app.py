@@ -500,6 +500,7 @@ def guardar_csv():
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR", 
         "U_Plan", "U_Leccion", "U_Costo", "U_Supervisor", "U_A_Orden", "U_A_NumTec", "U_A_Horas", "U_NoOT", "U_A_TipoOT",
+        "U_A_Causa", "U_A_TipoDano"
     ]
 
     try:
@@ -586,7 +587,10 @@ def guardar_csv():
                 datos.get("NumPersonas", ""),
                 datos.get("horasTrabajadas", ""),
                 datos.get("otBase", ""),
-                datos.get("ordenBase", " ")
+                datos.get("ordenBase", " "),
+                datos.get("causa", " "),
+                datos.get("tipoDanio", " ")
+
                
             ]
 
