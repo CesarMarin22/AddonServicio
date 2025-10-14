@@ -341,6 +341,25 @@ document
     });
   });
 
+
+// 👁️ Mostrar/Ocultar contraseña en el LOGIN
+function togglePassword() {
+  const passwordInput = document.getElementById("password");
+  const icon = document.getElementById("togglePasswordIcon");
+
+  if (passwordInput && icon) {
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      passwordInput.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let debounceTimeoutEmpleados = {}; // Variable para almacenar temporizadores de debounce por campo
 
@@ -503,36 +522,56 @@ window.editUser = function (id) {
 
 // Función para eliminar usuarios
 window.deleteUser = function (id) {
-  if (confirm("¿Estás seguro de que quieres eliminar este usuario?")) {
-    console.log("Deleting user with ID:", id);
-    axios
-      .delete(`http://158.23.90.252:8081/api/usuarios/${id}`)
-      .then(function (response) {
-        console.log("User deleted:", response.data);
-        loadUsers();
-        Swal.fire({
-          icon: "success",
-          title: "Éxito",
-          text: "Usuario eliminado correctamente.",
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
+  Swal.fire({
+    title: "¿Estás seguro?",
+    html: "Esta acción <b>eliminará permanentemente</b> al usuario seleccionado.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33", // rojo para eliminar
+    cancelButtonColor: "#3085d6", // azul para cancelar
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    reverseButtons: true,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      console.log("Deleting user with ID:", id);
+
+      axios
+        .delete(`http://158.23.90.252:8081/api/usuarios/${id}`)
+        .then(function (response) {
+          console.log("User deleted:", response.data);
+          loadUsers();
+
+          Swal.fire({
+            icon: "success",
+            title: "Eliminado",
+            text: "El usuario fue eliminado correctamente.",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
+        })
+        .catch(function (error) {
+          console.error("❌ Error al eliminar el usuario:", error);
+
+          const mensajeError =
+            error.response?.data?.message ||
+            "No se pudo eliminar el usuario. Verifica tu conexión o contacta a soporte.";
+
+          Swal.fire({
+            icon: "error",
+            title: "Error al eliminar usuario",
+            html: `<b>${mensajeError}</b>`,
+            confirmButtonText: "Entendido",
+            allowOutsideClick: false,
+          });
         });
-      })
-      .catch(function (error) {
-        console.error("Error al eliminar el usuario:", error);
-        Swal.fire({
-          icon: "error", // Icono indicando error
-          title: "Error",
-          html: "Error al eliminar el usuario.", // Mensaje
-          confirmButtonText: "Entendido",
-          allowOutsideClick: false,
-        });
-      });
-  }
+    }
+  });
 };
+
 // Función para cargar los usuarios
 function loadUsers() {
   console.log("Attempting to load users from API...");
@@ -555,9 +594,13 @@ function loadUsers() {
                             <td>${user.SOCIO}</td>
                             <td>${user.SUCURSAL}</td>
                             <td>
-                                <button class="btn btn-warning btn-sm" onclick="editUser(${user.ID})">Editar</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.ID})">Eliminar</button>
-                            </td>
+    <button class="btn btn-warning btn-sm" onclick="editUser(${user.ID})" title="Editar">
+      <i class="fas fa-edit"></i>
+    </button>
+    <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.ID})" title="Eliminar">
+      <i class="fas fa-trash"></i>
+    </button>
+  </td>
                         `;
           tbody.appendChild(row);
         });
@@ -590,9 +633,10 @@ var userForm = document.getElementById("userForm");
 if (userForm) {
   userForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    var userId = document.getElementById("userId").value;
-    var data = {
-      USUARIO: document.getElementById("usuario").value,
+    const userId = document.getElementById("userId").value;
+    const usuarioInput = document.getElementById("usuario").value.trim();
+    const data = {
+      USUARIO: usuarioInput,
       PERFIL: parseInt(document.getElementById("perfil").value, 10),
       ACTIVO: parseInt(document.getElementById("activo").value, 10),
       SOCIO: parseInt(document.getElementById("socio").value, 10),
@@ -600,22 +644,46 @@ if (userForm) {
       PWD: document.getElementById("pwd").value,
     };
 
-    var method = userId ? "PUT" : "POST";
-    var url = userId
+    const method = userId ? "PUT" : "POST";
+    const url = userId
       ? `http://158.23.90.252:8081/api/usuarios/${userId}`
       : "http://158.23.90.252:8081/api/usuarios";
 
-    console.log("Submitting user form with data:", data);
+    console.log("⏳ Verificando usuario existente...");
 
-    axios({
-      method: method,
-      url: url,
-      data: data,
-    })
+    // 🔍 Verificar si el usuario ya existe (solo al crear)
+    axios
+      .get("http://158.23.90.252:8081/api/usuarios")
+      .then(function (response) {
+        const usuarios = response.data.map((u) =>
+          u.USUARIO.trim().toLowerCase()
+        );
+        const usuarioNuevo = usuarioInput.toLowerCase();
+
+        if (usuarios.includes(usuarioNuevo) && !userId) {
+          Swal.fire({
+            icon: "warning",
+            title: "Usuario duplicado",
+            html: "El nombre de usuario ya existe. Por favor elige otro.",
+            confirmButtonText: "Entendido",
+            allowOutsideClick: false,
+          });
+          throw new Error("Usuario duplicado");
+        }
+
+        // ✅ Si no existe, continuar con el guardado normal
+        return axios({
+          method: method,
+          url: url,
+          data: data,
+        });
+      })
       .then(function (response) {
         console.log("User saved:", response.data);
         $("#userModal").modal("hide");
-        loadUsers();
+        setTimeout(() => {
+          loadUsers();
+        }, 300);
         Swal.fire({
           icon: "success",
           title: "¡Éxito!",
@@ -628,6 +696,7 @@ if (userForm) {
         });
       })
       .catch(function (error) {
+        if (error.message === "Usuario duplicado") return; // detener flujo
         console.error("Error al guardar el usuario:", error);
         Swal.fire({
           icon: "error",
@@ -639,7 +708,6 @@ if (userForm) {
       });
   });
 }
-
 /////////////////////////////////////////////////////////AQUI SE CARGA LA PAGINA /////////////////////////////////////////////////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", function () {
   const tipoOrdenAudi = document.getElementById("tipoOrdenAudi");
@@ -882,13 +950,12 @@ document.addEventListener("DOMContentLoaded", function () {
           Swal.fire({
             icon: "success",
             title: "Guardado exitoso",
-            text: `Se guardó ${
-              isSeguridad
-                ? "Flash Report"
-                : isAudi
+            text: `Se guardó ${isSeguridad
+              ? "Flash Report"
+              : isAudi
                 ? "OT Audi"
                 : "Orden de Trabajo"
-            } correctamente en el archivo CSV.`,
+              } correctamente en el archivo CSV.`,
             toast: true,
             position: "top-end",
             showConfirmButton: false,
@@ -952,6 +1019,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const horometroContainer = document
       .getElementById("horometro")
       ?.closest(".form-group");
+    const tipoOrdenContainer = document.getElementById("tipoOrdenContainer");
 
     // ✅ Verificación por seguridad
     if (!folioContainer || !labelFechaInicio || !labelHoraInicio) return;
@@ -968,7 +1036,7 @@ document.addEventListener("DOMContentLoaded", function () {
       horaSalidaContainer && (horaSalidaContainer.style.display = "none");
       horometroContainer && (horometroContainer.style.display = "block");
       defectosSection.style.display = "none";
-
+      tipoOrdenContainer && (tipoOrdenContainer.style.display = "block");
       labelFechaInicio.textContent = "Fecha de llegada al taller:";
       labelHoraInicio.textContent = "Hora de llegada al taller:";
       if (fechaTermino) fechaTermino.value = "";
@@ -985,7 +1053,7 @@ document.addEventListener("DOMContentLoaded", function () {
       horaSalidaContainer && (horaSalidaContainer.style.display = "block");
       horometroContainer && (horometroContainer.style.display = "none");
       defectosSection.style.display = "block";
-
+      tipoOrdenContainer && (tipoOrdenContainer.style.display = "block");
       labelFechaInicio.textContent = "Fecha de inicio de trabajo:";
       labelHoraInicio.textContent = "Hora de inicio de trabajo:";
     }
@@ -1213,8 +1281,7 @@ document
         ) {
           doc.setFontSize(12);
           doc.text(
-            `${index + 1}. Cantidad: ${refaccion.cantidad}, Número de Parte: ${
-              refaccion.numeroParte
+            `${index + 1}. Cantidad: ${refaccion.cantidad}, Número de Parte: ${refaccion.numeroParte
             }, Descripción: ${refaccion.descripcion}`,
             margin,
             yPosition

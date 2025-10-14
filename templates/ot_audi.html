@@ -116,9 +116,10 @@
     </div>
 
     <!-- Tipo de Orden -->
-    <div class="form-group">
+    <div class="form-group" id="tipoOrdenContainer">
       <label for="tipoOrdenAudi">Tipo de Orden:</label>
       <select class="form-control" id="tipoOrdenAudi" name="U_A_Orden">
+        <option value="" disabled selected>Seleccione un tipo de orden</option>
         <option value="ZPM2" data-calltype="3">Preventivo</option>
         <option value="ZPM3" data-calltype="15">Correctivo</option>
         <option value="ZPM8" data-calltype="2">Ajustes</option>

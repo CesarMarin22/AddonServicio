@@ -15,11 +15,16 @@ body.background-image {
 }
 
 h1.title-orange {
-    color: #f18700; /* Color naranja del título */
-    font-size: 2.5rem; /* Tamaño de la fuente del título */
-    margin-bottom: 1rem; /* Espaciado inferior del título */
-    text-align: center; /* Centrar el texto */
-    font-weight: bold; /* Grosor de la fuente */
+    color: #f18700;
+    /* Color naranja del título */
+    font-size: 2.5rem;
+    /* Tamaño de la fuente del título */
+    margin-bottom: 1rem;
+    /* Espaciado inferior del título */
+    text-align: center;
+    /* Centrar el texto */
+    font-weight: bold;
+    /* Grosor de la fuente */
 }
 
 .logo {
@@ -45,7 +50,8 @@ h1.title-orange {
 
 .login-form h2 {
     margin-bottom: 20px;
-    color: #f18700; /* Color naranja del subtítulo Login */
+    color: #f18700;
+    /* Color naranja del subtítulo Login */
 }
 
 .form-group {
@@ -64,13 +70,41 @@ h1.title-orange {
     appearance: none;
 }
 
+.background-overlay {
+    pointer-events: none; /* ✅ deja pasar clics y que se vea todo encima */
+}
+
 .toggle-password {
     position: absolute;
-    right: 10px;
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
     color: #1d1d1b;
+    font-size: 1.2rem;
+    z-index: 100; /* ✅ lo pone encima de todo */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #1d1d1b;
+    font-size: 1rem;
+    z-index: 100;
+    
+}
+
+.toggle-password:hover {
+    color: #f18700;
+    /* tono naranja de IPL */
+}
+
+/* Si quieres dar un toque más moderno */
+.toggle-password i {
+    font-size: 1rem;
 }
 
 .btn-orange {
@@ -95,4 +129,25 @@ h1.title-orange {
         max-width: 150px;
         margin-bottom: 15px;
     }
+}
+
+/* --- FIX OJO LOGIN --- */
+.login-form-container {
+    position: relative; /* 👈 crea un contexto para que el ojito se vea dentro del form */
+    overflow: visible !important; /* 👈 evita que se oculte el ícono */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #1d1d1b;
+    font-size: 1.2rem;
+    z-index: 9999; /* 👁️ por encima de todo */
+}
+
+.toggle-password:hover {
+    color: #f18700; /* efecto naranja */
 }
