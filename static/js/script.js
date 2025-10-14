@@ -1176,13 +1176,13 @@ function validarFormulario() {
   if (tipo === "audi") {
     camposRequeridos = Array.from(
       form.querySelectorAll(
-        "input:not(.refaccion):not(#tecnico3):not(#tecnico4):not(#revisoTrabajo), select:not(.refaccion), textarea:not(.refaccion)"
+        "input:not(.refaccion):not(#tecnico3):not(#tecnico4):not(#revisoTrabajo):not(#noEconomico):not(#modelo), select:not(.refaccion), textarea:not(.refaccion)"
       )
     );
   } else if (tipo === "seguridad") {
     camposRequeridos = Array.from(
       form.querySelectorAll(
-        "input:not(.refaccion), select:not(.refaccion), textarea:not(.refaccion)"
+        "input:not(.refaccion):not(#noEconomico):not(#modelo), select:not(.refaccion), textarea:not(.refaccion)"
       )
     );
   } else if (tipo === "seguridad") {
