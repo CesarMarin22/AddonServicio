@@ -941,6 +941,15 @@ document.addEventListener("DOMContentLoaded", function () {
         datos.refacciones = capturarRefacciones();
       }
 
+      ["causa", "tipoDanio"].forEach((campo) => {
+        if (datos[campo]) {
+          datos[campo] = datos[campo]
+            .replace(/^[A-Z]+:/, "") // Quita el prefijo
+            .trim()
+            .toUpperCase();
+        }
+      });
+
       console.log("📤 Enviando datos:", datos);
 
       axios
