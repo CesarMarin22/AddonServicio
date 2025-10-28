@@ -2,10 +2,39 @@
 {% block title %}Dashboard - IPL{% endblock %}
 
 {% block content %}
+
 <div class="container mt-5">
   <h2 class="mb-4 text-center">
     Historial de OT de {{ session['username'] }}
   </h2>
+
+  <!-- Botón Crear OT dinámico según perfil -->
+  <div class="d-block d-md-none text-center mb-3">
+    {% set perfil = session.get('perfil') %}
+    {% if perfil in [1, 2, 3, 4, 5] %}
+    <a 
+      href="
+        {% if perfil == 5 %}
+          {{ url_for('ot_audi') }}
+        {% elif perfil == 4 %}
+          {{ url_for('ot_seguridad') }}
+        {% else %}
+          {{ url_for('ordenes_trabajo') }}
+        {% endif %}
+      "
+      class="btn btn-primary btn-lg"
+    >
+      {% if perfil == 5 %}
+        Crear OT AUDI
+      {% elif perfil == 4 %}
+        Flash Report
+      {% else %}
+        Crear OT
+      {% endif %}
+    </a>
+    {% endif %}
+  </div>
+<div class="container mt-5">
 
   <!-- Contador de registros -->
   <div class="d-flex justify-content-end mb-3">

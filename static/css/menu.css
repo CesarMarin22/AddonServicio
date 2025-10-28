@@ -5,35 +5,46 @@ body {
     background-color: #f7f7f7 !important;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Evita que el body tenga scroll */
+    overflow: hidden;
+    /* Evita que el body tenga scroll */
 }
 
 /* Color de fondo del sidebar */
 .sidebar {
-    background-color: #f18700 !important; /* Color naranja */
+    background-color: #f18700 !important;
+    /* Color naranja */
     position: fixed;
     top: 0;
     left: 0;
     height: 100%;
-    width: 250px; /* Ajusta según el ancho que necesites */
-    overflow-y: auto; /* Permite scroll en el sidebar si es necesario */
-    z-index: 1000; /* Asegura que esté encima del contenido principal */
+    width: 250px;
+    /* Ajusta según el ancho que necesites */
+    overflow-y: auto;
+    /* Permite scroll en el sidebar si es necesario */
+    z-index: 1000;
+    /* Asegura que esté encima del contenido principal */
     display: flex;
-    flex-direction: column; /* Hace que el contenido se apile en columnas */
-    justify-content: space-between; /* Distribuye espacio entre los elementos */
+    flex-direction: column;
+    /* Hace que el contenido se apile en columnas */
+    justify-content: space-between;
+    /* Distribuye espacio entre los elementos */
 }
 
 /* Contenido principal del sidebar */
 .nav {
-    flex-grow: 1; /* Esto permite que el contenido del sidebar ocupe todo el espacio disponible */
+    flex-grow: 1;
+    /* Esto permite que el contenido del sidebar ocupe todo el espacio disponible */
 }
 
 /* Estilos para el avatar y nombre del usuario en el sidebar */
 .user-info {
-    padding: 20px; /* Añadir un poco de espacio alrededor del nombre y el avatar */
+    padding: 20px;
+    /* Añadir un poco de espacio alrededor del nombre y el avatar */
     color: white;
-    background-color: #f18700; /* Opcional: cambiar el fondo del área del usuario */
+    background-color: #f18700;
+    /* Opcional: cambiar el fondo del área del usuario */
 }
+
 /* Estilos del nombre y avatar */
 .username-avatar {
     display: flex;
@@ -45,8 +56,10 @@ body {
     display: inline-block;
     width: 40px;
     height: 40px;
-    background-color: #1d1d1b; /* Fondo negro */
-    color: #f18700; /* Texto color naranja */
+    background-color: #1d1d1b;
+    /* Fondo negro */
+    color: #f18700;
+    /* Texto color naranja */
     font-size: 18px;
     font-weight: bold;
     border-radius: 50%;
@@ -61,29 +74,42 @@ body {
 }
 
 .btn-custom {
-    background-color: #f18700; /* Color de fondo del botón */
-    color: #1d1d1b; /* Color del texto del botón */
-    border: none; /* Sin bordes */
-    padding: 10px 20px; /* Espaciado interno */
-    font-size: 16px; /* Tamaño del texto */
-    font-weight: bold; /* Texto en negrita */
-    border-radius: 5px; /* Bordes redondeados */
-    text-transform: uppercase; /* Texto en mayúsculas */
-    transition: all 0.3s ease; /* Transición suave */
-  }
-  
-  .btn-custom:hover {
-    background-color: #d97500; /* Color de fondo más oscuro al pasar el mouse */
-    color: #ffffff; /* Cambiar el texto a blanco al pasar el mouse */
-  }
-  
+    background-color: #f18700;
+    /* Color de fondo del botón */
+    color: #1d1d1b;
+    /* Color del texto del botón */
+    border: none;
+    /* Sin bordes */
+    padding: 10px 20px;
+    /* Espaciado interno */
+    font-size: 16px;
+    /* Tamaño del texto */
+    font-weight: bold;
+    /* Texto en negrita */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    text-transform: uppercase;
+    /* Texto en mayúsculas */
+    transition: all 0.3s ease;
+    /* Transición suave */
+}
+
+.btn-custom:hover {
+    background-color: #d97500;
+    /* Color de fondo más oscuro al pasar el mouse */
+    color: #ffffff;
+    /* Cambiar el texto a blanco al pasar el mouse */
+}
+
 
 /* Estilos para el contenido principal */
 #main-content {
-    margin-left: 250px; /* Debe coincidir con el ancho del sidebar */
+    margin-left: 250px;
+    /* Debe coincidir con el ancho del sidebar */
     padding: 20px;
     height: 100vh;
-    overflow-y: auto; /* Permite el scroll en el contenido principal */
+    overflow-y: auto;
+    /* Permite el scroll en el contenido principal */
     background-color: #f7f7f7;
 }
 
@@ -95,63 +121,85 @@ body {
 
 .dropdown-menu {
     position: absolute;
-    top: 100%; /* Coloca el dropdown justo debajo del campo de entrada */
+    top: 100%;
+    /* Coloca el dropdown justo debajo del campo de entrada */
     left: 0;
-    width: 100%; /* Hace que el dropdown tenga el mismo ancho que el campo de entrada */
+    width: 100%;
+    /* Hace que el dropdown tenga el mismo ancho que el campo de entrada */
     z-index: 1000;
-    margin-top: 4px; /* Añade un pequeño espacio entre el campo de entrada y el dropdown */
-    max-height: 200px; /* Limita la altura máxima del dropdown */
-    overflow-y: auto; /* Agrega scroll si el contenido supera la altura máxima */
-    background-color: white; /* Establece el fondo blanco para visibilidad */
-    border: 1px solid #ddd; /* Añade un borde para distinguir el dropdown */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Agrega sombra para un efecto visual */
+    margin-top: 4px;
+    /* Añade un pequeño espacio entre el campo de entrada y el dropdown */
+    max-height: 200px;
+    /* Limita la altura máxima del dropdown */
+    overflow-y: auto;
+    /* Agrega scroll si el contenido supera la altura máxima */
+    background-color: white;
+    /* Establece el fondo blanco para visibilidad */
+    border: 1px solid #ddd;
+    /* Añade un borde para distinguir el dropdown */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    /* Agrega sombra para un efecto visual */
 }
 
 .tipo-problema-dropdown {
     display: block;
-    max-height: 200px; /* Altura máxima visible */
-    overflow-y: auto; /* Activa el scroll si hay muchas opciones */
-    background-color: white; /* Fondo blanco */
-    position: relative; /* Para evitar desbordes */
-    word-wrap: break-word; /* Ajusta textos largos */
-    white-space: normal; /* Permite múltiples líneas si el texto es largo */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Añade sombra para mejor visibilidad */
+    max-height: 200px;
+    /* Altura máxima visible */
+    overflow-y: auto;
+    /* Activa el scroll si hay muchas opciones */
+    background-color: white;
+    /* Fondo blanco */
+    position: relative;
+    /* Para evitar desbordes */
+    word-wrap: break-word;
+    /* Ajusta textos largos */
+    white-space: normal;
+    /* Permite múltiples líneas si el texto es largo */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    /* Añade sombra para mejor visibilidad */
 }
 
 
 input[type="text"],
 textarea {
-  text-transform: uppercase;
+    text-transform: uppercase;
 }
 
 .no-uppercase {
     text-transform: none !important;
-  }
+}
 
 .tipo-problema-dropdown:focus {
-    overflow-y: auto; /* Asegura que el scroll funcione al desplegar */
+    overflow-y: auto;
+    /* Asegura que el scroll funcione al desplegar */
 }
 
 
 .dropdown-menu-scroll {
-    max-height: 200px; /* Limita la altura del dropdown */
-    overflow-y: auto; /* Agrega scroll vertical si es necesario */
+    max-height: 200px;
+    /* Limita la altura del dropdown */
+    overflow-y: auto;
+    /* Agrega scroll vertical si es necesario */
 }
 
 /* Estilos específicos para pantallas pequeñas */
 @media (max-width: 768px) {
     .tipo-problema-dropdown {
-        max-height: 150px; /* Reduce la altura máxima en pantallas pequeñas */
-        font-size: 14px; /* Ajusta el tamaño del texto */
+        max-height: 150px;
+        /* Reduce la altura máxima en pantallas pequeñas */
+        font-size: 14px;
+        /* Ajusta el tamaño del texto */
     }
 }
 
 .sidebar .nav-link.active {
-    background-color: #1d1d1b !important; /* Color negro */
+    background-color: #1d1d1b !important;
+    /* Color negro */
 }
 
 .sidebar .nav-link:hover {
-    background-color: #1d1d1b !important; /* Color negro */
+    background-color: #1d1d1b !important;
+    /* Color negro */
 }
 
 /* Ajuste de los iconos */
@@ -160,16 +208,19 @@ textarea {
 }
 
 .card-title {
-    color: #f18700 !important; /* Color naranja */
+    color: #f18700 !important;
+    /* Color naranja */
     font-size: 2rem !important;
 }
 
 .card-text {
-    color: #1d1d1b !important; /* Color negro */
+    color: #1d1d1b !important;
+    /* Color negro */
 }
 
 h1.h2 {
-    color: #1d1d1b !important; /* Color negro */
+    color: #1d1d1b !important;
+    /* Color negro */
     margin-bottom: 0 !important;
 }
 
@@ -181,22 +232,38 @@ h1.h2 {
     background-color: #f18700;
     color: white;
     border: none;
-  }
-  
-  .btn-ipl:hover {
+}
+
+.btn-ipl:hover {
     background-color: #d47500;
     color: white;
-  }
-  
+}
+
+.table button i {
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.table button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+}
+
 
 /* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
     #sidebar {
-        display: none; /* Oculta el sidebar en pantallas pequeñas */
+        display: none;
+        /* Oculta el sidebar en pantallas pequeñas */
     }
 
     #main-content {
-        margin-left: 0; /* Quitar el margen en pantallas pequeñas */
+        margin-left: 0;
+        /* Quitar el margen en pantallas pequeñas */
     }
 
     /* Botón de hamburguesa visible solo en pantallas pequeñas */
@@ -209,9 +276,11 @@ h1.h2 {
     .card-title {
         font-size: 1.5rem !important;
     }
+
     .card-text {
         font-size: 0.9rem !important;
     }
+
     h1.h2 {
         font-size: 1.75rem !important;
     }

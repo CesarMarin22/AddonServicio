@@ -1,14 +1,7 @@
-{% extends "menu.html" %} {% block title %} Gestión de Usuarios - IPL {%endblock
-%} {% block content %}
-<div
-  class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom"
->
-  <button
-    type="button"
-    class="btn btn-dark d-lg-none me-2"
-    data-toggle="modal"
-    data-target="#sidebarModal"
-  >
+{% extends "menu.html" %} {% block title %} Gestión de Usuarios - IPL {%
+endblock %} {% block content %}
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <button type="button" class="btn btn-dark d-lg-none me-2" data-toggle="modal" data-target="#sidebarModal">
     <i class="fas fa-bars"></i>
     <!-- Icono de 3 rayitas -->
   </button>
@@ -43,19 +36,12 @@
         <td>{{ user.SOCIO }}</td>
         <td>{{ user.SUCURSAL }}</td>
         <td>
-          {% raw %}
-          <button
-            class="btn btn-warning btn-sm"
-            onclick="editUser({{ user.ID }})"
-          >
-            <i class="fas fa-edit"></i> Editar
+          <button class="btn btn-warning btn-sm" onclick="editUser({{ user.ID }})" title="Editar usuario">
+            <i class="fas fa-edit"></i>
           </button>
-          {% endraw %}
-          <button
-            class="btn btn-danger btn-sm"
-            onclick="deleteUser({{ user.ID }})"
-          >
-            <i class="fas fa-trash-alt"></i> Eliminar
+
+          <button class="btn btn-danger btn-sm" onclick="deleteUser({{ user.ID }})" title="Eliminar usuario">
+            <i class="fas fa-trash-alt"></i>
           </button>
         </td>
       </tr>
@@ -65,23 +51,12 @@
 </div>
 
 <!-- Modal para Crear/Editar Usuario -->
-<div
-  class="modal fade"
-  id="userModal"
-  tabindex="-1"
-  aria-labelledby="userModalLabel"
-  aria-hidden="true"
->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="userModalLabel">Crear Usuario</h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -90,12 +65,7 @@
           <input type="hidden" id="userId" />
           <div class="form-group">
             <label for="usuario">Usuario</label>
-            <input
-              type="text"
-              class="form-control no-uppercase"
-              id="usuario"
-              required
-            />
+            <input type="text" class="form-control no-uppercase" id="usuario" required />
           </div>
           <div class="form-group">
             <label for="perfil">Perfil</label>
@@ -139,18 +109,9 @@
           <div class="form-group">
             <label for="pwd">Contraseña</label>
             <div class="input-group">
-              <input
-                type="password"
-                class="form-control no-uppercase"
-                id="pwd"
-                required
-              />
+              <input type="password" class="form-control no-uppercase" id="pwd" required />
               <div class="input-group-append">
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  id="togglePwdVisibility"
-                >
+                <button type="button" class="btn btn-outline-secondary" id="togglePwdVisibility">
                   <i class="fas fa-eye"></i>
                 </button>
               </div>

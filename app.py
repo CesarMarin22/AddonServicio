@@ -53,12 +53,14 @@ def index():
 def limpiar_texto(texto: str) -> str:
     if not texto:
         return ""
-    # Normalizar a NFD para separar letras de acentos
-    texto = unicodedata.normalize('NFD', texto)
+    # Normalizar acentos
+    texto = unicodedata.normalize('NFD', texto)   
     # Quitar acentos y caracteres no ASCII
-    texto = texto.encode('ascii', 'ignore').decode('utf-8')
+    texto = texto.encode('ascii', 'ignore').decode('utf-8')    
     # Reemplazar ñ explícitamente
-    texto = texto.replace("ñ", "n").replace("Ñ", "N")
+    texto = texto.replace("ñ", "n").replace("Ñ", "N")    
+    # Reemplazar comas por puntos
+    texto = texto.replace(",", ".")   
     return texto
 
 @app.route('/dashboard')
@@ -126,21 +128,6 @@ def dashboard():
         total_registros=total_registros,
         total_paginas=total_paginas
     )
-
-
-
-    return render_template(
-        "dashboard.html",
-        llamadas=llamadas,
-        is_admin=is_admin,
-        perfil=session.get('perfil'),
-        page=page,
-        per_page=per_page,
-        total_registros=total_registros,
-        total_paginas=total_paginas
-    )
-
-
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -484,7 +471,8 @@ def guardar_csv():
         "U_Qty12", "U_Code12", "U_Qty13", "U_Code13", "U_Qty14", "U_Code14", "U_Qty15", "U_Code15",
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR",
-        "U_Plan", "U_Leccion", "U_Costo", "U_Supervisor", "U_A_Orden", "U_A_NumTec", "U_A_Horas", "U_NoOT", "U_A_TipoOT", 
+        "U_Plan", "U_Leccion", "U_Costo", "U_Supervisor", "U_A_Orden", "U_A_NumTec", "U_A_Horas", "U_NoOT", "U_A_TipoOT",
+        "U_A_Causa", "U_A_TipoDano"
     ]
 
     encabezados_2 = [
@@ -577,10 +565,10 @@ def guardar_csv():
                 "1",  # U_Version (siempre 1)
                 datos.get("nombreCssr", ""),
                 datos.get("U_Severidad", ""),
-                datos.get("areaTrabajo", ""),
-                datos.get("accionesSituacion", ""),
-                datos.get("planAccion", ""),
-                datos.get("leccionesAprendidas", ""),
+                limpiar_texto(datos.get("areaTrabajo", "")),
+                limpiar_texto(datos.get("accionesSituacion", "")),
+                limpiar_texto(datos.get("planAccion", "")),
+                limpiar_texto(datos.get("leccionesAprendidas", "")),
                 datos.get("costoAproximado", ""),
                 datos.get("vistoBuenoCliente", ""),
                 datos.get("U_A_Orden", ""),
