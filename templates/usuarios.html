@@ -1,5 +1,5 @@
-{% extends "menu.html" %} {% block title %} Gestión de Usuarios - IPL {%
-endblock %} {% block content %}
+{% extends "menu.html" %} {% block title %} Gestión de Usuarios - IPL {%endblock
+%} {% block content %}
 <div
   class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom"
 >
@@ -43,17 +43,19 @@ endblock %} {% block content %}
         <td>{{ user.SOCIO }}</td>
         <td>{{ user.SUCURSAL }}</td>
         <td>
+          {% raw %}
           <button
             class="btn btn-warning btn-sm"
             onclick="editUser({{ user.ID }})"
           >
-            Editar
+            <i class="fas fa-edit"></i> Editar
           </button>
+          {% endraw %}
           <button
             class="btn btn-danger btn-sm"
             onclick="deleteUser({{ user.ID }})"
           >
-            Eliminar
+            <i class="fas fa-trash-alt"></i> Eliminar
           </button>
         </td>
       </tr>
@@ -103,7 +105,6 @@ endblock %} {% block content %}
               <option value="3">Empleado</option>
               <option value="4">Personal Seguridad</option>
               <option value="5">Personal IPL AUDI</option>
-
             </select>
           </div>
           <div class="form-group">
