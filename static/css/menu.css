@@ -253,6 +253,12 @@ h1.h2 {
     padding: 0;
 }
 
+.table-active {
+  background-color: #fff3cd !important; /* amarillo suave */
+  transition: background-color 0.5s ease;
+}
+
+
 
 /* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
@@ -270,6 +276,39 @@ h1.h2 {
     #sidebarToggle {
         display: block;
     }
+
+    .tabla-dashboard table.table thead {
+    display: none;
+  }
+
+  .tabla-dashboard table.table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .tabla-dashboard table.table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  .tabla-dashboard table.table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .tabla-dashboard table.table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #444;
+    flex-basis: 45%;
+  }
 }
 
 @media (max-width: 576px) {

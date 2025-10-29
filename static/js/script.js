@@ -1590,6 +1590,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
 ////////////////////////////////////fin de causas y tipo de daños//////////////////////////////////
 
 function capturarRefacciones() {

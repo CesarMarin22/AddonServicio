@@ -1,0 +1,263 @@
+{% extends "menu.html" %} {% block title %}Ver OT Audi - IPL{% endblock %} {%
+block content %}
+<div class="container mt-5">
+  <div
+    class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom"
+  >
+    <h1 class="h2 mb-0 flex-grow-1">
+      Vista de Orden de Trabajo AUDI
+      <span class="text-primary">OT SAP {{ ot.DocNum }}</span>
+    </h1>
+  </div>
+
+  {% if ot %}
+  <div class="container mt-4">
+    <!-- Usuario de Creación -->
+    <div class="form-group">
+      <label><strong>Usuario de Creación:</strong></label>
+      <p>{{ ot.U_CreateUser }}</p>
+    </div>
+
+    <!-- Serie -->
+    <div class="form-group">
+      <label><strong>Sucursal:</strong></label>
+      <p>PUE ({{ ot.SucursalName }})</p>
+    </div>
+
+    <!-- Tipo de Orden -->
+    <div class="form-group">
+      <label><strong>Tipo de Orden:</strong></label>
+      <p>
+        {% if ot.U_A_TipoOT == 'B' %} Aviso {% elif ot.U_A_TipoOT == 'N' %}
+        Reporte de Trabajo {% else %} Desconocido {% endif %}
+      </p>
+    </div>
+
+    <!-- Folio Físico -->
+    <div class="form-group">
+      <label><strong>Folio Físico:</strong></label>
+      <p>{{ ot.CustomerRefNo or 'N/A' }}</p>
+    </div>
+
+    <!-- Número de Aviso -->
+    <div class="form-group">
+      <label><strong>Número de Aviso:</strong></label>
+      <p>{{ ot.DocNum }}</p>
+    </div>
+
+    <!-- Fecha Inicio -->
+    <div class="form-group">
+      <label><strong>Fecha Inicio de Trabajo:</strong></label>
+      <p>{{ ot.StartDate[:10] if ot.StartDate else 'N/A' }}</p>
+    </div>
+
+    <!-- Hora Inicio -->
+    <div class="form-group">
+      <label><strong>Hora Inicio de Trabajo:</strong></label>
+      <p>{{ ot.U_HoraInicio or ot.StartTime }}</p>
+    </div>
+
+    <!-- Tipo de Orden ZPM -->
+    <div class="form-group">
+      <label><strong>Código SAP de Tipo de Orden:</strong></label>
+      <p>{{ ot.U_A_Orden or 'N/A' }}</p>
+    </div>
+
+    <!-- Defecto -->
+    <div class="form-group">
+      <label><strong>Defecto:</strong></label>
+      <p>{{ ot.U_A_Defectos or 'N/A' }}</p>
+    </div>
+
+    <!-- Causa -->
+    <div class="form-group">
+      <label><strong>Causa:</strong></label>
+      <p>{{ ot.U_A_Causa or 'N/A' }}</p>
+    </div>
+
+    <!-- Tipo de Daño -->
+    <div class="form-group">
+      <label><strong>Tipo de Daño:</strong></label>
+      <p>{{ ot.U_A_TipoDano or 'N/A' }}</p>
+    </div>
+
+    <!-- Persona que Reporta -->
+    <div class="form-group">
+      <label><strong>Persona que Reporta:</strong></label>
+      <p>{{ ot.U_PersonWhoReports or 'N/A' }}</p>
+    </div>
+
+    <!-- Equipo en Funcionamiento -->
+    <div class="form-group">
+      <label><strong>Equipo en Funcionamiento:</strong></label>
+      <p>
+        {% if ot.U_EquipoFunciona == 1 %} Sí {% elif ot.U_EquipoFunciona == 0 %}
+        No {% else %} N/A {% endif %}
+      </p>
+    </div>
+
+    <!-- Cliente -->
+    <div class="form-group">
+      <label><strong>Código de Cliente:</strong></label>
+      <p>{{ ot.CustomerCode }}</p>
+    </div>
+
+    <div class="form-group">
+      <label><strong>Nombre del Cliente:</strong></label>
+      <p>{{ ot.CustomerName }}</p>
+    </div>
+
+    <!-- No de Serie -->
+    <div class="form-group">
+      <label><strong>No. de Serie:</strong></label>
+      <p>{{ ot.ManufacturerSerialNum }}</p>
+    </div>
+
+    <!-- Marca -->
+    <div class="form-group">
+      <label><strong>Marca:</strong></label>
+      <p>{{ ot.ItemGroupCode or 'N/A' }}</p>
+    </div>
+
+    <!-- Modelo -->
+    <div class="form-group">
+      <label><strong>Modelo:</strong></label>
+      <p>{{ ot.ItemDescription }}</p>
+    </div>
+
+    <!-- Número Económico -->
+    <div class="form-group">
+      <label><strong>Número Económico:</strong></label>
+      <p>{{ ot.InternalSerialNum or 'N/A' }}</p>
+    </div>
+
+    <!-- Número de Artículo -->
+    <div class="form-group">
+      <label><strong>Número de Artículo:</strong></label>
+      <p>{{ ot.ItemCode or 'N/A' }}</p>
+    </div>
+
+    <!-- Horómetro -->
+    <div class="form-group">
+      <label><strong>Horómetro:</strong></label>
+      <p>{{ ot.U_Horometro or 'N/A' }}</p>
+    </div>
+
+    <!-- Descripción de la Falla -->
+    <div class="form-group">
+      <label><strong>Descripción de la Falla:</strong></label>
+      <p>{{ ot.Subject or 'Sin descripción' }}</p>
+    </div>
+
+    <!-- Trabajo Realizado -->
+    <div class="form-group">
+      <label><strong>Trabajo Realizado:</strong></label>
+      <p>{{ ot.Resolution or 'Sin información' }}</p>
+    </div>
+
+    <!-- Tipo de Refacciones -->
+    <div class="form-group">
+      <label><strong>Tipo de Refacciones:</strong></label>
+      <p>
+        {% if ot.U_TipoRefacciones == 1 %} Instaladas {% elif
+        ot.U_TipoRefacciones == 0 %} Requeridas {% elif ot.U_TipoRefacciones ==
+        2 %} Ambas {% else %} N/A {% endif %}
+      </p>
+    </div>
+
+    <!-- Tabla de Refacciones -->
+    <h5 class="mt-4">Refacciones</h5>
+    <table class="table table-bordered table-sm">
+      <thead class="thead-dark">
+        <tr>
+          <th>#</th>
+          <th>Número de Parte</th>
+          <th>Cantidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in range(1, 21) %} {% set code = ot['U_Code' ~ i|string] %} {%
+        set qty = ot['U_Qty' ~ i|string] %} {% if code %}
+        <tr>
+          <td>{{ i }}</td>
+          <td>{{ code }}</td>
+          <td>{{ qty }}</td>
+        </tr>
+        {% endif %} {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Número de Personas -->
+    <div class="form-group">
+      <label><strong>Número de Personas que Trabajaron:</strong></label>
+      <p>{{ ot.U_A_NumTec or 'N/A' }}</p>
+    </div>
+
+    <!-- Horas Trabajadas -->
+    <div class="form-group">
+      <label><strong>Horas Trabajadas:</strong></label>
+      <p>{{ ot.U_A_Horas or 'N/A' }}</p>
+    </div>
+
+    <!-- Fecha de Término -->
+    <div class="form-group">
+      <label><strong>Fecha de Término de Trabajo:</strong></label>
+      <p>{{ ot.EndDueDate[:10] if ot.EndDueDate else 'N/A' }}</p>
+    </div>
+
+    <!-- Hora de Término -->
+    <div class="form-group">
+      <label><strong>Hora de Término de Trabajo:</strong></label>
+      <p>{{ ot.U_HoraFin or ot.EndTime or 'N/A' }}</p>
+    </div>
+
+    <!-- Realizó Trabajo -->
+    <div class="form-group">
+      <label><strong>Realizó Trabajo:</strong></label>
+      <p>{{ ot.U_Tecnico2 or 'N/A' }}</p>
+    </div>
+
+    <!-- Técnico 2 -->
+    <div class="form-group">
+      <label><strong>Técnico 2 (opcional):</strong></label>
+      <p>{{ ot.U_Tecnico3 or 'N/A' }}</p>
+    </div>
+
+    <!-- Técnico 3 -->
+    <div class="form-group">
+      <label><strong>Técnico 3 (opcional):</strong></label>
+      <p>{{ ot.U_Tecnico4 or 'N/A' }}</p>
+    </div>
+
+    <!-- Nombre de CSSR -->
+    <div class="form-group">
+      <label><strong>Nombre de REV:</strong></label>
+      <p>{{ ot.U_CSSR or 'N/A' }}</p>
+    </div>
+
+    <!-- Revisó Trabajo -->
+    <div class="form-group">
+      <label><strong>Revisó Trabajo:</strong></label>
+      <p>{{ ot.U_Supervisor or 'N/A' }}</p>
+    </div>
+
+    <!-- Visto Bueno del Cliente -->
+    <div class="form-group">
+      <label><strong>Visto Bueno del Cliente:</strong></label>
+      <p>{{ ot.U_Supervisor or 'N/A' }}</p>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="{{ url_for('dashboard', page=pagina) }}" class="btn btn-dark">
+        <i class="fas fa-arrow-left"></i> Volver
+      </a>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="alert alert-warning text-center">
+    No se encontró información de esta OT.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

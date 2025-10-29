@@ -593,10 +593,97 @@ def guardar_csv():
 
 @app.route('/ot_seguridad')
 def ot_seguridad():
-    if session.get('perfil') in [1,4]:  # Solo personal de seguridad puede entrar
+    if session.get('perfil') in [1, 2, 3, 4, 5]:  # Solo personal de seguridad puede entrar
         return render_template('ot_seguridad.html')
     else:
         return redirect(url_for('dashboard'))  # Redirigir si no tiene permiso
+    
+    
+@app.route('/ver_ot/<int:docnum>')
+def ver_ot(docnum):
+    pagina = request.args.get('pagina', 1, type=int)
+    route_id = session.get('ROUTEID')
+    b1session = session.get('B1SESSION')
+
+    headers = {
+        'Cookie': f'B1SESSION={b1session}; ROUTEID={route_id}',
+        'Content-Type': 'application/json'
+    }
+
+    sap_url = f"https://158.23.90.252:50000/b1s/v1/ServiceCalls?$filter=DocNum eq {docnum}"
+    response = requests.get(sap_url, headers=headers, verify=False)
+
+    ot = None
+    if response.status_code == 200:
+        data = response.json()
+        if "value" in data and len(data["value"]) > 0:
+            ot = data["value"][0]
+            # 🔹 Tipo de orden
+            call_type_id = ot.get("CallType")
+            ot["CallTypeName"] = obtener_nombre_tipo_orden(call_type_id, headers)
+            # 🔹 Sucursal
+            ot["SucursalName"] = obtener_nombre_sucursal(ot.get("Series"))
+            # 🔹 Empleados
+            ot["RealizoTrabajoNombre"] = obtener_nombre_empleado(ot.get("TechnicianCode"), headers)
+            ot["Tecnico3Nombre"] = obtener_nombre_empleado(ot.get("U_Tecnico3"), headers)
+            ot["Tecnico4Nombre"] = obtener_nombre_empleado(ot.get("U_Tecnico4"), headers)
+
+    if not ot:
+        return render_template("ver_ot_error.html", docnum=docnum)
+
+    # --- Detectar tipo de OT ---
+    if ot.get("U_Severidad"):
+        template = "ver_ot_seguridad.html"
+    elif ot.get("CustomerName") == "AUDI MEXICO" and ot.get("Series") == 374:
+        template = "ver_ot_audi.html"
+    else:
+        template = "ver_ot.html"
+
+    # 🔹 Pasamos también la página actual
+    return render_template(template, ot=ot, pagina=pagina)
+
+
+    
+def obtener_nombre_tipo_orden(call_type_id, headers):
+    sap_url = "https://158.23.90.252:50000/b1s/v1/ServiceCallTypes"
+    response = requests.get(sap_url, headers=headers, verify=False)
+
+    if response.status_code == 200:
+        data = response.json().get("value", [])
+        for tipo in data:
+            if tipo["CallTypeID"] == call_type_id:
+                return tipo["Name"]
+    return f"Tipo {call_type_id}"  # fallback
+
+def obtener_nombre_empleado(employee_id, headers):
+    if not employee_id:
+        return None
+
+    sap_url = f"https://10.1.0.6:50000/b1s/v1/EmployeesInfo?$filter=EmployeeID eq {employee_id}"
+    response = requests.get(sap_url, headers=headers, verify=False)
+
+    if response.status_code == 200:
+        data = response.json().get("value", [])
+        if data:
+            emp = data[0]
+            nombre = f"{emp.get('FirstName', '').strip()} {emp.get('LastName', '').strip()}"
+            return nombre.strip()
+    return f"ID {employee_id}"
+
+def obtener_nombre_sucursal(series_id):
+    sucursales = {
+        87: "AGS",
+        82: "CLY",
+        88: "GDL",
+        89: "IRA",
+        83: "MEX",
+        85: "MTY",
+        86: "QRO",
+        90: "SLP",
+        84: "TOL",
+        374: "PUE"
+    }
+    return sucursales.get(int(series_id), f"Serie {series_id}")   
 
 @app.route('/ot_audi')
 def ot_audi():

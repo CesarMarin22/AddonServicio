@@ -1,0 +1,129 @@
+{% extends "menu.html" %} {% block title %}Ver Flash Report - IPL{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div
+    class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom"
+  >
+    <h1 class="h2 mb-0 flex-grow-1">Vista de Flash Report  <span class="text-primary">(Folio SAP {{ ot.DocNum }})</span> </h1>
+  </div>
+
+  {% if ot %}
+  <div class="container mt-4">
+    <!-- Usuario -->
+    <div class="form-group">
+      <label><strong>Usuario que elaboró Flash Report:</strong></label>
+      <p>{{ ot.U_CreateUser }}</p>
+    </div>
+
+    <!-- Sucursal -->
+    <div class="form-group">
+      <label><strong>Sucursal:</strong></label>
+      <p>{{ ot.SucursalName }}</p>
+    </div>
+
+    <!-- Tipo de Orden -->
+    <div class="form-group">
+      <label><strong>Tipo de Orden:</strong></label>
+      <p>Seguridad ({{ ot.CallType }})</p>
+    </div>
+
+    <!-- Fecha -->
+    <div class="form-group">
+      <label><strong>Fecha:</strong></label>
+      <p>{{ ot.StartDate[:10] if ot.StartDate else 'N/A' }}</p>
+    </div>
+
+    <!-- Hora -->
+    <div class="form-group">
+      <label><strong>Hora:</strong></label>
+      <p>{{ ot.StartTime or ot.U_HoraInicio or 'N/A' }}</p>
+    </div>
+
+    <!-- Severidad -->
+    <div class="form-group">
+      <label><strong>Severidad:</strong></label>
+      <p>{{ ot.U_Severidad or 'N/A' }}</p>
+    </div>
+
+    <!-- Lugar del Suceso -->
+    <div class="form-group">
+      <label><strong>Lugar del Suceso (Cliente):</strong></label>
+      <p>{{ ot.CustomerCode or 'N/A' }}</p>
+    </div>
+
+    <!-- Nombre del Lugar -->
+    <div class="form-group">
+      <label><strong>Nombre del Lugar del Suceso:</strong></label>
+      <p>{{ ot.CustomerName or 'N/A' }}</p>
+    </div>
+
+    <!-- Área del Suceso -->
+    <div class="form-group">
+      <label><strong>Área del Suceso:</strong></label>
+      <p>{{ ot.U_AreaTrabajo or 'N/A' }}</p>
+    </div>
+
+    <!-- Descripción del Suceso -->
+    <div class="form-group">
+      <label><strong>Descripción del Suceso:</strong></label>
+      <p>{{ ot.Resolution or 'Sin descripción' }}</p>
+    </div>
+
+    <!-- Posible Causa -->
+    <div class="form-group">
+      <label><strong>Posible Causa:</strong></label>
+      <p>{{ ot.Subject or ot.Description or 'N/A' }}</p>
+    </div>
+
+    <!-- Acciones Realizadas -->
+    <div class="form-group">
+      <label
+        ><strong>Acciones realizadas para atender la situación:</strong></label
+      >
+      <p>{{ ot.U_AccionesR or 'N/A' }}</p>
+    </div>
+
+    <!-- Plan de Acción -->
+    <div class="form-group">
+      <label><strong>Plan de Acción:</strong></label>
+      <p>{{ ot.U_Plan or 'N/A' }}</p>
+    </div>
+
+    <!-- Lecciones Aprendidas -->
+    <div class="form-group">
+      <label><strong>Lecciones Aprendidas:</strong></label>
+      <p>{{ ot.U_Leccion or 'N/A' }}</p>
+    </div>
+
+    <!-- Costo -->
+    <div class="form-group">
+      <label><strong>Costo Aproximado:</strong></label>
+      <p>${{ "%.2f"|format(ot.U_Costo or 0) }}</p>
+    </div>
+
+    <!-- Persona Involucrada -->
+    <div class="form-group">
+      <label><strong>Persona Involucrada:</strong></label>
+      <p>{{ ot.U_PersonWhoReports or 'N/A' }}</p>
+    </div>
+
+    <!-- Supervisor -->
+    <div class="form-group">
+      <label><strong>Nombre del Supervisor:</strong></label>
+      <p>{{ ot.U_Supervisor or 'N/A' }}</p>
+    </div>
+
+   <div class="text-center mt-4">
+  <a href="{{ url_for('dashboard', page=pagina) }}" class="btn btn-dark">
+    <i class="fas fa-arrow-left"></i> Volver
+  </a>
+</div>
+  </div>
+
+  {% else %}
+  <div class="alert alert-warning text-center">
+    No se encontró información de esta OT de seguridad.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

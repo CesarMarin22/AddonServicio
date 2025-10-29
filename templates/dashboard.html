@@ -1,54 +1,40 @@
-{% extends "menu.html" %}
-{% block title %}Dashboard - IPL{% endblock %}
-
-{% block content %}
-
+{% extends "menu.html" %} {% block title %}Dashboard - IPL{% endblock %} {%
+block content %}
 <div class="container mt-5">
-  <h2 class="mb-4 text-center">
-    Historial de OT de {{ session['username'] }}
-  </h2>
+  <h2 class="mb-4 text-center">Historial de OT de {{ session['username'] }}</h2>
 
   <!-- Botón Crear OT dinámico según perfil -->
   <div class="d-block d-md-none text-center mb-3">
-    {% set perfil = session.get('perfil') %}
-    {% if perfil in [1, 2, 3, 4, 5] %}
-    <a 
+    {% set perfil = session.get('perfil') %} {% if perfil in [1, 2, 3, 4, 5] %}
+    <a
       href="
-        {% if perfil == 5 %}
-          {{ url_for('ot_audi') }}
-        {% elif perfil == 4 %}
-          {{ url_for('ot_seguridad') }}
-        {% else %}
-          {{ url_for('ordenes_trabajo') }}
-        {% endif %}
-      "
+          {% if perfil == 5 %}
+            {{ url_for('ot_audi') }}
+          {% elif perfil == 4 %}
+            {{ url_for('ot_seguridad') }}
+          {% else %}
+            {{ url_for('ordenes_trabajo') }}
+          {% endif %}
+        "
       class="btn btn-primary btn-lg"
     >
-      {% if perfil == 5 %}
-        Crear OT AUDI
-      {% elif perfil == 4 %}
-        Flash Report
-      {% else %}
-        Crear OT
-      {% endif %}
+      {% if perfil == 5 %} Crear OT AUDI {% elif perfil == 4 %} Flash Report {%
+      else %} Crear OT {% endif %}
     </a>
     {% endif %}
   </div>
-<div class="container mt-5">
 
   <!-- Contador de registros -->
   <div class="d-flex justify-content-end mb-3">
     <span class="font-weight-bold">
-      Mostrando {{ (page-1)*per_page + 1 }}
-      –
-      {{ (page-1)*per_page + llamadas|length }}
-      de {{ total_registros }} registros
-      (Página {{ page }} de {{ total_paginas }})
+      Mostrando {{ (page-1)*per_page + 1 }} – {{ (page-1)*per_page +
+      llamadas|length }} de {{ total_registros }} registros (Página {{ page }}
+      de {{ total_paginas }})
     </span>
   </div>
 
   <!-- Tabla -->
-  <div class="table-responsive">
+  <div class="table-responsive tabla-dashboard">
     <table class="table table-striped table-hover table-bordered mb-3">
       <thead style="background-color: #1d1d1b; color: white">
         <tr>
@@ -57,20 +43,33 @@
           <th>Cliente</th>
           <th>Serie</th>
           <th>Fecha</th>
+          <th>Ver</th>
+          <!-- 👁️ Nueva columna -->
         </tr>
       </thead>
       <tbody>
         {% for llamada in llamadas %}
-        <tr>
-          <td>{{ llamada.DocNum }}</td>
-          <td>{{ llamada.CustomerRefNo }}</td>
-          <td>{{ llamada.CustomerName }}</td>
-          <td>{{ llamada.ManufacturerSerialNum }}</td>
-          <td>{{ llamada.FechaFormateada }}</td>
+        <tr id="ot-{{ llamada.DocNum }}">
+          <td data-label="OT SAP">{{ llamada.DocNum }}</td>
+          <td data-label="Folio OT Física">{{ llamada.CustomerRefNo }}</td>
+          <td data-label="Cliente">{{ llamada.CustomerName }}</td>
+          <td data-label="Serie">{{ llamada.ManufacturerSerialNum }}</td>
+          <td data-label="Fecha">{{ llamada.FechaFormateada }}</td>
+          <td data-label="Ver" class="text-center">
+            <!-- 👁️ Botón para ver detalle -->
+            <a
+              href="{{ url_for('ver_ot', docnum=llamada.DocNum, pagina=page) }}"
+              class="btn btn-sm btn-outline-dark ver-ot-btn"
+              data-docnum="{{ llamada.DocNum }}"
+              title="Ver detalle de OT"
+            >
+              <i class="fas fa-eye"></i>
+            </a>
+          </td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="5" class="text-center">No hay llamadas registradas.</td>
+          <td colspan="6" class="text-center">No hay llamadas registradas.</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -79,14 +78,42 @@
 
   <!-- Paginación -->
   <div class="d-flex justify-content-between">
-    <a href="{{ url_for('dashboard', page=page-1) }}" 
-       class="btn btn-dark {% if page == 1 %}disabled{% endif %}">
-       Anterior
+    <a
+      href="{{ url_for('dashboard', page=page-1) }}"
+      class="btn btn-dark {% if page == 1 %}disabled{% endif %}"
+    >
+      Anterior
     </a>
-    <a href="{{ url_for('dashboard', page=page+1) }}" 
-       class="btn btn-dark {% if page == total_paginas %}disabled{% endif %}">
-       Siguiente
+    <a
+      href="{{ url_for('dashboard', page=page+1) }}"
+      class="btn btn-dark {% if page == total_paginas %}disabled{% endif %}"
+    >
+      Siguiente
     </a>
   </div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // 🔹 Guardar la OT seleccionada al hacer clic en el botón "ver"
+    document.querySelectorAll(".ver-ot-btn").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        localStorage.setItem("ultimaOTVista", this.dataset.docnum);
+      });
+    });
+
+    // 🔹 Al cargar el dashboard, leer la última OT vista y resaltarla
+    const ultimaOT = localStorage.getItem("ultimaOTVista");
+    if (ultimaOT) {
+      const fila = document.getElementById(`ot-${ultimaOT}`);
+      if (fila) {
+        fila.classList.add("table-active"); // Bootstrap resalta la fila
+        fila.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        // 🔸 Opcional: eliminar el resaltado después de 5 segundos
+        setTimeout(() => fila.classList.remove("table-active"), 5000);
+      }
+    }
+  });
+</script>
+
 {% endblock %}
