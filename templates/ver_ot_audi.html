@@ -6,7 +6,7 @@ block content %}
   >
     <h1 class="h2 mb-0 flex-grow-1">
       Vista de Orden de Trabajo AUDI
-      <span class="text-primary">OT SAP {{ ot.DocNum }}</span>
+      <span class="text-danger">(Folio SAP {{ ot.DocNum }})</span>
     </h1>
   </div>
 
@@ -247,8 +247,8 @@ block content %}
       <p>{{ ot.U_Supervisor or 'N/A' }}</p>
     </div>
 
-    <div class="text-center mt-4">
-      <a href="{{ url_for('dashboard', page=pagina) }}" class="btn btn-dark">
+    <div class="text-center-volver">
+      <a href="{{ url_for('dashboard', page=pagina) }}" class="boton-volver">
         <i class="fas fa-arrow-left"></i> Volver
       </a>
     </div>

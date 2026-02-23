@@ -23,10 +23,10 @@ EXCEL_PATH = r"\\10.1.0.4\Users\Sistemas\Documents\ordenes_trabajo.xlsx"
 
 
 # URL de la API de usuarios
-USERS_API_URL = 'http://158.23.90.252:8081/api/usuarios'
+USERS_API_URL = 'http://68.155.144.63:8081/api/usuarios'
 
 # Datos para la autenticación en SAP B1
-SAP_LOGIN_URL = 'https://158.23.90.252:50000/b1s/v1/Login'
+SAP_LOGIN_URL = 'https://68.155.144.63:50000/b1s/v1/Login'
 SAP_USERNAME = 'manager'
 SAP_PASSWORD = 'yottak01'
 SAP_COMPANYDB = 'B1_IPL'
@@ -88,7 +88,7 @@ def dashboard():
         top = per_page
 
         sap_url = (
-            f"https://158.23.90.252:50000/b1s/v1/ServiceCalls?"
+            f"https://68.155.144.63:50000/b1s/v1/ServiceCalls?"
             f"$filter=U_CreateUser eq '{username}'"
             f"&$orderby=AssignedDate desc"
             f"&$skip={skip}&$top={top}"
@@ -213,7 +213,7 @@ def buscar_clientes():
 
     # Modificar la URL para buscar por CardCode, CardName o CardForeignName, y CardType cCustomer
     sap_url = (
-        f"https://158.23.90.252:50000/b1s/v1/BusinessPartners?"
+        f"https://68.155.144.63:50000/b1s/v1/BusinessPartners?"
         f"$filter=(contains(CardCode, '{search_query}') "
         f"or contains(CardName, '{search_query}') "
         f"or contains(CardForeignName, '{search_query}')) "
@@ -250,7 +250,7 @@ def equipos_cliente():
 
     # Construye la consulta para obtener todos los equipos activos del cliente
     sap_url = (
-    "https://158.23.90.252:50000/b1s/v1/$crossjoin(Items, CustomerEquipmentCards, Manufacturers)"
+    "https://68.155.144.63:50000/b1s/v1/$crossjoin(Items, CustomerEquipmentCards, Manufacturers)"
     "?$expand=Items($select=ItemCode, U_Modelo),CustomerEquipmentCards($select=U_NoEconomico, ItemCode, ManufacturerSerialNum),Manufacturers($select=ManufacturerName)"
     f"&$filter=Items/ItemCode eq CustomerEquipmentCards/ItemCode and Items/Manufacturer eq Manufacturers/Code "
     f"and contains(CustomerEquipmentCards/CustomerCode,'{customer_code}') and CustomerEquipmentCards/StatusOfSerialNumber eq 'A' "
@@ -287,7 +287,7 @@ def buscar_items():
 
     # Construir la consulta para obtener los items
     sap_url = (
-        f"https://158.23.90.252:50000/b1s/v1/Items?$select=ItemCode,ItemName"
+        f"https://68.155.144.63:50000/b1s/v1/Items?$select=ItemCode,ItemName"
         f"&$filter=startswith(ItemCode, '{item_code}') and ItemsGroupCode eq {group_code}"
     )
 
@@ -321,7 +321,7 @@ def buscar_empleados():
 
     # Construir la consulta para obtener los empleados
     sap_url = (
-        f"https://158.23.90.252:50000/b1s/v1/EmployeesInfo?"
+        f"https://68.155.144.63:50000/b1s/v1/EmployeesInfo?"
     f"$select=FirstName,LastName,MiddleName,EmployeeID,Active, EmployeeRolesInfoLines"
     f"&$filter=(JobTitle eq 'TECNICO' ) and (Active eq 'tYES') "
     f"and (contains(LastName, '{query}') or contains(FirstName, '{query}') or contains(MiddleName, '{query}'))"
@@ -366,7 +366,7 @@ def buscar_cssrs():
 
     # Construir la consulta para obtener los CSSRs activos
     sap_url = (
-        f"https://158.23.90.252:50000/b1s/v1/EmployeesInfo?"
+        f"https://68.155.144.63:50000/b1s/v1/EmployeesInfo?"
         f"$select=FirstName,LastName,MiddleName,EmployeeID"
         f"&$filter=Active eq 'Y' and JobTitle eq 'CSSR' "
         f"and (contains(FirstName, '{query}') or contains(LastName, '{query}') or contains(MiddleName, '{query}'))"
@@ -403,7 +403,7 @@ def tipos_problema():
     if not route_id or not b1session:
         return jsonify({"message": "No active session"}), 403
 
-    sap_url_base = "https://158.23.90.252:50000/b1s/v1/ServiceCallProblemTypes"
+    sap_url_base = "https://68.155.144.63:50000/b1s/v1/ServiceCallProblemTypes"
     headers = {
         'Cookie': f'B1SESSION={b1session}; ROUTEID={route_id}',
         'Content-Type': 'application/json'
@@ -472,7 +472,7 @@ def guardar_csv():
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR",
         "U_Plan", "U_Leccion", "U_Costo", "U_Supervisor", "U_A_Orden", "U_A_NumTec", "U_A_Horas", "U_NoOT", "U_A_TipoOT",
-        "U_A_Causa", "U_A_TipoDano"
+        "U_A_Causa", "U_A_TipoDano", "U_A_FolioE"
     ]
 
     encabezados_2 = [
@@ -488,7 +488,7 @@ def guardar_csv():
         "U_Qty16", "U_Code16", "U_Qty17", "U_Code17", "U_Qty18", "U_Code18", "U_Qty19", "U_Code19",
         "U_Qty20", "U_Code20", "U_Version", "U_CSSR", "U_Severidad", "U_AreaTrabajo", "U_AccionesR", 
         "U_Plan", "U_Leccion", "U_Costo", "U_Supervisor", "U_A_Orden", "U_A_NumTec", "U_A_Horas", "U_NoOT", "U_A_TipoOT",
-        "U_A_Causa", "U_A_TipoDano"
+        "U_A_Causa", "U_A_TipoDano", "U_A_FolioE"
     ]
 
     try:
@@ -577,7 +577,8 @@ def guardar_csv():
                 datos.get("otBase", ""),
                 datos.get("ordenBase", " "),
                 datos.get("causa", " "),
-                datos.get("tipoDanio", " ")
+                datos.get("tipoDanio", " "),
+                datos.get("folioEx", " ")
 
                
             ]
@@ -610,7 +611,7 @@ def ver_ot(docnum):
         'Content-Type': 'application/json'
     }
 
-    sap_url = f"https://158.23.90.252:50000/b1s/v1/ServiceCalls?$filter=DocNum eq {docnum}"
+    sap_url = f"https://68.155.144.63:50000/b1s/v1/ServiceCalls?$filter=DocNum eq {docnum}"
     response = requests.get(sap_url, headers=headers, verify=False)
 
     ot = None
@@ -645,7 +646,7 @@ def ver_ot(docnum):
 
     
 def obtener_nombre_tipo_orden(call_type_id, headers):
-    sap_url = "https://158.23.90.252:50000/b1s/v1/ServiceCallTypes"
+    sap_url = "https://68.155.144.63:50000/b1s/v1/ServiceCallTypes"
     response = requests.get(sap_url, headers=headers, verify=False)
 
     if response.status_code == 200:
@@ -659,7 +660,7 @@ def obtener_nombre_empleado(employee_id, headers):
     if not employee_id:
         return None
 
-    sap_url = f"https://10.1.0.6:50000/b1s/v1/EmployeesInfo?$filter=EmployeeID eq {employee_id}"
+    sap_url = f"https://68.155.144.63:50000/b1s/v1/EmployeesInfo?$filter=EmployeeID eq {employee_id}"
     response = requests.get(sap_url, headers=headers, verify=False)
 
     if response.status_code == 200:
@@ -705,7 +706,7 @@ def buscar_empleados_todos():
 
     # Mismo select, pero SIN filtro de JobTitle (solo activos)
     sap_url = (
-        f"https://158.23.90.252:50000/b1s/v1/EmployeesInfo?"
+        f"https://68.155.144.63:50000/b1s/v1/EmployeesInfo?"
         f"$select=FirstName,LastName,MiddleName,EmployeeID,Active,EmployeeRolesInfoLines"
         f"&$filter=(Active eq 'tYES') and "
         f"(contains(LastName, '{query}') or contains(FirstName, '{query}') or contains(MiddleName, '{query}'))"

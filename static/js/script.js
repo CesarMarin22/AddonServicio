@@ -451,7 +451,7 @@ window.createUser = function () {
 /// funcion para cargar socios
 function loadSocios(selectedSocioId) {
   axios
-    .get("http://158.23.90.252:8081/api/socios")
+    .get("http://68.155.144.63:8081/api/socios")
     .then(function (response) {
       console.log("Socios loaded:", response.data);
       var socios = response.data;
@@ -489,7 +489,7 @@ function loadSocios(selectedSocioId) {
 window.editUser = function (id) {
   console.log("Editing user with ID:", id);
   axios
-    .get(`http://158.23.90.252:8081/api/usuarios/${id}`)
+    .get(`http://68.155.144.63:8081/api/usuarios/${id}`)
     .then(function (response) {
       console.log("User data received for edit:", response.data);
       var user = response.data;
@@ -537,7 +537,7 @@ window.deleteUser = function (id) {
       console.log("Deleting user with ID:", id);
 
       axios
-        .delete(`http://158.23.90.252:8081/api/usuarios/${id}`)
+        .delete(`http://68.155.144.63:8081/api/usuarios/${id}`)
         .then(function (response) {
           console.log("User deleted:", response.data);
           loadUsers();
@@ -576,7 +576,7 @@ window.deleteUser = function (id) {
 function loadUsers() {
   console.log("Attempting to load users from API...");
   axios
-    .get("http://158.23.90.252:8081/api/usuarios")
+    .get("http://68.155.144.63:8081/api/usuarios")
     .then(function (response) {
       console.log("API response received:", response);
       if (response.status === 200) {
@@ -631,81 +631,92 @@ function loadUsers() {
 // Manejo del formulario de usuario
 var userForm = document.getElementById("userForm");
 if (userForm) {
-  userForm.addEventListener("submit", function (event) {
+  userForm.addEventListener("submit", async function (event) {
     event.preventDefault();
-    const userId = document.getElementById("userId").value;
-    const usuarioInput = document.getElementById("usuario").value.trim();
-    const data = {
-      USUARIO: usuarioInput,
-      PERFIL: parseInt(document.getElementById("perfil").value, 10),
-      ACTIVO: parseInt(document.getElementById("activo").value, 10),
-      SOCIO: parseInt(document.getElementById("socio").value, 10),
-      SUCURSAL: document.getElementById("sucursal").value,
-      PWD: document.getElementById("pwd").value,
-    };
 
-    const method = userId ? "PUT" : "POST";
-    const url = userId
-      ? `http://158.23.90.252:8081/api/usuarios/${userId}`
-      : "http://158.23.90.252:8081/api/usuarios";
+    // ✅ prender loader (si existe)
+    if (window.showGlobalLoader) window.showGlobalLoader();
 
-    console.log("⏳ Verificando usuario existente...");
+    try {
+      const userId = document.getElementById("userId").value;
+      const usuarioInput = document.getElementById("usuario").value.trim();
 
-    // 🔍 Verificar si el usuario ya existe (solo al crear)
-    axios
-      .get("http://158.23.90.252:8081/api/usuarios")
-      .then(function (response) {
-        const usuarios = response.data.map((u) =>
-          u.USUARIO.trim().toLowerCase()
-        );
+      const data = {
+        USUARIO: usuarioInput,
+        PERFIL: parseInt(document.getElementById("perfil").value, 10),
+        ACTIVO: parseInt(document.getElementById("activo").value, 10),
+        SOCIO: parseInt(document.getElementById("socio").value, 10),
+        SUCURSAL: document.getElementById("sucursal").value,
+        PWD: document.getElementById("pwd").value,
+      };
+
+      const method = userId ? "PUT" : "POST";
+      const url = userId
+        ? `http://68.155.144.63:8081/api/usuarios/${userId}`
+        : "http://68.155.144.63:8081/api/usuarios";
+
+      // 🔍 Validar duplicados SOLO cuando es alta (POST)
+      if (!userId) {
+        const resp = await axios.get("http://68.155.144.63:8081/api/usuarios");
+        const usuarios = (resp.data || []).map((u) => (u.USUARIO || "").trim().toLowerCase());
         const usuarioNuevo = usuarioInput.toLowerCase();
 
-        if (usuarios.includes(usuarioNuevo) && !userId) {
-          Swal.fire({
+        if (usuarios.includes(usuarioNuevo)) {
+          // ✅ apagar loader antes del swal
+          if (window.hideGlobalLoader) window.hideGlobalLoader();
+
+          await Swal.fire({
             icon: "warning",
             title: "Usuario duplicado",
             html: "El nombre de usuario ya existe. Por favor elige otro.",
             confirmButtonText: "Entendido",
             allowOutsideClick: false,
           });
-          throw new Error("Usuario duplicado");
+          return; // ⛔ detener flujo
         }
+      }
 
-        // ✅ Si no existe, continuar con el guardado normal
-        return axios({
-          method: method,
-          url: url,
-          data: data,
-        });
-      })
-      .then(function (response) {
-        console.log("User saved:", response.data);
-        $("#userModal").modal("hide");
-        setTimeout(() => {
-          loadUsers();
-        }, 300);
-        Swal.fire({
-          icon: "success",
-          title: "¡Éxito!",
-          text: "Usuario guardado correctamente.",
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        });
-      })
-      .catch(function (error) {
-        if (error.message === "Usuario duplicado") return; // detener flujo
-        console.error("Error al guardar el usuario:", error);
-        Swal.fire({
-          icon: "error",
-          title: "¡Error!",
-          html: "Error al guardar el usuario.",
-          confirmButtonText: "Entendido",
-          allowOutsideClick: false,
-        });
+      // ✅ Guardar (POST/PUT)
+      const saveResp = await axios({ method, url, data });
+
+      // Cerrar modal
+      $("#userModal").modal("hide");
+
+      // refrescar tabla
+      loadUsers();
+
+      // ✅ apagar loader antes del swal
+      if (window.hideGlobalLoader) window.hideGlobalLoader();
+
+      // ✅ ESPERAR el swal (aunque sea toast)
+      await Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: "Usuario guardado correctamente.",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
       });
+
+    } catch (error) {
+      console.error("Error al guardar el usuario:", error);
+
+      // ✅ apagar loader en error
+      if (window.hideGlobalLoader) window.hideGlobalLoader();
+
+      Swal.fire({
+        icon: "error",
+        title: "¡Error!",
+        html: "Error al guardar el usuario.",
+        confirmButtonText: "Entendido",
+        allowOutsideClick: false,
+      });
+    } finally {
+      // ✅ doble seguro: si por algo quedó prendido
+      if (window.hideGlobalLoader) window.hideGlobalLoader();
+    }
   });
 }
 /////////////////////////////////////////////////////////AQUI SE CARGA LA PAGINA /////////////////////////////////////////////////////////////////////////////////////
@@ -870,20 +881,29 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", function (event) {
       event.preventDefault();
 
+      const loader = document.getElementById("globalLoader");
       const tipo = this.getAttribute("data-tipo") || "ot";
       const isSeguridad = tipo === "seguridad";
       const isAudi = tipo === "audi";
 
-      // ✅ Siempre validar formulario
-      if (!validarFormulario()) {
-        return; // detener si faltan campos
+      if (window.showGlobalLoader) window.showGlobalLoader();
+
+      // ✅ Validar formulario
+      const esValido = validarFormulario();
+
+      if (!esValido) {
+        // ⚠️ Ocultar loader antes de salir
+        if (window.hideGlobalLoader) window.hideGlobalLoader();
+        return;
       }
+
 
       if (!isSeguridad && !isAudi) {
         const roleID = parseInt(
           document.getElementById("realizoTrabajoRoleID")?.value
         );
         if (isNaN(roleID) || roleID !== -2) {
+          if (window.hideGlobalLoader) window.hideGlobalLoader();
           Swal.fire({
             icon: "error",
             title: "Rol inválido",
@@ -955,6 +975,9 @@ document.addEventListener("DOMContentLoaded", function () {
       axios
         .post("/guardar_csv", datos)
         .then(function (res) {
+          setTimeout(() => {
+            if (window.hideGlobalLoader) window.hideGlobalLoader();
+          }, 300); // 🕐 pequeño delay visual de 300 ms
           console.log("📥 Respuesta backend:", res.data);
           Swal.fire({
             icon: "success",
@@ -982,6 +1005,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         })
         .catch(function (error) {
+          if (window.hideGlobalLoader) window.hideGlobalLoader();
           console.error("❌ Error al guardar:", error.response?.data || error);
           Swal.fire({
             icon: "error",
@@ -1035,7 +1059,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (tipo === "B") {
       // 🚨 Aviso
-      folioContainer.style.display = "block";
+      folioContainer.style.display = "none";
       refaccionesSection && (refaccionesSection.style.display = "none");
       numPersonas && (numPersonas.style.display = "none");
       horasTrabajadas && (horasTrabajadas.style.display = "none");
@@ -1307,10 +1331,12 @@ document
 
 /////////////////////////////////////Validar formulario para campos obligatorios//////////////////////////////////////
 function validarFormulario() {
+  const loader = document.getElementById("globalLoader");
   const form = document.getElementById("ordenTrabajoForm");
   const tipo = form.dataset.tipo; // "ot", "audi", "seguridad"
   let camposRequeridos = [];
 
+  // Determinar campos requeridos según el tipo de formulario
   if (tipo === "audi") {
     camposRequeridos = Array.from(
       form.querySelectorAll(
@@ -1323,13 +1349,6 @@ function validarFormulario() {
         "input:not(.refaccion):not(#noEconomico):not(#modelo), select:not(.refaccion), textarea:not(.refaccion)"
       )
     );
-  } else if (tipo === "seguridad") {
-    // 📌 Flash Report → TODOS los campos obligatorios
-    camposRequeridos = Array.from(
-      form.querySelectorAll(
-        "input:not(.refaccion), select:not(.refaccion), textarea:not(.refaccion)"
-      )
-    );
   } else {
     camposRequeridos = Array.from(
       form.querySelectorAll(
@@ -1338,21 +1357,26 @@ function validarFormulario() {
     );
   }
 
-  // ⚡ Filtrar solo campos visibles y que realmente se deben llenar
-  camposRequeridos = camposRequeridos.filter((campo) => {
-    return campo.offsetParent !== null; // solo visibles
-  });
+  // ⚡ Filtrar solo campos visibles
+  camposRequeridos = camposRequeridos.filter((campo) => campo.offsetParent !== null);
 
   // 🔍 Buscar campos vacíos
   const camposFaltantes = camposRequeridos.filter(
     (campo) => campo.value.trim() === ""
   );
 
+  // Si hay campos faltantes
   if (camposFaltantes.length > 0) {
+    // ✅ Ocultar el spinner correctamente
+    if (loader && loader.classList.contains("active")) {
+      loader.classList.remove("active");
+    }
+
     console.log(
       "Campos faltantes:",
       camposFaltantes.map((c) => c.id || c.name)
     );
+
     const nombresCampos = camposFaltantes
       .map((campo) => {
         const label = campo.closest(".form-group")?.querySelector("label");
@@ -1362,8 +1386,7 @@ function validarFormulario() {
 
     let titulo = "Campos incompletos";
     if (tipo === "audi") titulo = "Campos incompletos en OT Audi";
-    else if (tipo === "seguridad")
-      titulo = "Campos incompletos en Flash Report";
+    else if (tipo === "seguridad") titulo = "Campos incompletos en Flash Report";
     else titulo = "Campos incompletos en Orden de Trabajo";
 
     Swal.fire({
@@ -1376,8 +1399,10 @@ function validarFormulario() {
 
     return false;
   }
+
   return true;
 }
+
 
 function cargarTiposDeProblema() {
   const tipoProblemaDropdown = document.getElementById("tipoProblema");
@@ -1403,7 +1428,7 @@ function cargarTiposDeProblema() {
 
       if (isAudi) {
         // 🔹 IDs permitidos SOLO para Audi
-        const idsAudi = ["2", "7", "8", "11", "198"];
+        const idsAudi = ["2", "7", "8", "11", "198", "197"];
         lista = tiposProblema.filter((t) =>
           idsAudi.includes(String(t.ProblemTypeID))
         );
@@ -1496,6 +1521,8 @@ const causasTabla = [
   },
   { code: "O:ESPEJO", name: "ESPEJO", danio: "OTROS" },
   { code: "O:PAREMETROS", name: "PAREMETROS", danio: "OTROS" },
+  { code: "P:PREVENTIVO MAYOR", name: "PREVENTIVO MAYOR", danio: "PREVENTIVO" },
+  { code: "P:PREVENTIVO MENOR", name: "PREVENTIVO MENOR", danio: "PREVENTIVO" },
 ];
 
 const tipoDanioTabla = [
@@ -1534,6 +1561,8 @@ const tipoDanioTabla = [
   { code: "O:DESGASTE NATURAL", name: "DESGASTE NATURAL O", danio: "OTROS" },
   { code: "O:FRACTURA", name: "FRACTURA O", danio: "OTROS" },
   { code: "O:GOLPE", name: "GOLPE", danio: "OTROS" },
+  { code: "P:PREVENTIVO MAYOR", name: "PREVENTIVO MAYOR", danio: "PREVENTIVO" },
+  { code: "P:PREVENTIVO MENOR", name: "PREVENTIVO MENOR", danio: "PREVENTIVO" },
 ];
 
 // Mapa entre ID del defecto (tipoProblema) y prefijos de código
@@ -1543,6 +1572,7 @@ const defectosPrefijos = {
   8: ["M:"], // Mecánico
   198: ["E:"], // Electrónico
   11: ["O:"], // Otros
+  197: ["P:"], // Preventivo
 };
 
 // Función para actualizar selects

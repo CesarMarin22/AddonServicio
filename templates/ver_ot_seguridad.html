@@ -4,7 +4,7 @@
   <div
     class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom"
   >
-    <h1 class="h2 mb-0 flex-grow-1">Vista de Flash Report  <span class="text-primary">(Folio SAP {{ ot.DocNum }})</span> </h1>
+    <h1 class="h2 mb-0 flex-grow-1">Vista de Flash Report <span class="text-danger">(Folio SAP {{ ot.DocNum }})</span> </h1>
   </div>
 
   {% if ot %}
@@ -113,11 +113,11 @@
       <p>{{ ot.U_Supervisor or 'N/A' }}</p>
     </div>
 
-   <div class="text-center mt-4">
-  <a href="{{ url_for('dashboard', page=pagina) }}" class="btn btn-dark">
-    <i class="fas fa-arrow-left"></i> Volver
-  </a>
-</div>
+    <div class="text-center-volver">
+      <a href="{{ url_for('dashboard', page=pagina) }}" class="boton-volver">
+        <i class="fas fa-arrow-left"></i> Volver
+      </a>
+    </div>
   </div>
 
   {% else %}
